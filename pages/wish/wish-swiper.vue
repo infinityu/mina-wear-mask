@@ -21,10 +21,9 @@
 							<view class="content-item">
 								<image class="countDown animation-speed-2" :class="{ 'animation-scale-up': (currentPageIndex == 0)}" style="width: 600rpx; height: 300rpx; margin-top: 50rpx;"
 								 mode="aspectFit" :src="countDown"></image>
-								 <span class="animation-speed-2" :class="{ 'animation-slide-right': (currentPageIndex == 0)}"
-								 style="font-size: 500%; font-weight: 1000; margin-top: -180rpx; margin-left: 110rpx;">
+								<span class="animation-speed-2" :class="{ 'animation-slide-right': (currentPageIndex == 0)}" style="font-size: 500%; font-weight: 1000; margin-top: -180rpx; margin-left: 110rpx;">
 									<font style="color: white">{{countDownDays}}</font>
-								 </span>
+								</span>
 							</view>
 						</view>
 					</view>
@@ -59,8 +58,7 @@
 						<view class="content-item">
 							<image class="animation-speed-2" :class="{ 'animation-slide-left': (currentPageIndex == 2)}" style="width: 550rpx; height: 200rpx; margin-top: -70rpx;"
 							 mode="aspectFit" :src="bannerWishRec"></image>
-							<span class="animation-speed-2" :class="{ 'animation-slide-right': (currentPageIndex == 2)}"
-								style="font-size: 120%; font-weight: 500; margin-top: -130rpx;">
+							<span class="animation-speed-2" :class="{ 'animation-slide-right': (currentPageIndex == 2)}" style="font-size: 120%; font-weight: 500; margin-top: -130rpx;">
 								<font style="color: #C12928">在这里，给您拜年喽！</font>
 							</span>
 						</view>
@@ -75,18 +73,15 @@
 					<image class="page-bg" :style="{height:windowHeight+'px;'}" mode="aspectFill" :src="pageBg"></image>
 					<view class="content-wrapper ">
 						<view class="content-item">
-							<image class="animation-speed-2" :class="{ 'animation-slide-left': (currentPageIndex == 3)}" 
-							style="width: 550rpx; height: 100rpx;"
+							<image class="animation-speed-2" :class="{ 'animation-slide-left': (currentPageIndex == 3)}" style="width: 550rpx; height: 100rpx;"
 							 mode="aspectFit" :src="bannerWishMouseYear"></image>
 						</view>
 						<view class="content-item">
-							<image class="animation-speed-2" :class="{ 'animation-scale-up': (currentPageIndex == 3)}" 
-							style="width: 650rpx; height: 500rpx;"
+							<image class="animation-speed-2" :class="{ 'animation-scale-up': (currentPageIndex == 3)}" style="width: 650rpx; height: 500rpx;"
 							 mode="aspectFit" :src="mouse2020"></image>
 						</view>
 						<view class="content-item">
-							<image class="animation-speed-2" :class="{ 'animation-scale-down': (currentPageIndex == 3)}" 
-							style="width: 650rpx; height: 500rpx; margin-top: -100rpx;"
+							<image class="animation-speed-2" :class="{ 'animation-scale-down': (currentPageIndex == 3)}" style="width: 650rpx; height: 500rpx; margin-top: -100rpx;"
 							 mode="aspectFit" :src="wishMsg3"></image>
 						</view>
 					</view>
@@ -96,13 +91,11 @@
 					<image class="page-bg" :style="{height:windowHeight+'px;'}" mode="aspectFill" :src="pageBg"></image>
 					<view class="content-wrapper ">
 						<view class="content-item">
-							<image class="animation-speed-2" :class="{ 'animation-scale-up': (currentPageIndex == 4)}" 
-							style="width: 550rpx; height: 380rpx;"
+							<image class="animation-speed-2" :class="{ 'animation-scale-up': (currentPageIndex == 4)}" style="width: 550rpx; height: 380rpx;"
 							 mode="aspectFit" :src="mouseMoney"></image>
 						</view>
 						<view class="content-item">
-							<image class="animation-speed-2" :class="{ 'animation-scale-down': (currentPageIndex == 4)}" 
-							style="width: 650rpx; height: 600rpx; margin-top: 10rpx;"
+							<image class="animation-speed-2" :class="{ 'animation-scale-down': (currentPageIndex == 4)}" style="width: 650rpx; height: 600rpx; margin-top: 10rpx;"
 							 mode="aspectFit" :src="wishMsg4"></image>
 						</view>
 					</view>
@@ -112,8 +105,7 @@
 					<image class="page-bg" :style="{height:windowHeight+'px;'}" mode="aspectFill" :src="pageBg"></image>
 					<view class="content-wrapper ">
 						<view class="content-item">
-							<image class="animation-speed-2" :class="{ 'animation-slide-left': (currentPageIndex == 5)}" 
-							style="width: 550rpx; height: 80rpx; margin-left: -300rpx;"
+							<image class="animation-speed-2" :class="{ 'animation-slide-left': (currentPageIndex == 5)}" style="width: 550rpx; height: 80rpx; margin-left: -300rpx;"
 							 mode="aspectFit" :src="bannerWishMouseYear"></image>
 						</view>
 						<view class="content-item">
@@ -135,17 +127,15 @@
 							 mode="aspectFit" :src="pic2020Hot"></image>
 						</view>
 						<view class="content-item">
-							<image class="animation-speed-2" :class="{ 'animation-slide-right': (currentPageIndex == 6)}"
-							style="width: 600rpx; height: 300rpx; margin-top: -50rpx;" mode="aspectFit" :src="picSpringFestival"></image>
+							<image class="animation-speed-2" :class="{ 'animation-slide-right': (currentPageIndex == 6)}" style="width: 600rpx; height: 300rpx; margin-top: -50rpx;"
+							 mode="aspectFit" :src="picSpringFestival"></image>
 						</view>
 						<view class="content-item">
-							<image class="animation-speed-2" :class="{ 'animation-shake': (currentPageIndex == 6)}" 
-							style="width: 300rpx; height: 300rpx; margin-top: 0rpx;"
+							<image class="animation-speed-2" :class="{ 'animation-shake': (currentPageIndex == 6)}" style="width: 300rpx; height: 300rpx; margin-top: 0rpx;"
 							 mode="aspectFit" :src="mouseCute"></image>
 						</view>
 						<view class="content-item">
-							<image class="animation-speed-2" :class="{ 'animation-scale-down': (currentPageIndex == 6)}" 
-							style="width: 650rpx; height: 500rpx; margin-top: -100rpx;"
+							<image class="animation-speed-2" :class="{ 'animation-scale-down': (currentPageIndex == 6)}" style="width: 650rpx; height: 500rpx; margin-top: -100rpx;"
 							 mode="aspectFit" :src="wishMsg6"></image>
 						</view>
 					</view>
@@ -165,9 +155,8 @@
 							<view class="content-item">
 								<view class="padding-xl customized-wish">
 									<view class="uni-textarea2">
-										<textarea maxlength="100" :value="wishMessage"
-										placeholder-style="color: white" placeholder="请输入祝福语或选择模板" />
-									</view>
+										<textarea maxlength="100" :value="wishMessage" placeholder-style="color: white" placeholder="请输入祝福语或选择模板" />
+										</view>
 								</view>
 							</view>
 							<!-- <view class="content-item">
@@ -202,6 +191,8 @@
 </template>
 
 <script>
+	import { mapGetters } from "vuex";
+	
 	export default {
 		data() {
 			return {
@@ -215,81 +206,11 @@
 			};
 		},
 		computed: {
-			pageBg: function() {
-				return this.imgPath + "page-bg.png";
-			},
-			avatarBg: function() {
-				return this.imgPath + "avatar-bg.png";
-			},
-			greetings: function() {
-				return this.imgPath + "greetings.png";
-			},
-			countDown: function() {
-				return this.imgPath + "count-down.png";
-			},
-			nextIcon: function() {
-				return this.imgPath + "next-icon.png";
-			},
-			// page 2
-			mouseHappiness: function() {
-				return this.imgPath + "mouse-happiness.png";
-			},
-			bannerWishMouseYear: function() {
-				return this.imgPath + "banner-wish.png";
-			},
-			// page 3
-			littleYear: function() {
-				return this.imgPath + "pic-little-year.png";
-			},
-			bannerWishRec: function() {
-				return this.imgPath + "banner-wish-rec.png";
-			},
-			// page 4
-			mouse2020: function() {
-				return this.imgPath + "mouse-2020.png";
-			},
-			// page 5
-			mouseMoney: function() {
-				return this.imgPath + "mouse-money.png";
-			},
-			// page 6
-			picDinner: function() {
-				return this.imgPath + "pic-dinner.png";
-			},
-			// page 7
-			pic2020Hot: function() {
-				return this.imgPath + "pic-2020-hot.png";
-			},
-			picSpringFestival: function() {
-				return this.imgPath + "pic-spring-festival.png";
-			},
-			mouseCute: function() {
-				return this.imgPath + "mouse-cute.png";
-			},
-			// page 8
-			mouseOnCoin: function() {
-				return this.imgPath + "mouse-on-coin.png";
-			},
-			//...
-			wishMsg1: function() {
-				return this.imgPath + "wish-msg-1.png";
-			},
-			wishMsg2: function() {
-				return this.imgPath + "wish-msg-2.png";
-			},
-			wishMsg3: function() {
-				return this.imgPath + "wish-msg-3.png";
-			},
-			wishMsg4: function() {
-				return this.imgPath + "wish-msg-4.png";
-			},
-			wishMsg5: function() {
-				return this.imgPath + "wish-msg-5.png";
-			},
-			wishMsg6: function() {
-				return this.imgPath + "wish-msg-6.png";
-			},
-				
+			...mapGetters(["pageBg", "avatarBg","greetings","countDown","nextIcon",
+			"mouseHappiness", "bannerWishMouseYear", "littleYear", "bannerWishRec",
+			"mouse2020", "mouseMoney", "picDinner", "pic2020Hot", "picSpringFestival",
+			"mouseCute", "mouseOnCoin", "wishMsg1", "wishMsg2", "wishMsg3","wishMsg4",
+			"wishMsg5", "wishMsg6"]),
 		},
 		onReady() {
 			console.log("onReady");
