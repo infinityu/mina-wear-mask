@@ -6,6 +6,10 @@
 		},
 		onLaunch: function() {
 			console.log('App Launch');
+			wx.cloud.init({
+				traceUser: true,
+				env: 'typo-battle-prdct-05f8e4'
+			});
 			uni.getSystemInfo({
 					success: function(e) {
 						// #ifdef MP-WEIXIN

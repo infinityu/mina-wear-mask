@@ -196,7 +196,7 @@
 	export default {
 		data() {
 			return {
-				imgPath: "https://mina-img-store-1258554429.cos.ap-shanghai.myqcloud.com/new-year-wish/",
+				wish_db: null,
 				windowHeight: 800,
 				windowWidth: 400,
 				currentPageIndex: 0,
@@ -227,6 +227,41 @@
 		},
 		onLoad() {
 			console.log("onLoad");
+			const db = wx.cloud.database({
+			  env: 'typo-battle-prdct-05f8e4'
+			})
+			this.wish_db = db.collection('wish_redirect');
+			// this.wish_db.add({
+			//   // data 字段表示需新增的 JSON 数据
+			//   data: {
+			//     // _id: 'todo-identifiant-aleatoire', // 可选自定义 _id，在此处场景下用数据库自动分配的就可以了
+			//     description: "learn cloud database",
+			//     due: new Date("2018-09-01"),
+			//     tags: [
+			//       "cloud",
+			//       "database"
+			//     ],
+			//     // 为待办事项添加一个地理位置（113°E，23°N）
+			//     location: new db.Geo.Point(113, 23),
+			//     done: false
+			//   },
+			//   success: function(res) {
+			//     // res 是一个对象，其中有 _id 字段标记刚创建的记录的 id
+			//     console.log(res)
+			//   },
+			//   fail: function(res){
+			// 	console.log(res);
+			//   }
+			// })
+			
+			wx.cloud.callFunction({
+			  name: 'wish',
+			  complete: res => {
+			    console.log('callFunction wish result: ', res)
+			  }
+			})
+			
+			// load background music
 			const bgAudioMannager = uni.getBackgroundAudioManager();
 			bgAudioMannager.title = '春节序曲';
 			bgAudioMannager.singer = '中华人民解放军军乐团';
