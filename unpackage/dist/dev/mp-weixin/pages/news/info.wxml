@@ -1,0 +1,1 @@
+<view class="content"><view class="title">{{''+title+''}}</view><view><rich-text nodes="{{content}}"></rich-text></view></view>

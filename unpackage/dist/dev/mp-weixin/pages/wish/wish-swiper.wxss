@@ -1,0 +1,58 @@
+
+.swiper {
+	width: 750rpx;
+	background-color: #C12928;
+}
+.content-wrapper {
+	top: 0rpx;
+	position: absolute;
+	padding-top: 100rpx;
+	padding-left: 50rpx;
+	padding-right: 50rpx;
+	width: 750rpx;
+}
+.content-item {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-box-pack: center;
+	-webkit-justify-content: center;
+	        justify-content: center;
+	-webkit-flex-wrap: wrap;
+	        flex-wrap: wrap;
+}
+.page-bg-header{
+	top: 0;
+}
+.page-bg {
+	height: 1400rpx;
+	width: 750rpx;
+}
+.avatar-bg {
+	height: 220rpx;
+	width: 220rpx;
+}
+.greetings {
+	height: 125rpx;
+}
+.customized-wish {
+	width: 700rpx;
+	padding: 10rpx 5rpx 10rpx 5rpx;
+	border: 2px yellow dashed ;
+	border-radius: 20rpx;
+	color: #EEEEEE;
+	margin-top: 40rpx;
+}
+.nextIcon{
+	width: 45rpx;
+	height: 45rpx;
+}
+.actions {
+	top: -200rpx;
+	padding-left: 100rpx;
+	padding-right: 100rpx;
+}
+.boxes{
+	color: red;
+}
+

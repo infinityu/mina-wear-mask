@@ -1,0 +1,11 @@
+
+.tower-swiper .tower-item {
+		-webkit-transform: scale(calc(0.5 + var(--index) / 10));
+		        transform: scale(calc(0.5 + var(--index) / 10));
+		margin-left: calc(var(--left) * 100rpx - 150rpx);
+		z-index: var(--index);
+		width: 400rpx;
+		height: 680rpx;
+		left: 43%;
+}
+

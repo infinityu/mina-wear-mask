@@ -1,0 +1,24 @@
+{
+  "pages": [
+    "pages/wish/wish-swiper",
+    "pages/login/login",
+    "pages/wish/wish-cards",
+    "pages/news/list",
+    "pages/news/info"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "新年祝福",
+    "navigationBarBackgroundColor": "#C12928",
+    "backgroundColor": "#C12928",
+    "navigationStyle": "custom"
+  },
+  "requiredBackgroundModes": [
+    "audio"
+  ],
+  "usingComponents": {
+    "cu-custom": "/colorui/components/cu-custom"
+  },
+  "sitemapLocation": "sitemap7.json"
+}

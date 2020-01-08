@@ -1,0 +1,14 @@
+
+.content{
+	padding: 10rpx 2%;
+	width: 96%;
+	-webkit-flex-wrap: wrap;
+	        flex-wrap: wrap;
+}
+.title{
+	line-height: 2em;
+	font-weight: 700;
+	font-size: 38rpx;
+}
+	
+
