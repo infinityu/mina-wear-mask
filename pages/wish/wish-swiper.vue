@@ -147,6 +147,7 @@
 						<view class="content-wrapper ">
 							<view class="content-item">
 								<image class="avatar-bg" mode="aspectFit" :src="avatarBg"></image>
+								<image class="avatar-from cu-avatar xl round margin-left" mode="aspectFit" :src="userInfo.avatarUrl"></image>
 							</view>
 							<view class="content-item">
 								<image class="greetings  animation-speed-2" :class="{ 'animation-slide-left': (currentPageIndex == 0)}" mode="aspectFit"
@@ -183,7 +184,7 @@
 			</swiper>
 		</view>
 		<view class="flex solid-bottom padding justify-around actions">
-			<view class="action-item "><button class="cu-btn round bg-yellow shadow" @tap="startEditWishMessage"> 定制转发</button></view>
+			<view class="action-item "><button class="cu-btn round bg-yellow shadow" open-type="getUserInfo" @getuserinfo="startEditWishMessage"> 定制转发</button></view>
 			<image class="nextIcon animation-delay-2 animation-slide-top" mode="aspectFit" :src="nextIcon"></image>
 			<view class="action-item "><button class="cu-btn round bg-yellow shadow" @click="jumpTo"> 加福字儿</button></view>
 		</view>
@@ -203,6 +204,7 @@
 				fromMessage: "祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您",
 				countDownDays: 20,
 				wishMessage: "",
+				userInfo:{}
 			};
 		},
 		computed: {
@@ -284,7 +286,7 @@
 			});
 
 		},
-		onShareAppMessage() {
+		share() {
 			console.log("share");
 		},
 		methods: {
@@ -298,7 +300,20 @@
 				console.log(event.detail);
 				this.currentPageIndex = event.detail.current;
 			},
-			startEditWishMessage: function() {
+			startEditWishMessage: function(result) {
+				console.log('mpGetUserInfo', result);
+				if (result.detail.errMsg !== 'getUserInfo:ok') {
+					uni.showModal({
+						title: '获取用户信息失败',
+						content: '错误原因' + result.detail.errMsg,
+						showCancel: false
+					});
+					return;
+				}
+				this.hasUserInfo = true;
+				this.userInfo = result.detail.userInfo;
+				this.userInfo.avatarUrl = this.userInfo.avatarUrl.replace("132", "0"); // 959 * 959
+				console.log(this.userInfo);
 				this.currentPageIndex = 7;
 			},
 			applyWishTemplate: function(e) {
@@ -337,6 +352,12 @@
 		padding-left: 50rpx;
 		padding-right: 50rpx;
 		width: 750rpx;
+	}
+	.avatar-from{
+		position: absolute;
+		margin-top: 0rpx;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 	.content-item {
