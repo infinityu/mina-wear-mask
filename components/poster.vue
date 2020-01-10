@@ -1,20 +1,20 @@
 <template>
 	<view>
 		<!-- 海报 -->
-		<canvas canvas-id="wish-poster" :style="{width:cansWidth,height:cansHeight}" class="isCan"></canvas>
-		<view class="bg" @click="closeCans"></view>
-		<view class="fixedBox">
+		<canvas canvas-id="wish-poster" style="width:270px; height:270px; margin-top: 50px" class="isCan"></canvas>
+		<view class="flex solid-bottom padding justify-around actions">
 			<view class="boxLeft">
-				<button class="flexBtn btnLeft" hover-class="btnHover" @click="saveCans">保存</button>
+				<button class="cu-btn round bg-yellow shadow btnLeft" @click="saveCans">保存</button>
 			</view>
 			<view class="boxRight">
-				<button class="flexBtn" type="primary" open-type="getUserInfo" @getuserinfo="getAvatar">获取头像</button>
+				<button class="cu-btn round bg-yellow shadow" open-type="getUserInfo" @getuserinfo="getAvatar">获取头像</button>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
+	import { mapGetters, mapState, mapMutations } from "vuex";
 	export default {
 		props: {
 			bgImg: {
@@ -32,13 +32,7 @@
 			};
 		},
 		computed: {
-			bgImgUrl() {
-				console.log('bgImg', this.bgImg);
-				if (this.bgImg) {
-					return this.bgImg;
-				}
-				return '/static/image/location.png';
-			}
+			...mapState({userInfo:'userInfo'})
 		},
 		watch: {
 			avatarUrl: function(newBgImg) {
@@ -47,13 +41,6 @@
 				uni.downloadFile({
 					url: newBgImg,
 					success: function(res) {
-						// self.drawBg({
-						// 	url: res.tempFilePath,
-						// 	sLeft: 0,
-						// 	sTop: 0,
-						// 	sWidth: 1,
-						// 	sHeight: 0.75
-						// })
 						self.ctx.drawImage(res.tempFilePath,0,0, self.cansWidth, self.cansHeight);
 						self.wishWordBg();
 						self.wishWord();
@@ -66,9 +53,24 @@
 		created() {
 			this.ctx = uni.createCanvasContext('wish-poster', this);
 			//绘制底色为白色
-			this.drawBaseBg('#FFD314');
+			// this.drawBaseBg('#FFD314');
+			this.drawBaseBg('#C12928');
 			this.wishWordBg();
 			this.wishWord();
+		},
+		onLoad() {
+			console.log("++this.userInfo.avatarUrl", this.userInfo.avatarUrl);
+			if(this.userInfo.avatarUrl != null) {
+				let self = this;
+				uni.downloadFile({
+					url: self.userInfo.avatarUrl,
+					success: function(res) {
+						self.ctx.drawImage(res.tempFilePath,0,0, self.cansWidth, self.cansHeight);
+						self.wishWordBg();
+						self.wishWord();
+					}
+				})
+			}
 		},
 		computed: {
 			today() {
@@ -80,6 +82,7 @@
 			}
 		},
 		methods: {
+			...mapMutations(["saveLoginUserInfo"]),
 			drawBaseBg(bgColor) {
 				this.ctx.rect(0, 0, this.cansWidth, this.cansHeight)
 				this.ctx.setFillStyle(bgColor)
@@ -87,15 +90,15 @@
 				this.ctx.draw(true)
 			},
 			wishWordBg() {
-				this.roundBoarder('white', '#f3a32b', .7, .7, 40);
+				this.roundBoarder('white', '#C12928', .7, .7, 40);
 			},
 			wishWord(){
 				this.drawText({
 					text: '福',
 					// text: '我是标题',
-					sLeft: 0.77,
-					sTop: 0.91,
-					fontSize: 42,
+					sLeft: 0.73,
+					sTop: 0.93,
+					fontSize: 60,
 					color: 'white',
 					bold: true,
 					lineHeight: 12
@@ -134,9 +137,6 @@
 					this.ctx.restore();
 					this.ctx.draw(true);
 				})
-			},
-			closeCans() {
-				this.$parent.posterShow = false
 			},
 			saveCans() {
 				console.log('保存')
@@ -284,10 +284,12 @@
 					return;
 				}
 				this.hasUserInfo = true;
-				this.userInfo = result.detail.userInfo
-				this.userInfo.avatarUrl = this.userInfo.avatarUrl.replace("132", "0"); // 959 * 959
-				this.avatarUrl = this.userInfo.avatarUrl;
-				console.log(this.userInfo);
+				let userInfo = result.detail.userInfo;
+				userInfo.avatarUrl = userInfo.avatarUrl.replace("132", "0"); // 959 * 959
+				console.log(userInfo);
+				this.saveLoginUserInfo(userInfo);
+				this.avatarUrl = userInfo.avatarUrl;
+
 			},
 		}
 	}
@@ -304,47 +306,6 @@
 		// background-color: rgba(0, 0, 0, 0.8);
 	}
 
-	.fixedBox {
-		width: 100%;
-		height: 100upx;
-		position: fixed;
-		bottom: 30upx;
-		left: 0;
-		display: flex;
-		// z-index: 1000;
-
-		.boxLeft,
-		.boxRight {
-			width: 50%;
-			height: 100%;
-			display: flex;
-			align-items: center;
-			position: relative;
-			// z-index: 1000;
-			justify-content: center;
-
-			.flexBtn {
-				position: relative;
-				// z-index: 1000;
-				width: 200upx;
-				height: 60upx;
-				text-align: center;
-				line-height: 55upx;
-				font-size: 24upx;
-				border-bottom: 6upx #f58365 solid;
-				border-radius: 32upx;
-				color: white;
-				background: linear-gradient(to left, #f58365, #ff188a);
-			}
-		}
-	}
-
-	.btnHover {
-		height: 55upx !important;
-		border-bottom: 0 #F6BE3C solid !important;
-		transform: translateY(3px) translateZ(0px) !important;
-	}
-
 	.isCan {
 		border: 6px solid white;
 		border-radius: 10px;
@@ -358,5 +319,10 @@
 		bottom: 130upx;
 		margin: 0 auto;
 		background-size: 100%;
+	}
+	.actions{
+		top: -200px;
+		padding-left: 100rpx;
+		padding-right: 100rpx;
 	}
 </style>

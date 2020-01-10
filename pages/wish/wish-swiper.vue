@@ -1,28 +1,33 @@
 <template>
 	<view class="wish-main" :style="{height:windowHeight+'px;'}">
 		<view class="wish-bg">
-			<swiper class="swiper" @change="pageChange" :style="{height:windowHeight+'px;'}" circular vertical :indicator-dots="false"
-			 :current="currentPageIndex">
+			<swiper class="swiper" @change="swipeItemChange" :style="{height:windowHeight+'px;'}" circular vertical
+			 :indicator-dots="false" :current="currentPageIndex">
 				// page 1
 				<swiper-item>
 					<view>
 						<image class="page-bg" :style="{height:windowHeight+'px;'}" mode="aspectFill" :src="pageBg"></image>
-						<view class="content-wrapper ">
+						<view class="content-wrapper">
 							<view class="content-item">
 								<image class="avatar-bg" mode="aspectFit" :src="avatarBg"></image>
+								<image class="avatar-from cu-avatar round margin-left" mode="aspectFit" :src="fromUserInfo.avatarUrl"></image>
+							</view>
+							<view class="content-item">
+								 <view class="animation-speed-2 test" :class="{ 'animation-slide-right': (currentPageIndex == 0)}"
+								 style="color: #fbbd08; font-size: 180%">{{fromUserInfo.nickName}}</view>
 							</view>
 							<view class="content-item">
 								<image class="greetings  animation-speed-2" :class="{ 'animation-slide-left': (currentPageIndex == 0)}" mode="aspectFit"
 								 :src="greetings"></image>
 							</view>
-							<view class="content-item">
+							<view class="content-item test">
 								<view class="customized-wish">{{fromMessage}}</view>
 							</view>
 							<view class="content-item">
 								<image class="countDown animation-speed-2" :class="{ 'animation-scale-up': (currentPageIndex == 0)}" style="width: 600rpx; height: 300rpx; margin-top: 50rpx;"
 								 mode="aspectFit" :src="countDown"></image>
 								<span class="animation-speed-2" :class="{ 'animation-slide-right': (currentPageIndex == 0)}" style="font-size: 500%; font-weight: 1000; margin-top: -180rpx; margin-left: 110rpx;">
-									<font style="color: white">{{countDownDays}}</font>
+									<font style="color: #fbbd08; font-style:italic">{{countDownDays}}</font>
 								</span>
 							</view>
 						</view>
@@ -140,60 +145,23 @@
 						</view>
 					</view>
 				</swiper-item>
-				// page 8
-				<swiper-item>
-					<view>
-						<image class="page-bg" :style="{height:windowHeight+'px;'}" mode="aspectFill" :src="pageBg"></image>
-						<view class="content-wrapper ">
-							<view class="content-item">
-								<image class="avatar-bg" mode="aspectFit" :src="avatarBg"></image>
-								<image class="avatar-from cu-avatar xl round margin-left" mode="aspectFit" :src="userInfo.avatarUrl"></image>
-							</view>
-							<view class="content-item">
-								<image class="greetings  animation-speed-2" :class="{ 'animation-slide-left': (currentPageIndex == 0)}" mode="aspectFit"
-								 :src="greetings"></image>
-							</view>
-							<view class="content-item">
-								<view class="padding-xl customized-wish">
-									<view class="uni-textarea2">
-										<textarea maxlength="100" :value="wishMessage" placeholder-style="color: white" placeholder="请输入祝福语或选择模板" />
-										</view>
-								</view>
-							</view>
-							<!-- <view class="content-item">
-								<image class="animation-speed-2" :class="{ 'animation-scale-up': (currentPageIndex == 0)}" 
-								style="width: 600rpx; height: 300rpx; margin-top: 50rpx;" mode="aspectFit" :src="mouseOnCoin"></image>
-							</view> -->
-							<view class="content-item">
-								<view class="flex">
-									<view class="flex-sub padding-sm margin-xs"><button class="cu-btn round bg-yellow shadow" 
-										@tap="applyWishTemplate" data-template="1">祝福一 </button></view>
-									<view class="flex-sub padding-sm margin-xs"><button class="cu-btn round bg-yellow shadow" 
-										@tap="applyWishTemplate" data-template="2">祝福二 </button></view>
-								</view>
-								<view class="flex">
-									<view class="flex-sub padding-sm margin-xs"><button class="cu-btn round bg-yellow shadow" 
-										@tap="applyWishTemplate" data-template="3">祝福三 </button></view>
-									<view class="flex-sub padding-sm margin-xs"><button class="cu-btn round bg-yellow shadow" 
-										@tap="applyWishTemplate" data-template="0">自定义 </button></view>
-								</view>
-							</view>
-						</view>
-					</view>
-				</swiper-item>
 			</swiper>
 		</view>
 		<view class="flex solid-bottom padding justify-around actions">
-			<view class="action-item "><button class="cu-btn round bg-yellow shadow" open-type="getUserInfo" @getuserinfo="startEditWishMessage"> 定制转发</button></view>
+			<view><button class="cu-btn round bg-yellow shadow" open-type="getUserInfo" @getuserinfo="getUserInfoCallback"> 定制转发</button></view>
 			<image class="nextIcon animation-delay-2 animation-slide-top" mode="aspectFit" :src="nextIcon"></image>
-			<view class="action-item "><button class="cu-btn round bg-yellow shadow" @click="jumpTo"> 加福字儿</button></view>
+			<view><button class="cu-btn round bg-yellow shadow" open-type="getUserInfo" @getuserinfo="getUserInfoAndToAddHappiness"> 加福字儿</button></view>
 		</view>
 	</view>
 </template>
 
 <script>
-	import { mapGetters } from "vuex";
-	
+	import {
+		mapState,
+		mapGetters,
+		mapMutations
+	} from "vuex";
+
 	export default {
 		data() {
 			return {
@@ -202,21 +170,32 @@
 				windowWidth: 400,
 				currentPageIndex: 0,
 				fromMessage: "祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您祝福您",
-				countDownDays: 20,
 				wishMessage: "",
-				userInfo:{}
+				fromUserInfo: {
+					avatarUrl: "https://mina-img-store-1258554429.cos.ap-shanghai.myqcloud.com/new-year-wish/kids-trans.png",
+					nickName: "祝福者的名字"
+				}
 			};
 		},
 		computed: {
-			...mapGetters(["pageBg", "avatarBg","greetings","countDown","nextIcon",
-			"mouseHappiness", "bannerWishMouseYear", "littleYear", "bannerWishRec",
-			"mouse2020", "mouseMoney", "picDinner", "pic2020Hot", "picSpringFestival",
-			"mouseCute", "mouseOnCoin", "wishMsg1", "wishMsg2", "wishMsg3","wishMsg4",
-			"wishMsg5", "wishMsg6"]),
+			...mapGetters(["pageBg", "avatarBg", "kids", "greetings", "countDown", "nextIcon",
+				"mouseHappiness", "bannerWishMouseYear", "littleYear", "bannerWishRec",
+				"mouse2020", "mouseMoney", "picDinner", "pic2020Hot", "picSpringFestival",
+				"mouseCute", "mouseOnCoin", "wishMsg1", "wishMsg2", "wishMsg3", "wishMsg4",
+				"wishMsg5", "wishMsg6"
+			]),
+			...mapState({
+				userInfo: 'userInfo'
+			}),
+			countDownDays: function(){
+				let dayNow = new Date().getDate();
+				let countDown = 25 - dayNow;
+				return countDown > 0 ? countDown : 0;
+			}
+			
 		},
 		onReady() {
 			console.log("onReady");
-			uni.hideTabBar();
 			let self = this;
 			uni.getSystemInfo({
 				success: function(res) {
@@ -227,10 +206,25 @@
 				}
 			});
 		},
-		onLoad() {
+		onLoad(option) {
 			console.log("onLoad");
+			console.log(option);
+			
+			uni.loadFontFace({
+			  family: 'edu-lishu',
+			  source: 'url("https://mina-img-store-1258554429.cos.ap-shanghai.myqcloud.com/new-year-wish/I.Ngaan-subfont.ttf")',
+			  success() {
+			      console.log('success')
+			  }
+			});
+			
+			if (option != null && option.fromUserInfo != null) {
+				this.fromUserInfo = JSON.parse(decodeURIComponent(option.fromUserInfo));
+				this.fromMessage = this.fromUserInfo.message;
+			}
+			console.log("this.fromUserInfo", this.fromUserInfo);
 			const db = wx.cloud.database({
-			  env: 'typo-battle-prdct-05f8e4'
+				env: 'typo-battle-prdct-05f8e4'
 			})
 			this.wish_db = db.collection('wish_redirect');
 			// this.wish_db.add({
@@ -255,14 +249,14 @@
 			// 	console.log(res);
 			//   }
 			// })
-			
-			wx.cloud.callFunction({
-			  name: 'wish',
-			  complete: res => {
-			    console.log('callFunction wish result: ', res)
-			  }
-			})
-			
+
+			// wx.cloud.callFunction({
+			//   name: 'wish',
+			//   complete: res => {
+			//     console.log('callFunction wish result: ', res)
+			//   }
+			// })
+
 			// load background music
 			const bgAudioMannager = uni.getBackgroundAudioManager();
 			bgAudioMannager.title = '春节序曲';
@@ -286,21 +280,13 @@
 			});
 
 		},
-		share() {
-			console.log("share");
-		},
 		methods: {
-			jumpTo: function() {
-				console.log("jump");
-				uni.switchTab({
-					url: '/pages/login/login'
-				});
-			},
-			pageChange: function(event){
+			...mapMutations(["saveLoginUserInfo"]),
+			swipeItemChange: function(event) {
 				console.log(event.detail);
 				this.currentPageIndex = event.detail.current;
 			},
-			startEditWishMessage: function(result) {
+			getUserInfoCallback: function(result) {
 				console.log('mpGetUserInfo', result);
 				if (result.detail.errMsg !== 'getUserInfo:ok') {
 					uni.showModal({
@@ -311,38 +297,63 @@
 					return;
 				}
 				this.hasUserInfo = true;
-				this.userInfo = result.detail.userInfo;
-				this.userInfo.avatarUrl = this.userInfo.avatarUrl.replace("132", "0"); // 959 * 959
-				console.log(this.userInfo);
-				this.currentPageIndex = 7;
+				let userInfo = result.detail.userInfo;
+				userInfo.avatarUrl = userInfo.avatarUrl.replace("132", "0"); // 959 * 959
+				console.log(userInfo);
+				this.saveLoginUserInfo(userInfo);
+				uni.switchTab({
+					url: '/pages/wish/wish-send'
+				});
+			},
+			getUserInfoAndToAddHappiness: function(result) {
+				console.log('mpGetUserInfo', result);
+				if (result.detail.errMsg !== 'getUserInfo:ok') {
+					uni.showModal({
+						title: '获取用户信息失败',
+						content: '错误原因' + result.detail.errMsg,
+						showCancel: false
+					});
+					return;
+				}
+				this.hasUserInfo = true;
+				let userInfo = result.detail.userInfo;
+				userInfo.avatarUrl = userInfo.avatarUrl.replace("132", "0"); // 959 * 959
+				console.log(userInfo);
+				this.saveLoginUserInfo(userInfo);
+				uni.switchTab({
+					url: '/pages/login/add-happiness'
+				});
 			},
 			applyWishTemplate: function(e) {
 				let templateId = e.currentTarget.dataset.template;
 				console.log(templateId);
 				switch (templateId) {
-				    case "0":
-				        this.wishMessage = "点击此处，输入你想要的祝福语";
-				        break;
-				    case "1":
-				        this.wishMessage = "祝福语模板一";
-				         break;
-				    case "2":
-				        this.wishMessage = "祝福语模板二";
-				         break;
-				    case "3":
-				        this.wishMessage = "祝福语模板三";
-				         break;
-				} 
+					case "0":
+						this.wishMessage = "点击此处，输入你想要的祝福语";
+						break;
+					case "1":
+						this.wishMessage = "祝福语模板一";
+						break;
+					case "2":
+						this.wishMessage = "祝福语模板二";
+						break;
+					case "3":
+						this.wishMessage = "祝福语模板三";
+						break;
+				}
 				console.log("this.wishMessage", this.wishMessage);
-			},
+			}
 		}
 	}
 </script>
 
 <style>
+	.wish-main {
+		background-color: #C12928;
+	}
+
 	.swiper {
 		width: 750rpx;
-		background-color: #C12928;
 	}
 
 	.content-wrapper {
@@ -353,12 +364,6 @@
 		padding-right: 50rpx;
 		width: 750rpx;
 	}
-	.avatar-from{
-		position: absolute;
-		margin-top: 0rpx;
-		margin-left: auto;
-		margin-right: auto;
-	}
 
 	.content-item {
 		display: flex;
@@ -366,18 +371,27 @@
 		flex-wrap: wrap;
 	}
 
-	.page-bg-header{
+	.page-bg-header {
 		top: 0;
 	}
-	
+
 	.page-bg {
 		height: 1400rpx;
 		width: 750rpx;
 	}
 
 	.avatar-bg {
-		height: 220rpx;
-		width: 220rpx;
+		height: 250rpx;
+		width: 250rpx;
+	}
+
+	.avatar-from {
+		position: absolute;
+		margin-top: 25rpx;
+		margin-left: auto;
+		margin-right: auto;
+		height: 200rpx;
+		width: 200rpx;
 	}
 
 	.greetings {
@@ -387,13 +401,13 @@
 	.customized-wish {
 		width: 700rpx;
 		padding: 10rpx 5rpx 10rpx 5rpx;
-		border: 2px yellow dashed ;
+		border: 2px yellow dashed;
 		border-radius: 20rpx;
 		color: #EEEEEE;
 		margin-top: 40rpx;
 	}
 
-	.nextIcon{
+	.nextIcon {
 		width: 45rpx;
 		height: 45rpx;
 	}
@@ -403,8 +417,12 @@
 		padding-left: 100rpx;
 		padding-right: 100rpx;
 	}
-	
-	.boxes{
-		color: red;
+
+	.test {
+		font-family: edu-lishu;
+		margin-left: 20rpx;
 	}
+	
+	
+	
 </style>

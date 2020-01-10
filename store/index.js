@@ -4,14 +4,19 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	state: {
-		imgPath: "https://mina-img-store-1258554429.cos.ap-shanghai.myqcloud.com/new-year-wish/"
+		imgPath: "https://mina-img-store-1258554429.cos.ap-shanghai.myqcloud.com/new-year-wish/",
+		userInfo: null
 	},
 	getters: {
+		// page 1
 		pageBg: function(state) {
 			return state.imgPath + "page-bg.png";
 		},
 		avatarBg: function(state) {
-			return state.imgPath + "avatar-bg.png";
+			return state.imgPath + "avatar-circle.png";
+		},
+		kids: function(state) {
+			return state.imgPath + "kids-trans.png";
 		},
 		greetings: function(state) {
 			return state.imgPath + "greetings.png";
@@ -82,7 +87,11 @@ const store = new Vuex.Store({
 			return state.imgPath + "wish-msg-6.png";
 		},
 	},
-	mutations: {},
+	mutations: {
+		saveLoginUserInfo(state, value){
+			state.userInfo = value;
+		}
+	},
 	actions: {}
 })
 export default store

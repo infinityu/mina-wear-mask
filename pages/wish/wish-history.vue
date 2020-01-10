@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view class="history-main" :style="{height:windowHeight+'px'}">
 		<view class="cu-bar bg-white margin-top">
 			<view class="action">
 				<text class="cuIcon-title text-pink"></text>   收到与送出的祝福
@@ -7,8 +7,6 @@
 		</view>
 		<view class="cu-card dynamic" :class="isCard?'no-card':''">
 			<view class="cu-item shadow">
-				
-		
 				<view class="cu-list menu-avatar comment solids-top">
 					<view class="cu-item">
 						<view class="cu-avatar round" style="background-image:url(https://ossweb-img.qq.com/images/lol/img/champion/Morgana.png);"></view>
@@ -62,6 +60,7 @@
 </template>
 
 <script>
+	import { mapGetters, mapState, mapMutations } from "vuex";
 	export default {
 		data() {
 			return {
@@ -100,9 +99,21 @@
 				direction: ''
 			};
 		},
-		onLoad() {
-			this.TowerSwiper('swiperList');
-			// 初始化towerSwiper 传已有的数组名即可
+		onReady() {
+			console.log("onReady");
+			let self = this;
+			uni.getSystemInfo({
+				success: function(res) {
+					self.windowHeight = res.windowHeight;
+					console.log("windowHeight", self.windowHeight);
+					self.windowWidth = res.windowWidth;
+					console.log("windowWidth", self.windowWidth);
+				}
+			});
+		},
+		computed: {
+			...mapGetters(["pageBg"]),
+			...mapState({userInfo:'userInfo'})
 		},
 		methods: {
 			DotStyle(e) {
@@ -164,12 +175,7 @@
 </script>
 
 <style>
-	.tower-swiper .tower-item {
-			transform: scale(calc(0.5 + var(--index) / 10));
-			margin-left: calc(var(--left) * 100upx - 150upx);
-			z-index: var(--index);
-			width: 400upx;
-			height: 680upx;
-			left: 43%;
-		}
+	.history-main{
+		background-color: #C12928;
+	}
 </style>
