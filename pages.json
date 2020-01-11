@@ -1,6 +1,9 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		
+		{
+			"path": "pages/login/add-happiness",
+			"style": {}
+		},
 		{
 			"path": "pages/wish/wish-swiper",
 			"style": {
@@ -14,10 +17,7 @@
 			"path": "pages/wish/wish-send",
 			"style": {}
 		},
-		{
-			"path": "pages/login/add-happiness",
-			"style": {}
-		},
+		
 		{
 			"path": "pages/wish/wish-history",
 			"style": {}
@@ -40,38 +40,39 @@
 		"backgroundColor": "#C12928",
 		"navigationStyle": "custom"
 	},
-	"tabBar": {
-		"color": "#7A7E83",
-		"selectedColor": "#3cc51f",
-		"borderStyle": "black",
-		// "backgroundColor": "#ffffff",
-		"list": [{
-			"pagePath": "pages/wish/wish-swiper",
-			"iconPath": "static/tabbar/happiness3.png",
-			"selectedIconPath": "static/tabbar/happiness.png",
-			"text": "收祝福"
-		}, {
-			"pagePath": "pages/wish/wish-send",
-			"iconPath": "static/tabbar/happiness3.png",
-			"selectedIconPath": "static/tabbar/happiness.png",
-			"text": "送祝福"
-		}, {
-		// 	"pagePath": "pages/wish/wish-history",
-		// 	"iconPath": "static/tabbar/happiness3.png",
-		// 	"selectedIconPath": "static/tabbar/happiness.png",
-		// 	"text": "祝福记录"
-		// }, {
-		// 	"pagePath": "pages/news/list",
-		// 	"iconPath": "static/tabbar/happiness3.png",
-		// 	"selectedIconPath": "static/tabbar/happiness.png",
-		// 	"text": "文章列表"
-		// }, {
-			"pagePath": "pages/login/add-happiness",
-			"iconPath": "static/tabbar/happiness3.png",
-			"selectedIconPath": "static/tabbar/happiness.png",
-			"text": "头像添福"
-		}]
-	},
+	// "tabBar": {
+	// 	"color": "#7A7E83",
+	// 	"selectedColor": "#3cc51f",
+	// 	"borderStyle": "black",
+	// 	"backgroundColor": "#ffffff",
+	// 	"list": [
+	// 	{
+	// 		"pagePath": "pages/wish/wish-swiper",
+	// 		"iconPath": "static/tabbar/happiness3.png",
+	// 		"selectedIconPath": "static/tabbar/happiness.png",
+	// 		"text": "收祝福"
+	// 	}, {
+	// 		"pagePath": "pages/wish/wish-send",
+	// 		"iconPath": "static/tabbar/happiness3.png",
+	// 		"selectedIconPath": "static/tabbar/happiness.png",
+	// 		"text": "送祝福"
+	// 	}, {
+	// 		"pagePath": "pages/wish/wish-history",
+	// 		"iconPath": "static/tabbar/happiness3.png",
+	// 		"selectedIconPath": "static/tabbar/happiness.png",
+	// 		"text": "祝福记录"
+	// 	}, {
+	// 		"pagePath": "pages/news/list",
+	// 		"iconPath": "static/tabbar/happiness3.png",
+	// 		"selectedIconPath": "static/tabbar/happiness.png",
+	// 		"text": "文章列表"
+	// 	}, {
+	// 		"pagePath": "pages/login/add-happiness",
+	// 		"iconPath": "static/tabbar/happiness3.png",
+	// 		"selectedIconPath": "static/tabbar/happiness.png",
+	// 		"text": "头像添福"
+	// 	}]
+	// },
 	"condition": { //模式配置，仅开发期间生效
 		"current": 0, //当前激活的模式(list 的索引项)
 		"list": [{

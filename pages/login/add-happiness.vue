@@ -1,15 +1,22 @@
 <template>
 	<view class="main">
-		<image class="page-bg" :style="{height:windowHeight+'px;'}" mode="aspectFill" :src="pageBg"></image>
+		<image class="page-bg"  mode="aspectFill" :src="pageBg"></image>
 		<view>
 			<canvas canvas-id="wish-poster" style="width:270px; height:270px; margin-top: 50px" class="isCan"></canvas>
-			<view class="flex solid-bottom padding justify-around actions">
-				<view class="boxLeft">
-					<button class="cu-btn round bg-yellow shadow btnLeft" @click="saveCans">保存</button>
-				</view>
-				<view class="boxRight">
-					<button class="cu-btn round bg-yellow shadow" open-type="getUserInfo" @getuserinfo="getAvatar">获取头像</button>
-				</view>
+		</view>
+		<view class="solid-bottom grid justify-around actions">
+			<view class="grid col-1">
+				<button class="cu-btn round bg-yellow shadow" open-type="getUserInfo" @getuserinfo="getAvatar">获取头像</button>
+			</view>
+			<view class="grid col-2">
+				<button class="cu-btn round bg-yellow shadow btnLeft" @click="uploadImage">选择图片</button>
+			</view>
+			<view class="grid col-3">
+				<button class="cu-btn round bg-yellow shadow btnLeft" @click="saveCans">保存</button>
+			</view>
+			<view class="grid col-1" style="margin-top: 100rpx">
+				<button class="cu-btn block line-orange lg" open-type="share">
+					<text class="cuIcon-upload"></text> 推荐给朋友</button>
 			</view>
 		</view>
 	</view>
@@ -23,7 +30,6 @@
 		},
 		data() {
 			return {
-				hasUserInfo: false,
 				loginProvider: "weixin",
 				bgImg: '',
 				vatarUrl: '',
@@ -57,28 +63,56 @@
 			});
 		},
 		onLoad() {
-			uni.loadFontFace({
-			  family: 'edu-lishu',
-			  source: 'url("https://mina-img-store-1258554429.cos.ap-shanghai.myqcloud.com/new-year-wish/I.Ngaan-subfont.ttf")',
-			  success() {
-			      console.log('success')
-					console.log("++this.userInfo.avatarUrl", this.userInfo.avatarUrl);
-					if(this.userInfo.avatarUrl != null) {
-						let self = this;
-						uni.downloadFile({
-							url: self.userInfo.avatarUrl,
-							success: function(res) {
-								self.ctx.drawImage(res.tempFilePath,0,0, self.cansWidth, self.cansHeight);
-								self.wishWordBg();
-								self.wishWord();
-							}
-						})
-					}
-			  }
-			});
+			console.log("add happiness on load");
+			this.drawAvatarWithHappiness("https://mina-img-store-1258554429.cos.ap-shanghai.myqcloud.com/new-year-wish/avatar_happiness_default.png");
+			// let self = this;
+			// uni.loadFontFace({
+			//   family: 'edu-lishu',
+			//   source: 'url("https://mina-img-store-1258554429.cos.ap-shanghai.myqcloud.com/new-year-wish/I.Ngaan-subfont.ttf")',
+			//   success() {
+			// 		console.log('loadFontFace success')
+			// 		self.wishWordBg();
+			// 		self.wishWord();
+			// 		if(self.userInfo!= null && self.userInfo.avatarUrl != null) {
+			// 			console.log("++this.userInfo.avatarUrl", self.userInfo.avatarUrl);
+			// 			uni.downloadFile({
+			// 				url: self.userInfo.avatarUrl,
+			// 				success: function(res) {
+			// 					self.ctx.drawImage(res.tempFilePath,0,0, self.cansWidth, self.cansHeight);
+			// 				}
+			// 			})
+			// 		}
+					
+			//   }
+			// });
+		},
+		onShareAppMessage() {
+			this.userInfo.message = this.wishMessage;
+			return {
+				title: '送你一个福字儿',
+				desc: '为头像添加一个福字儿',
+				path: '/pages/login/add-happiness',
+				success: function(res){
+					console.log(res);
+				}
+			}
 		},
 		methods: {
 			...mapMutations(["saveLoginUserInfo"]),
+			uploadImage(){
+				let self = this;
+				uni.chooseImage({
+				    count: 1, //默认9
+				    sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+				    sourceType: ['album', 'camera'],
+				    success: function (res) {
+						console.log(res);
+						self.ctx.drawImage(res.tempFilePaths[0],0,0, self.cansWidth, self.cansHeight);
+						self.wishWordBg();
+						self.wishWord();
+				    }
+				});
+			},
 			drawBaseBg(bgColor) {
 				this.ctx.rect(0, 0, this.cansWidth, this.cansHeight)
 				this.ctx.setFillStyle(bgColor)
@@ -91,11 +125,9 @@
 			wishWord(){
 				this.drawText({
 					text: '福',
-					// text: '我是标题',
 					sLeft: 0.73,
 					sTop: 0.93,
 					fontSize: 60,
-					fontFamily: "KaiTi_GB2312",
 					color: 'white',
 					bold: true,
 					lineHeight: 12
@@ -155,20 +187,20 @@
 							filePath: res.tempFilePath,
 							success: function(res) {
 								uni.showToast({
-									title: '保存相册成功'
+									title: '请至相册查看'
 								})
-								console.log('save success')
+								console.log('保存成功')
 							},
 							fail(res) {
 								console.log(res)
-								if (res.errMsg == "saveImageToPhotosAlbum:fail auth deny") {
+								if (res.errMsg.indexOf("fail")) {
 									uni.showModal({
 										title: '您需要授权相册权限',
 										success(res) {
 											if (res.confirm) {
 												uni.openSetting({
 													success(res) {
-			
+														console.log("相册授权成功");
 													},
 													fail(res) {
 														console.log(res)
@@ -267,38 +299,57 @@
 						this.ctx.fillText(item.text[i], isLeft, item.sTop * this.cansHeight + item.lineHeight * i)
 					}
 				} else {
-					console.log('我是字符串', item.text)
+					console.log('绘制字符', item.text)
 					this.ctx.fillText(item.text, isLeft, item.sTop * this.cansHeight)
 				}
 				this.ctx.draw(true)
 				this.ctx.restore()
 			},
+			drawAvatarWithHappiness(imageUrl){
+				uni.showLoading({
+				    title: '加载中...'
+				});
+				let self = this;
+				uni.downloadFile({
+					url: imageUrl,
+					timeout: 5000,
+					success: function(res) {
+						uni.hideLoading();
+						self.ctx.drawImage(res.tempFilePath,0,0, self.cansWidth, self.cansHeight);
+						self.wishWordBg();
+						self.wishWord();
+					},
+					fail: function(e){
+						uni.hideLoading();
+						uni.showModal({
+							title: '图片加载超时',
+							content: '请检查网络，点击确定重新加载',
+							success(res) {
+								if (res.confirm) {
+									self.drawAvatarWithHappiness(imageUrl);
+								} else if (res.cancel) {
+									console.log('用户点击取消');
+								}
+							}
+						})
+					}
+				})
+			},
 			getAvatar(result) {
 				console.log('mpGetUserInfo', result);
 				if (result.detail.errMsg !== 'getUserInfo:ok') {
 					uni.showModal({
-						title: '获取用户信息失败',
-						content: '错误原因' + result.detail.errMsg,
+						title: '获取用户头像失败',
+						content: '用户信息仅用于创建新的图片，请放心使用',
 						showCancel: false
 					});
 					return;
 				}
-				this.hasUserInfo = true;
 				let userInfo = result.detail.userInfo;
-				userInfo.avatarUrl = userInfo.avatarUrl.replace("132", "0"); // 959 * 959
 				console.log(userInfo);
+				userInfo.avatarUrl = userInfo.avatarUrl.replace("132", "0"); // 使用最大分辨率头像 959 * 959
 				this.saveLoginUserInfo(userInfo);
-				let newBgImg = userInfo.avatarUrl;
-				
-				let self = this;
-				uni.downloadFile({
-					url: newBgImg,
-					success: function(res) {
-						self.ctx.drawImage(res.tempFilePath,0,0, self.cansWidth, self.cansHeight);
-						self.wishWordBg();
-						self.wishWord();
-					}
-				})
+				this.drawAvatarWithHappiness(userInfo.avatarUrl);
 			}
 		}
 	}
@@ -306,7 +357,6 @@
 
 <style lang="scss" scoped>
 	.main{
-		width: 750rpx;
 		background-color: #C12928;
 	}
 	
@@ -341,8 +391,10 @@
 		background-size: 100%;
 	}
 	.actions{
-		top: -200px;
+		position: absolute;
+		top: 440px;
 		padding-left: 100rpx;
 		padding-right: 100rpx;
+		font-weight: 800;
 	}
 </style>
