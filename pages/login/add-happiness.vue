@@ -317,7 +317,10 @@
 				    sourceType: ['album', 'camera'],
 				    success: function (res) {
 						console.log(res);
-						self.downloadImageAndDrawWithText(res.tempFilePaths[0]);
+						self.drawCansBgImg(res.tempFilePaths[0]);
+						self.drawDefaultTextBg();
+						self.drawDefaultText();
+						// self.downloadImageAndDrawWithText(res.tempFilePaths[0]);
 				    }
 				});
 			},
@@ -346,6 +349,11 @@
 								uni.showToast({
 									title: '请至相册查看'
 								})
+								uni.vibrateShort({
+									success: function() {
+										console.log('success');
+									}
+								});
 								console.log('保存成功')
 							},
 							fail(res) {

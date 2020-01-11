@@ -1,5 +1,5 @@
 {
-    "name" : "news",
+    "name" : "头像加福字",
     "appid" : "",
     "description" : "",
     "versionName" : "1.0.0",
@@ -57,12 +57,12 @@
     /* 小程序特有相关 */
     "mp-weixin" : {
         "appid" : "wxb3e0c4ce12fa8606",
-		"cloudfunctionRoot": "./functions/",
+        "cloudfunctionRoot" : "./functions/",
         "setting" : {
             "urlCheck" : false
         },
         "usingComponents" : true,
-		"requiredBackgroundModes": ["audio"]
+        "requiredBackgroundModes" : [ "audio" ]
     },
     "mp-alipay" : {
         "usingComponents" : true
