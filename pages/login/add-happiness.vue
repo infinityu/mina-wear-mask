@@ -19,12 +19,17 @@
 					<text class="cuIcon-upload"></text>推荐给朋友</button>
 			</view>
 		</view>
+		<view>
+			<tui-footer :fixed="true" :copyright="copyright"></tui-footer>
+		</view>
 	</view>
 </template>
 <script>
 	import { mapGetters, mapState, mapMutations } from "vuex";
+	import tuiFooter from "@/components/footer";
 	export default {
 		components: {
+			tuiFooter
 		},
 		data() {
 			return {
@@ -34,7 +39,8 @@
 				textBgBoarderColor: '#FFFFFF',
 				textBgColor: '#C12928',
 				wishText: '福',
-				defaultAvatarPath: '/static/image/avatar_happiness_default.png'
+				defaultAvatarPath: '/static/image/avatar_happiness_default.png',
+				copyright: " Copyright © 2016-2020 人文之窗公众号"
 			}
 		},
 		computed: {
@@ -245,6 +251,11 @@
 					lineHeight: 12
 				};
 				this.drawText(textOption);
+				uni.vibrateShort({
+					success: function() {
+						console.log('success');
+					}
+				});
 			},
 			downloadImageAndDrawWithText(imageUrl){
 				uni.showLoading({
