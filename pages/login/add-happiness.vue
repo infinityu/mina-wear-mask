@@ -62,7 +62,6 @@
 			console.log("onReady");
 		},
 		onShareAppMessage() {
-			this.userInfo.message = this.wishMessage;
 			return {
 				title: '送你一个福字儿',
 				desc: '为头像添加一个福字儿',

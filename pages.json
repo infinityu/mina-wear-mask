@@ -1,6 +1,10 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+			"path": "pages/crop/crop",
+			"style": {}
+		},
+		{
 			"path": "pages/login/add-happiness",
 			"style": {}
 		},
@@ -17,11 +21,11 @@
 			"path": "pages/wish/wish-send",
 			"style": {}
 		},
-		
 		{
 			"path": "pages/wish/wish-history",
 			"style": {}
 		},
+		
 		{
 			"path": "pages/news/list",
 			"style": {
