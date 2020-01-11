@@ -2,89 +2,58 @@
 	<view class="main">
 		<image class="page-bg"  mode="aspectFill" :src="pageBg"></image>
 		<view>
-			<canvas canvas-id="wish-poster" style="width:270px; height:270px; margin-top: 50px" class="isCan"></canvas>
+			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px; margin-top: 75px" class="isCan"></canvas>
 		</view>
 		<view class="solid-bottom grid justify-around actions">
 			<view class="grid col-1">
-				<button class="cu-btn round bg-yellow shadow" open-type="getUserInfo" @getuserinfo="getAvatar">获取头像</button>
+				<button class="cu-btn round bg-yellow shadow" open-type="getUserInfo" @getuserinfo="getUserInfoCallBack">获取头像</button>
 			</view>
 			<view class="grid col-2">
-				<button class="cu-btn round bg-yellow shadow btnLeft" @click="uploadImage">选择图片</button>
+				<button class="cu-btn round bg-yellow shadow btnLeft" @click="chooseImage">选择图片</button>
 			</view>
 			<view class="grid col-3">
 				<button class="cu-btn round bg-yellow shadow btnLeft" @click="saveCans">保存</button>
 			</view>
 			<view class="grid col-1" style="margin-top: 100rpx">
 				<button class="cu-btn block line-orange lg" open-type="share">
-					<text class="cuIcon-upload"></text> 推荐给朋友</button>
+					<text class="cuIcon-upload"></text>推荐给朋友</button>
 			</view>
 		</view>
 	</view>
 </template>
 <script>
-	import poster from '@/components/poster.vue';
 	import { mapGetters, mapState, mapMutations } from "vuex";
 	export default {
 		components: {
-			poster
 		},
 		data() {
 			return {
-				loginProvider: "weixin",
-				bgImg: '',
-				vatarUrl: '',
-				// 海报
-				cansWidth: 270, //海报宽度
-				cansHeight: 270 //海报高度
+				cansWidth: 270, // 宽度 px
+				cansHeight: 270 ,// 高度 px
+				cansBgColor: "#FFD314",
+				textBgBoarderColor: '#FFFFFF',
+				textBgColor: '#C12928',
+				wishText: '福',
+				defaultAvatarPath: '/static/image/avatar_happiness_default.png'
 			}
 		},
 		computed: {
-			...mapGetters(["pageBg"]),
+			...mapGetters(["pageBg", "defaultAvatarUrl"]),
 			...mapState({userInfo:'userInfo'})
 		},
 		created() {
-			this.ctx = uni.createCanvasContext('wish-poster', this);
-			//绘制底色为白色
-			// this.drawBaseBg('#FFD314');
-			this.drawBaseBg('#C12928');
-			this.wishWordBg();
-			this.wishWord();
+			console.log("created");
+		},
+		onLoad() {
+			console.log("onLoad");
+			this.ctx = uni.createCanvasContext('cans-id-happines', this);
+			// this.drawCansBgColor(this.cansBgColor);
+			this.drawCansBgImg(this.defaultAvatarPath);
+			this.drawDefaultTextBg();
+			this.drawDefaultText();
 		},
 		onReady() {
 			console.log("onReady");
-			let self = this;
-			uni.getSystemInfo({
-				success: function(res) {
-					self.windowHeight = res.windowHeight;
-					console.log("windowHeight", self.windowHeight);
-					self.windowWidth = res.windowWidth;
-					console.log("windowWidth", self.windowWidth);
-				}
-			});
-		},
-		onLoad() {
-			console.log("add happiness on load");
-			this.drawAvatarWithHappiness("https://mina-img-store-1258554429.cos.ap-shanghai.myqcloud.com/new-year-wish/avatar_happiness_default.png");
-			// let self = this;
-			// uni.loadFontFace({
-			//   family: 'edu-lishu',
-			//   source: 'url("https://mina-img-store-1258554429.cos.ap-shanghai.myqcloud.com/new-year-wish/I.Ngaan-subfont.ttf")',
-			//   success() {
-			// 		console.log('loadFontFace success')
-			// 		self.wishWordBg();
-			// 		self.wishWord();
-			// 		if(self.userInfo!= null && self.userInfo.avatarUrl != null) {
-			// 			console.log("++this.userInfo.avatarUrl", self.userInfo.avatarUrl);
-			// 			uni.downloadFile({
-			// 				url: self.userInfo.avatarUrl,
-			// 				success: function(res) {
-			// 					self.ctx.drawImage(res.tempFilePath,0,0, self.cansWidth, self.cansHeight);
-			// 				}
-			// 			})
-			// 		}
-					
-			//   }
-			// });
 		},
 		onShareAppMessage() {
 			this.userInfo.message = this.wishMessage;
@@ -99,55 +68,66 @@
 		},
 		methods: {
 			...mapMutations(["saveLoginUserInfo"]),
-			uploadImage(){
+			loadFont(){
 				let self = this;
-				uni.chooseImage({
-				    count: 1, //默认9
-				    sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-				    sourceType: ['album', 'camera'],
-				    success: function (res) {
-						console.log(res);
-						self.ctx.drawImage(res.tempFilePaths[0],0,0, self.cansWidth, self.cansHeight);
-						self.wishWordBg();
-						self.wishWord();
-				    }
-				});
+				uni.loadFontFace({
+				  family: 'edu-lishu',
+				  source: 'url("https://mina-img-store-1258554429.cos.ap-shanghai.myqcloud.com/new-year-wish/I.Ngaan-subfont.ttf")',
+				  success() {
+						console.log('loadFontFace success')
+						self.drawDefaultTextBg();
+						self.drawDefaultText();
+						if(self.userInfo!= null && self.userInfo.avatarUrl != null) {
+							console.log("++this.userInfo.avatarUrl", self.userInfo.avatarUrl);
+							uni.downloadFile({
+								url: self.userInfo.avatarUrl,
+								success: function(res) {
+									self.ctx.drawImage(res.tempFilePath,0,0, self.cansWidth, self.cansHeight);
+								}
+							})
+						}
+						
+				  }
+				});	
 			},
-			drawBaseBg(bgColor) {
+			drawCansBgColor(bgColor) {
 				this.ctx.rect(0, 0, this.cansWidth, this.cansHeight)
 				this.ctx.setFillStyle(bgColor)
 				this.ctx.fill()
 				this.ctx.draw(true)
 			},
-			wishWordBg() {
-				this.roundBoarder('white', '#C12928', .7, .7, 40);
+			drawCansBgImg(imageFilePath) {
+				this.ctx.drawImage(imageFilePath, 0, 0, this.cansWidth, this.cansHeight);
+				this.ctx.draw(true);
 			},
-			wishWord(){
-				this.drawText({
-					text: '福',
-					sLeft: 0.73,
-					sTop: 0.93,
-					fontSize: 60,
-					color: 'white',
-					bold: true,
-					lineHeight: 12
-				})
-			},
-			roundBoarder(sColor, fColor, x, y, r){
-				x = Math.ceil(this.cansWidth * x)
-				y = Math.ceil(this.cansHeight * y)
+			/**
+			 *  绘制圆形边框
+			 * @param {Object} sColor  线条色
+			 * @param {Object} fColor
+			 * @param {Object} x  相对比例坐标
+			 * @param {Object} y
+			 * @param {Object} r
+			 */
+			_drawCircleWithBoarder(sColor, fColor, x, y, r, boarderWidth){
 				this.ctx.save();
-				var d = 2 * r;
 				var cx = x + r;
 				var cy = y + r;
-				this.ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-				this.ctx.setLineWidth(15);
+				// 圆的中心的 cx, cy 坐标, 圆的半径, 起始角, 结束角。
+				this.ctx.arc(cx, cy, r, 0, 2 * Math.PI); // 创建弧/曲线（用于创建圆或部分圆）
+				this.ctx.setLineWidth(boarderWidth);
 				this.ctx.setStrokeStyle(sColor);
 				this.ctx.stroke();
 				this.ctx.setFillStyle(fColor);
 				this.ctx.fill();
 				this.ctx.restore();
 				this.ctx.draw(true);
+			},
+			drawDefaultTextBg() {
+				let x = Math.ceil(this.cansWidth * 0.7);
+				let y = Math.ceil(this.cansHeight * 0.7);
+				let r = 40;
+				let boarderWidth = 15;
+				this._drawCircleWithBoarder(this.textBgBoarderColor, this.textBgColor, x, y, r, boarderWidth);
 			},
 			circleImg(img, x, y, r) {
 				uni.getImageInfo({
@@ -166,57 +146,6 @@
 					this.ctx.restore();
 					this.ctx.draw(true);
 				})
-			},
-			saveCans() {
-				console.log('保存')
-				uni.showLoading({
-					title: '保存ing...',
-					mask: true
-				})
-				uni.canvasToTempFilePath({
-					x: 0,
-					y: 0,
-					width: this.cansWidth * 1.5,
-					height: this.cansHeight * 1.5,
-					destWidth: this.cansWidth * 3,
-					destHeight: this.cansHeight * 3,
-					canvasId: 'wish-poster',
-					success: function(res) {
-						uni.hideLoading()
-						uni.saveImageToPhotosAlbum({
-							filePath: res.tempFilePath,
-							success: function(res) {
-								uni.showToast({
-									title: '请至相册查看'
-								})
-								console.log('保存成功')
-							},
-							fail(res) {
-								console.log(res)
-								if (res.errMsg.indexOf("fail")) {
-									uni.showModal({
-										title: '您需要授权相册权限',
-										success(res) {
-											if (res.confirm) {
-												uni.openSetting({
-													success(res) {
-														console.log("相册授权成功");
-													},
-													fail(res) {
-														console.log(res)
-													}
-												})
-											}
-										}
-									})
-								}
-							}
-						});
-					},
-					fail(res) {
-						uni.hideLoading()
-					}
-				}, this)
 			},
 			drawPara(item) {
 				var redIndexObj = {}
@@ -305,7 +234,19 @@
 				this.ctx.draw(true)
 				this.ctx.restore()
 			},
-			drawAvatarWithHappiness(imageUrl){
+			drawDefaultText(){
+				let textOption = {
+					text: this.wishText,
+					sLeft: 0.73,
+					sTop: 0.93,
+					fontSize: 60,
+					color: 'white',
+					bold: true,
+					lineHeight: 12
+				};
+				this.drawText(textOption);
+			},
+			downloadImageAndDrawWithText(imageUrl){
 				uni.showLoading({
 				    title: '加载中...'
 				});
@@ -315,9 +256,9 @@
 					timeout: 5000,
 					success: function(res) {
 						uni.hideLoading();
-						self.ctx.drawImage(res.tempFilePath,0,0, self.cansWidth, self.cansHeight);
-						self.wishWordBg();
-						self.wishWord();
+						self.drawCansBgImg(res.tempFilePath);
+						self.drawDefaultTextBg();
+						self.drawDefaultText();
 					},
 					fail: function(e){
 						uni.hideLoading();
@@ -326,7 +267,7 @@
 							content: '请检查网络，点击确定重新加载',
 							success(res) {
 								if (res.confirm) {
-									self.drawAvatarWithHappiness(imageUrl);
+									self.downloadImageAndDrawWithText(imageUrl);
 								} else if (res.cancel) {
 									console.log('用户点击取消');
 								}
@@ -335,7 +276,11 @@
 					}
 				})
 			},
-			getAvatar(result) {
+			/**
+			 *  获取用户信息回调方法
+			 * @param {Object} result
+			 */
+			getUserInfoCallBack(result) {
 				console.log('mpGetUserInfo', result);
 				if (result.detail.errMsg !== 'getUserInfo:ok') {
 					uni.showModal({
@@ -349,7 +294,76 @@
 				console.log(userInfo);
 				userInfo.avatarUrl = userInfo.avatarUrl.replace("132", "0"); // 使用最大分辨率头像 959 * 959
 				this.saveLoginUserInfo(userInfo);
-				this.drawAvatarWithHappiness(userInfo.avatarUrl);
+				this.downloadImageAndDrawWithText(userInfo.avatarUrl);
+			},
+			/**
+			 *  选择图片
+			 */
+			chooseImage(){
+				let self = this;
+				uni.chooseImage({
+				    count: 1, // 默认9
+				    sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+				    sourceType: ['album', 'camera'],
+				    success: function (res) {
+						console.log(res);
+						self.downloadImageAndDrawWithText(res.tempFilePaths[0]);
+				    }
+				});
+			},
+			/**
+			 * 保存
+			 */
+			saveCans() {
+				console.log('保存...')
+				uni.showLoading({
+					title: '保存ing...',
+					mask: true
+				})
+				uni.canvasToTempFilePath({
+					x: 0,
+					y: 0,
+					width: this.cansWidth * 1.5,
+					height: this.cansHeight * 1.5,
+					destWidth: this.cansWidth * 3,
+					destHeight: this.cansHeight * 3,
+					canvasId: 'cans-id-happines',
+					success: function(res) {
+						uni.hideLoading()
+						uni.saveImageToPhotosAlbum({
+							filePath: res.tempFilePath,
+							success: function(res) {
+								uni.showToast({
+									title: '请至相册查看'
+								})
+								console.log('保存成功')
+							},
+							fail(res) {
+								console.log(res)
+								if (res.errMsg.indexOf("fail")) {
+									uni.showModal({
+										title: '您需要授权相册权限',
+										success(res) {
+											if (res.confirm) {
+												uni.openSetting({
+													success(res) {
+														console.log("相册授权成功");
+													},
+													fail(res) {
+														console.log(res)
+													}
+												})
+											}
+										}
+									})
+								}
+							}
+						});
+					},
+					fail(res) {
+						uni.hideLoading()
+					}
+				}, this)
 			}
 		}
 	}

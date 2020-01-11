@@ -8,6 +8,10 @@ const store = new Vuex.Store({
 		userInfo: null
 	},
 	getters: {
+		// add happiness 
+		defaultAvatarUrl: function(state){
+			return state.imgPath + "avatar_happiness_default.png";
+		},
 		// page 1
 		pageBg: function(state) {
 			return state.imgPath + "page-bg.png";
