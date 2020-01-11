@@ -253,7 +253,6 @@
 				let self = this;
 				uni.downloadFile({
 					url: imageUrl,
-					timeout: 5000,
 					success: function(res) {
 						uni.hideLoading();
 						self.drawCansBgImg(res.tempFilePath);
@@ -261,6 +260,7 @@
 						self.drawDefaultText();
 					},
 					fail: function(e){
+						console.log(e);
 						uni.hideLoading();
 						uni.showModal({
 							title: '图片加载超时',
@@ -293,8 +293,8 @@
 				let userInfo = result.detail.userInfo;
 				console.log(userInfo);
 				userInfo.avatarUrl = userInfo.avatarUrl.replace("132", "0"); // 使用最大分辨率头像 959 * 959
-				this.saveLoginUserInfo(userInfo);
 				this.downloadImageAndDrawWithText(userInfo.avatarUrl);
+				this.saveLoginUserInfo(userInfo);
 			},
 			/**
 			 *  选择图片
