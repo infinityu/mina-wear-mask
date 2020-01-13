@@ -4,24 +4,11 @@
 	let WINDOW_HEIGHT = sysInfo.windowHeight;
 	export default {
 		globalData: {  
-		    WINDOW_HEIGHT: WINDOW_HEIGHT 
+		    WINDOW_HEIGHT: WINDOW_HEIGHT,
+			PAGE_BG_COLOR: '#C12928'
 		},
 		onLaunch: function() {
 			console.log('App Launch');
-			wx.cloud.init({
-				traceUser: true,
-				env: 'typo-battle-prdct-05f8e4'
-			});
-			uni.getSystemInfo({
-					success: function(e) {
-						// #ifdef MP-WEIXIN
-						Vue.prototype.StatusBar = e.statusBarHeight;
-						let custom = wx.getMenuButtonBoundingClientRect();
-						Vue.prototype.Custom = custom;
-						Vue.prototype.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
-						// #endif		
-					}
-				})
 		},
 		onShow: function() {
 			console.log('App Show');

@@ -70,8 +70,8 @@
 	.tui-fixed {
 		position: fixed;
 		z-index: 9999;
-		bottom: 0;
-		bottom: calc(50rpx + env(safe-area-inset-bottom));
+		bottom: 30px;
+		/* bottom: calc(50rpx + env(safe-area-inset-bottom)); */
 	}
 
 	.tui-footer-link {

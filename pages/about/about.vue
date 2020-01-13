@@ -1,8 +1,16 @@
 <template>
 	<view class="main" :style="{height:windowHeight+'px'}"  style="overflow: hidden">
-        <!-- <web-view :webview-styles="webviewStyles" src="https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzU3NTA4NjIwMw==&scene=124#wechat_redirect"></web-view> -->
-		<!-- <image class="page-bg"  mode="aspectFill" :src="pageBg"></image> -->
-		<view class="cu-list menu aboutContent" :class="[menuBorder?'sm-border':'',menuCard?'card-menu margin-top':'']">
+		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" :src="pageBg"></image>
+		<view style="margin-top: 100rpx;" class="grid justify-around" @click="showModal" data-target="Modal">
+			<view class="grid col-1">
+				<image style="width: 450rpx; height: 450rpx;" mode="aspectFill" :src="officialAccountUrl"></image>
+			</view>
+			<view class="grid col-1">
+				<text class="text-grey margin-top">   更多精彩，请关注公众号【人文之窗】 </text>
+			</view>	
+		</view>
+		
+		<view class="cu-list menu aboutContent margin-top-xl" :class="[menuBorder?'sm-border':'',menuCard?'card-menu margin-top':'']">
 			<!-- <view class="cu-item" :class="menuArrow?'arrow':''">
 				<view class="content">
 					<text class="cuIcon-btn text-green"></text>
@@ -39,14 +47,7 @@
 				</view>
 			</view> -->
 		</view>
-		<view class="margin-top-xl grid justify-around" @click="showModal" data-target="Modal">
-			<view class="grid col-1">
-				<image style="width: 450rpx; height: 450rpx;" mode="aspectFill" :src="officialAccountUrl"></image>
-			</view>
-			<view class="grid col-1">
-				<text class="text-grey margin-top">   更多精彩，请关注公众号【人文之窗】 </text>
-			</view>	
-		</view>
+		
 		<view @click="showModal" data-target="Modal">
 			<tui-footer :fixed="true" :copyright="copyright"></tui-footer>
 		</view>
@@ -127,7 +128,6 @@
 		background-color: #C12928;
 		height: 1334rpx;
 		width: 750rpx;
-		padding-top: 50px;
 	}
 	
 	.aboutContent{

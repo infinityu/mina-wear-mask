@@ -1,6 +1,6 @@
 <template>
 	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: hidden">
-		<image class="page-bg"  mode="aspectFill" :src="pageBg"></image>
+		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" :src="pageBg"></image>
 		<view>
 			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px; margin-top: 75px" class="isCan"></canvas>
 		</view>
@@ -62,14 +62,19 @@
 				textBgBoarderColor: '#FFFFFF',
 				textBgColor: '#C12928',
 				wishText: '福',
-				defaultAvatarPath: '/static/image/avatar_happiness_default.png',
+				defaultAvatarList: ['/static/image/avatar-0.png', '/static/image/avatar-0.png'],
+				defaultAvatarIndex: 0,
+				// defaultHappinessText: '/static/image/happiness_text.png',
 				copyright: " Copyright © 2016-2020 人文之窗公众号",
 				modalName: null
 			}
 		},
 		computed: {
 			...mapGetters(["pageBg", "defaultAvatarUrl"]),
-			...mapState({userInfo:'userInfo'})
+			...mapState({userInfo:'userInfo'}),
+			defaultAvatarPath: function() {
+				return this.defaultAvatarList[this.defaultAvatarIndex];
+			}
 		},
 		created() {
 		},
@@ -79,17 +84,22 @@
 			this.drawCansBgImg(this.defaultAvatarPath);
 			this.drawDefaultTextBg();
 			this.drawDefaultText();
+
 		},
 		onReady() {
 		},
 		onShow() {
+			console.log("onshow");
+			this.defaultAvatarIndex = Math.round(Math.random());
+			console.log(this.defaultAvatarIndex);
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
+			// this.refresh();
 		},
 		onShareAppMessage() {
 			return {
 				title: '送你一个福字儿',
 				desc: '为头像添加一个福字儿',
-				path: '/pages/login/add-happiness',
+				path: '/pages/happiness/add-happiness',
 				success: function(res){
 					console.log(res);
 				}
@@ -118,6 +128,11 @@
 						
 				  }
 				});	
+			},
+			refresh(){
+				this.drawCansBgImg(this.defaultAvatarPath);
+				this.drawDefaultTextBg();
+				this.drawDefaultText();
 			},
 			drawCansBgColor(bgColor) {
 				this.ctx.rect(0, 0, this.cansWidth, this.cansHeight)
@@ -377,6 +392,9 @@
 									success: function() {
 										console.log('success');
 									}
+								});
+								uni.switchTab({
+									url: '/pages/happiness/introduction'
 								});
 								console.log('保存成功')
 							},
