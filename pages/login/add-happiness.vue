@@ -1,5 +1,5 @@
 <template>
-	<view class="main">
+	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: hidden">
 		<image class="page-bg"  mode="aspectFill" :src="pageBg"></image>
 		<view>
 			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px; margin-top: 75px" class="isCan"></canvas>
@@ -14,13 +14,35 @@
 			<view class="grid col-3">
 				<button class="cu-btn round bg-yellow shadow btnLeft" @click="saveCans">保存</button>
 			</view>
-			<view class="grid col-1" style="margin-top: 100rpx">
+			<view class="grid col-1" style="margin-top: 50rpx">
 				<button class="cu-btn block line-orange lg" open-type="share">
 					<text class="cuIcon-upload"></text>推荐给朋友</button>
 			</view>
 		</view>
+		<!-- <view @click="showModal" data-target="Modal"> -->
 		<view>
 			<tui-footer :fixed="true" :copyright="copyright"></tui-footer>
+		</view>
+		<view class="cu-modal" :class="modalName=='Modal'?'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">微信搜索《人文之窗》</view>
+					<view class="action" @tap="hideModal">
+						<text class="cuIcon-close text-red"></text>
+					</view>
+				</view>
+				<view class="padding-xl">
+					中外名曲，经典老歌，电影故事，夜读美文，戏剧唱段，名家书画，摄影佳作。
+				</view>
+				<view class="padding">
+					人文之窗综艺微刊，每晚与您不见不散。
+				</view>
+				<view class="cu-bar bg-white justify-end">
+					<view class="action">
+						<button class="cu-btn line-green text-green" @tap="hideModal">我知道了</button>
+					</view>
+				</view>
+			</view>
 		</view>
 	</view>
 </template>
@@ -33,6 +55,7 @@
 		},
 		data() {
 			return {
+				windowHeight: 0,
 				cansWidth: 270, // 宽度 px
 				cansHeight: 270 ,// 高度 px
 				cansBgColor: "#FFD314",
@@ -40,7 +63,8 @@
 				textBgColor: '#C12928',
 				wishText: '福',
 				defaultAvatarPath: '/static/image/avatar_happiness_default.png',
-				copyright: " Copyright © 2016-2020 人文之窗公众号"
+				copyright: " Copyright © 2016-2020 人文之窗公众号",
+				modalName: null
 			}
 		},
 		computed: {
@@ -48,10 +72,8 @@
 			...mapState({userInfo:'userInfo'})
 		},
 		created() {
-			console.log("created");
 		},
 		onLoad() {
-			console.log("onLoad");
 			this.ctx = uni.createCanvasContext('cans-id-happines', this);
 			// this.drawCansBgColor(this.cansBgColor);
 			this.drawCansBgImg(this.defaultAvatarPath);
@@ -59,7 +81,9 @@
 			this.drawDefaultText();
 		},
 		onReady() {
-			console.log("onReady");
+		},
+		onShow() {
+			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
 		},
 		onShareAppMessage() {
 			return {
@@ -382,6 +406,13 @@
 						uni.hideLoading()
 					}
 				}, this)
+			},
+			showModal: function(e){
+				console.log(e.currentTarget.dataset);
+				this.modalName = e.currentTarget.dataset.target;
+			},
+			hideModal: function(e) {
+				this.modalName = null;
 			}
 		}
 	}

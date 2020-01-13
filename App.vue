@@ -1,8 +1,10 @@
 <script>
 	import Vue from 'vue'
+	let sysInfo = uni.getSystemInfoSync();
+	let WINDOW_HEIGHT = sysInfo.windowHeight;
 	export default {
 		globalData: {  
-		    currentNewsInfo: {}  
+		    WINDOW_HEIGHT: WINDOW_HEIGHT 
 		},
 		onLaunch: function() {
 			console.log('App Launch');

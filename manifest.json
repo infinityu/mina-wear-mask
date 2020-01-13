@@ -62,7 +62,13 @@
             "urlCheck" : false
         },
         "usingComponents" : true,
-        "requiredBackgroundModes" : [ "audio" ]
+        "requiredBackgroundModes" : [ "audio" ],
+        "plugins" : {
+            "tucao" : {
+                "version" : "1.1.5",
+                "provider" : "wx8abaf00ee8c3202e"
+            }
+        }
     },
     "mp-alipay" : {
         "usingComponents" : true

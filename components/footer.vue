@@ -71,7 +71,7 @@
 		position: fixed;
 		z-index: 9999;
 		bottom: 0;
-		bottom: env(safe-area-inset-bottom);
+		bottom: calc(50rpx + env(safe-area-inset-bottom));
 	}
 
 	.tui-footer-link {
