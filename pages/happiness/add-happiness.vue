@@ -1,6 +1,8 @@
 <template>
 	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: hidden">
-		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" :src="pageBg"></image>
+		<!-- <image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" :src="pageBg"></image> -->
+		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
+		
 		<view>
 			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px; margin-top: 75px" class="isCan"></canvas>
 		</view>
