@@ -12,6 +12,7 @@
 			"path": "pages/happiness/add-happiness",
 			"style": {
 				"navigationBarBackgroundColor": "#C12928",
+				"disableScroll": true,
 				"navigationStyle": "custom"
 			}
 		},
@@ -20,7 +21,11 @@
 		},
 		{
 			"path": "pages/about/about",
-			"style": {}
+			"style": {
+				"navigationBarBackgroundColor": "#C12928",
+				"disableScroll": true,
+				"navigationStyle": "custom"
+			}
 		}
 		// {
 		// 	"path": "pages/crop/crop",
@@ -63,8 +68,8 @@
 		// "navigationStyle": "custom"
 	},
 	"tabBar": {
-		"color": "#7A7E83",
-		"selectedColor": "#3cc51f",
+		"color": "#C12928",
+		"selectedColor": "#C12928",
 		"borderStyle": "black",
 		"backgroundColor": "#ffffff",
 		"list": [
@@ -95,12 +100,12 @@
 				"selectedIconPath": "static/tabbar/happiness.png",
 				"text": "头像添福"
 			}, 
-			{
-				"pagePath": "pages/happiness/introduction",
-				"iconPath": "static/tabbar/happiness3.png",
-				"selectedIconPath": "static/tabbar/happiness.png",
-				"text": "使用介绍"
-			}, 
+			// {
+			// 	"pagePath": "pages/happiness/introduction",
+			// 	"iconPath": "static/tabbar/happiness3.png",
+			// 	"selectedIconPath": "static/tabbar/happiness.png",
+			// 	"text": "使用介绍"
+			// }, 
 			{
 				"pagePath": "pages/about/about",
 				"iconPath": "static/tabbar/happiness3.png",

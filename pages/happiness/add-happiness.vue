@@ -1,6 +1,5 @@
 <template>
 	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: hidden">
-		<!-- <image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" :src="pageBg"></image> -->
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
 		
 		<view>
@@ -72,7 +71,6 @@
 			}
 		},
 		computed: {
-			...mapGetters(["pageBg", "defaultAvatarUrl"]),
 			...mapState({userInfo:'userInfo'}),
 			defaultAvatarPath: function() {
 				return this.defaultAvatarList[this.defaultAvatarIndex];
@@ -299,7 +297,7 @@
 			},
 			downloadImageAndDrawWithText(imageUrl){
 				uni.showLoading({
-				    title: '加载中...'
+				    title: '添福中...'
 				});
 				let self = this;
 				uni.downloadFile({
@@ -354,13 +352,62 @@
 				let self = this;
 				uni.chooseImage({
 				    count: 1, // 默认9
-				    sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+				    sizeType: ['compressed'], //可以指定是原图还是压缩图，默认二者都有
 				    sourceType: ['album', 'camera'],
 				    success: function (res) {
 						console.log(res);
-						self.drawCansBgImg(res.tempFilePaths[0]);
-						self.drawDefaultTextBg();
-						self.drawDefaultText();
+						let tempImagePath = res.tempFilePaths[0];
+						
+						wx.getFileSystemManager().readFile({
+						    filePath: tempImagePath,  //这里做示例，所以就选取第一张图片
+						    success: buffer => {
+						        console.log(buffer.data);
+								uni.showLoading({
+								    title: '添福中...'
+								});
+						        //这里是 云函数调用方法
+						        wx.cloud.callFunction({
+						            name: 'contentCheck',
+						            data: {
+						                value: buffer.data
+						            },
+						            success(json) {
+						                console.log("checkContent result", json)
+						                if (json.result.errCode == 87014) {
+						                    // uni.showToast({
+						                    //     title: '图片含有违法违规内容'
+						                    // });
+											uni.showModal({
+												title: '请勿使用违法违规内容',
+												content: '图片含有违法违规内容',
+												showCancel: false,
+												confirmText: '知道了',
+											});
+						                    console.log("bad")
+						                } else {
+											console.log("good")
+						                    //图片正常
+											self.drawCansBgImg(tempImagePath);
+											self.drawDefaultTextBg();
+											self.drawDefaultText();
+						                }
+						            },
+									fail(e){
+										console.log(e);
+										uni.showModal({
+											title: '请重试',
+											content: '对不起，服务器开了小差',
+											showCancel: false,
+											confirmText: '好的',
+										});
+									},
+									complete(){
+										uni.hideLoading();
+									}
+						        })
+						    }
+						})
+
 						// self.downloadImageAndDrawWithText(res.tempFilePaths[0]);
 				    }
 				});
@@ -395,9 +442,9 @@
 										console.log('success');
 									}
 								});
-								uni.switchTab({
-									url: '/pages/happiness/introduction'
-								});
+								// uni.switchTab({
+								// 	url: '/pages/happiness/introduction'
+								// });
 								console.log('保存成功')
 							},
 							fail(res) {

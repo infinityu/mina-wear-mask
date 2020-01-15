@@ -1,12 +1,12 @@
 <template>
 	<view class="main" :style="{height:windowHeight+'px'}"  style="overflow: hidden">
-		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" :src="pageBg"></image>
+		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
 		<view style="margin-top: 100rpx;" class="grid justify-around" @click="showModal" data-target="Modal">
 			<view class="grid col-1">
-				<image style="width: 450rpx; height: 450rpx;" mode="aspectFill" :src="officialAccountUrl"></image>
+				<image style="width:270px; height:270px; margin-top: 75px" mode="aspectFill" src="/static/image/official-account.png"></image>
 			</view>
 			<view class="grid col-1">
-				<text class="text-grey margin-top">   更多精彩，请关注公众号【人文之窗】 </text>
+				<text class="text-grey margin-top"> 更多精彩，请关注公众号【人文之窗】 </text>
 			</view>	
 		</view>
 		
@@ -102,7 +102,6 @@
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
 		},
 		computed: {
-			...mapGetters(["pageBg", "defaultAvatarUrl"]),
 			...mapState({userInfo:'userInfo'})
 		},
 		methods: {
