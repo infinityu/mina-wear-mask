@@ -1,23 +1,46 @@
 <template>
 	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: hidden">
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
-		
-		<view>
-			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px; margin-top: 75px" class="isCan"></canvas>
+		<cover-view class="happiness-option-wrapper animation-slide-left animation-speed-2">
+			<cover-view class="padding">
+				<cover-view class="grid col-4 grid-square margin-top-sm" @click="changeHappiness" data-target="0">
+					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h0.png"></cover-image>
+				</cover-view>
+				<cover-view class="grid col-4 grid-square margin-top-sm" @click="changeHappiness" data-target="1">
+					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h1.png"></cover-image>
+				</cover-view>
+				<cover-view class="grid col-4 grid-square margin-top-sm" @click="changeHappiness" data-target="2">
+					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h2.png"></cover-image>
+				</cover-view>
+				<cover-view class="grid col-4 grid-square margin-top-sm" @click="changeHappiness" data-target="3">
+					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h3.png"></cover-image>
+				</cover-view>
+				<cover-view class="grid col-4 grid-square margin-top-sm" @click="changeHappiness" data-target="4">
+					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h4.png"></cover-image>
+				</cover-view>
+			</cover-view>
+		</cover-view>
+		<view @click="nextHappiness">
+			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px;" class="isCan"></canvas>
 		</view>
-		<view class="solid-bottom grid justify-around actions">
+		<view class="grid justify-around action-wrapper">
 			<view class="grid col-1">
-				<button class="cu-btn round bg-yellow shadow" open-type="getUserInfo" @getuserinfo="getUserInfoCallBack">获取头像</button>
+				<button class="cu-btn round action-btn shadow animation-scale-down animation-delay-1 animation-speed-2" open-type="getUserInfo" @getuserinfo="getUserInfoCallBack">我的头像</button>
 			</view>
 			<view class="grid col-2">
-				<button class="cu-btn round bg-yellow shadow btnLeft" @click="chooseImage">选择图片</button>
+				<button class="cu-btn round action-btn shadow animation-slide-top animation-delay-2" @click="saveCans">
+					<text class="cuIcon-down"></text>保存</button>
 			</view>
 			<view class="grid col-3">
-				<button class="cu-btn round bg-yellow shadow btnLeft" @click="saveCans">保存</button>
+				<button class="cu-btn round action-btn shadow animation-scale-down animation-delay-1 animation-speed-2" @click="chooseImage">选择图片</button>
 			</view>
-			<view class="grid col-1" style="margin-top: 50rpx">
-				<button class="cu-btn block line-orange lg" open-type="share">
-					<text class="cuIcon-upload"></text>推荐给朋友</button>
+		</view>
+		<view class="grid justify-center share-wrapper">
+			<view class="grid col-1 animation-shake animation-speed-2 animation-delay-3">
+				<!-- <button class="cu-btn block shaline-orange lg" open-type="share"> -->
+				<button class="cu-btn round action-btn shadow" open-type="share">
+					推荐给朋友<text class="cuIcon-forward"></text></button>
+					
 			</view>
 		</view>
 		<!-- <view @click="showModal" data-target="Modal"> -->
@@ -48,7 +71,11 @@
 	</view>
 </template>
 <script>
-	import { mapGetters, mapState, mapMutations } from "vuex";
+	import {
+		mapGetters,
+		mapState,
+		mapMutations
+	} from "vuex";
 	import tuiFooter from "@/components/footer";
 	export default {
 		components: {
@@ -58,104 +85,117 @@
 			return {
 				windowHeight: 0,
 				cansWidth: 270, // 宽度 px
-				cansHeight: 270 ,// 高度 px
+				cansHeight: 270, // 高度 px
 				cansBgColor: "#FFD314",
-				textBgBoarderColor: '#FFFFFF',
-				textBgColor: '#C12928',
+				cornerBgColor: '#C12928',
+				cornerBgBoarderColor: '#FFFFFF',
+				r: 40,
+				boarderWidth: 15,
 				wishText: '福',
-				defaultAvatarList: ['/static/image/avatar-0.png', '/static/image/avatar-0.png'],
-				defaultAvatarIndex: 0,
-				// defaultHappinessText: '/static/image/happiness_text.png',
+				avatarPath: '/static/image/avatar.png',
+				happinessPathList: ['/static/image/h0.png', '/static/image/h1.png', '/static/image/h2.png', '/static/image/h3.png',
+					'/static/image/h4.png'
+				],
+				happinessIndex: 0,
 				copyright: " Copyright © 2016-2020 人文之窗公众号",
 				modalName: null
 			}
 		},
 		computed: {
-			...mapState({userInfo:'userInfo'}),
-			defaultAvatarPath: function() {
-				return this.defaultAvatarList[this.defaultAvatarIndex];
+			...mapState({
+				userInfo: 'userInfo'
+			}),
+			happinessPath: function() {
+				return this.happinessPathList[this.happinessIndex];
+			},
+			cornerX: function() {
+				return Math.ceil(this.cansWidth * 0.7);
+			},
+			cornerY: function() {
+				return Math.ceil(this.cansHeight * 0.7);
 			}
-		},
-		created() {
 		},
 		onLoad() {
 			this.ctx = uni.createCanvasContext('cans-id-happines', this);
-			// this.drawCansBgColor(this.cansBgColor);
-			this.drawCansBgImg(this.defaultAvatarPath);
-			this.drawDefaultTextBg();
-			this.drawDefaultText();
-
-		},
-		onReady() {
+			this.paint();
 		},
 		onShow() {
 			console.log("onshow");
-			this.defaultAvatarIndex = Math.round(Math.random());
-			console.log(this.defaultAvatarIndex);
+			let defaultAvatarIndex = Math.round(Math.random());
+			console.log(defaultAvatarIndex);
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
-			// this.refresh();
 		},
 		onShareAppMessage() {
 			return {
-				title: '送你一个福字儿',
+				title: ' 头像加福贺新春',
 				desc: '为头像添加一个福字儿',
 				path: '/pages/happiness/add-happiness',
-				success: function(res){
+				success: function(res) {
 					console.log(res);
 				}
 			}
 		},
 		methods: {
 			...mapMutations(["saveLoginUserInfo"]),
-			loadFont(){
-				let self = this;
-				uni.loadFontFace({
-				  family: 'edu-lishu',
-				  source: 'url("https://mina-img-store-1258554429.cos.ap-shanghai.myqcloud.com/new-year-wish/I.Ngaan-subfont.ttf")',
-				  success() {
-						console.log('loadFontFace success')
-						self.drawDefaultTextBg();
-						self.drawDefaultText();
-						if(self.userInfo!= null && self.userInfo.avatarUrl != null) {
-							console.log("++this.userInfo.avatarUrl", self.userInfo.avatarUrl);
-							uni.downloadFile({
-								url: self.userInfo.avatarUrl,
-								success: function(res) {
-									self.ctx.drawImage(res.tempFilePath,0,0, self.cansWidth, self.cansHeight);
-								}
-							})
-						}
-						
-				  }
-				});	
-			},
-			refresh(){
-				this.drawCansBgImg(this.defaultAvatarPath);
-				this.drawDefaultTextBg();
-				this.drawDefaultText();
-			},
-			drawCansBgColor(bgColor) {
-				this.ctx.rect(0, 0, this.cansWidth, this.cansHeight)
-				this.ctx.setFillStyle(bgColor)
-				this.ctx.fill()
-				this.ctx.draw(true)
+			paint(avatarFilePath, happinessFilePath) {
+				if (!avatarFilePath) {
+					avatarFilePath = this.avatarPath;
+				}
+				if (!happinessFilePath) {
+					happinessFilePath = this.happinessPath;
+				}
+				this.drawCansBgImg(avatarFilePath);
+				this.drawCornerBg();
+				this.drawHappiness(happinessFilePath);
+				uni.vibrateShort({
+					success: function() {
+						console.log('success');
+					}
+				});
 			},
 			drawCansBgImg(imageFilePath) {
 				this.ctx.drawImage(imageFilePath, 0, 0, this.cansWidth, this.cansHeight);
+				this.ctx.draw(false);
+			},
+			drawCornerBg() {
+				this._drawCircleWithBoarder(this.cornerBgBoarderColor, this.cornerBgColor, this.cornerX, this.cornerY, this.r, this.boarderWidth);
+			},
+			drawHappiness(happinessFilePath) {
+				this.ctx.drawImage(happinessFilePath, this.cornerX + 5, this.cornerY + 7, this.cansWidth * 0.25, this.cansHeight * 0.25);
 				this.ctx.draw(true);
+			},
+			/**
+			 * legacy
+			 */
+			drawDefaultText() {
+				let textOption = {
+					text: this.wishText,
+					sLeft: 0.73,
+					sTop: 0.93,
+					fontSize: 60,
+					color: 'white',
+					bold: true,
+					lineHeight: 12
+				};
+				this._drawText(textOption);
+				uni.vibrateShort({
+					success: function() {
+						console.log('success');
+					}
+				});
 			},
 			/**
 			 *  绘制圆形边框
 			 * @param {Object} sColor  线条色
 			 * @param {Object} fColor
-			 * @param {Object} x  相对比例坐标
-			 * @param {Object} y
+			 * @param {Object} cornerX  相对比例坐标
+			 * @param {Object} cornerY
 			 * @param {Object} r
 			 */
-			_drawCircleWithBoarder(sColor, fColor, x, y, r, boarderWidth){
+			_drawCircleWithBoarder(sColor, fColor, cornerX, cornerY, r, boarderWidth) {
 				this.ctx.save();
-				var cx = x + r;
-				var cy = y + r;
+				var cx = cornerX + r;
+				var cy = cornerY + r;
 				// 圆的中心的 cx, cy 坐标, 圆的半径, 起始角, 结束角。
 				this.ctx.arc(cx, cy, r, 0, 2 * Math.PI); // 创建弧/曲线（用于创建圆或部分圆）
 				this.ctx.setLineWidth(boarderWidth);
@@ -166,92 +206,7 @@
 				this.ctx.restore();
 				this.ctx.draw(true);
 			},
-			drawDefaultTextBg() {
-				let x = Math.ceil(this.cansWidth * 0.7);
-				let y = Math.ceil(this.cansHeight * 0.7);
-				let r = 40;
-				let boarderWidth = 15;
-				this._drawCircleWithBoarder(this.textBgBoarderColor, this.textBgColor, x, y, r, boarderWidth);
-			},
-			circleImg(img, x, y, r) {
-				uni.getImageInfo({
-					src: img
-				}).then((image) => {
-					console.log(image[1].path)
-					x = Math.ceil(this.cansWidth * x)
-					y = Math.ceil(this.cansHeight * y)
-					this.ctx.save();
-					var d = 2 * r;
-					var cx = x + r;
-					var cy = y + r;
-					this.ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-					this.ctx.clip();
-					this.ctx.drawImage(image[1].path, x, y, d, d);
-					this.ctx.restore();
-					this.ctx.draw(true);
-				})
-			},
-			drawPara(item) {
-				var redIndexObj = {}
-				if (item.redWord.length > 0) {
-					for (var i = 0; i < item.redWord.length; i++) {
-						let startIndex = 0,
-							index;
-						while ((index = item.para.indexOf(item.redWord[i], startIndex)) > -1) {
-							redIndexObj[index] = true;
-							for (var j = 0; j < item.redWord[i].length; j++) {
-								redIndexObj[index + j] = true
-							}
-							startIndex = index + 1;
-						}
-					}
-				}
-				this.ctx.font = `normal normal ${item.fontSize}px sans-serif`;
-				this.ctx.setFillStyle(item.color)
-				var isLeft
-				if (item.sLeft == 'center') {
-					isLeft = this.cansWidth * (.5 - item.sMaxWidth / 2) - item.fontSize
-				} else {
-					isLeft = item.sLeft * this.cansWidth
-				}
-				var maxWidth = Math.floor(this.cansWidth * item.sMaxWidth)
-				var tempList = item.para.split('')
-				var nowText = '',
-					isCol = 0,
-					textWidth = 0
-				for (var i = 0; i < tempList.length; i++) {
-					if (i > 0) {
-						nowText += tempList[i - 1]
-					} else {
-						nowText += tempList[0]
-					}
-					textWidth = this.ctx.measureText(nowText).width
-					if (textWidth > maxWidth) {
-						isCol++
-						nowText = '占'
-						textWidth = this.ctx.measureText(nowText).width
-					}
-					if (redIndexObj[i]) {
-						this.ctx.save()
-						if (item.bold) this.ctx.font = `normal bold ${item.fontSize}px sans-serif`;
-						this.ctx.setFillStyle(item.redColor)
-					}
-					this.ctx.fillText(tempList[i], isLeft + textWidth, item.sTop * this.cansHeight + item.titleHeight * isCol)
-					this.ctx.restore()
-				}
-				this.ctx.draw(true)
-			},
-			drawBg(item) {
-				if (item.sLeft == 'center') {
-					this.ctx.drawImage(item.url, this.cansWidth * (.5 - item.sWidth / 2), this.cansHeight * item.sTop, this.cansWidth *
-						item.sWidth, this.cansHeight * item.sHeight);
-				} else {
-					this.ctx.drawImage(item.url, this.cansWidth * item.sLeft, this.cansHeight * item.sTop, this.cansWidth * item.sWidth,
-						this.cansHeight * item.sHeight);
-				}
-				this.ctx.draw(true);
-			},
-			drawText(item) {
+			_drawText(item) {
 				var isLeft
 				if (item.sLeft == 'center') {
 					isLeft = this.cansWidth * .5 - (item.fontSize * item.text.length) / 2
@@ -278,37 +233,19 @@
 				this.ctx.draw(true)
 				this.ctx.restore()
 			},
-			drawDefaultText(){
-				let textOption = {
-					text: this.wishText,
-					sLeft: 0.73,
-					sTop: 0.93,
-					fontSize: 60,
-					color: 'white',
-					bold: true,
-					lineHeight: 12
-				};
-				this.drawText(textOption);
-				uni.vibrateShort({
-					success: function() {
-						console.log('success');
-					}
-				});
-			},
-			downloadImageAndDrawWithText(imageUrl){
+			downloadAvatarAndPaintAll(imageUrl) {
 				uni.showLoading({
-				    title: '添福中...'
+					title: '添福中...'
 				});
 				let self = this;
 				uni.downloadFile({
 					url: imageUrl,
 					success: function(res) {
 						uni.hideLoading();
-						self.drawCansBgImg(res.tempFilePath);
-						self.drawDefaultTextBg();
-						self.drawDefaultText();
+						self.avatarPath = res.tempFilePath;
+						self.paint();
 					},
-					fail: function(e){
+					fail: function(e) {
 						console.log(e);
 						uni.hideLoading();
 						uni.showModal({
@@ -316,7 +253,7 @@
 							content: '请检查网络，点击确定重新加载',
 							success(res) {
 								if (res.confirm) {
-									self.downloadImageAndDrawWithText(imageUrl);
+									self.downloadAvatarAndPaintAll(imageUrl);
 								} else if (res.cancel) {
 									console.log('用户点击取消');
 								}
@@ -342,57 +279,56 @@
 				let userInfo = result.detail.userInfo;
 				console.log(userInfo);
 				userInfo.avatarUrl = userInfo.avatarUrl.replace("132", "0"); // 使用最大分辨率头像 959 * 959
-				this.downloadImageAndDrawWithText(userInfo.avatarUrl);
+				this.downloadAvatarAndPaintAll(userInfo.avatarUrl);
 				this.saveLoginUserInfo(userInfo);
 			},
 			/**
 			 *  选择图片
 			 */
-			chooseImage(){
+			chooseImage() {
 				let self = this;
 				uni.chooseImage({
-				    count: 1, // 默认9
-				    sizeType: ['compressed'], //可以指定是原图还是压缩图，默认二者都有
-				    sourceType: ['album', 'camera'],
-				    success: function (res) {
+					count: 1, // 默认9
+					sizeType: ['compressed'], //可以指定是原图还是压缩图，默认二者都有
+					sourceType: ['album', 'camera'],
+					success: function(res) {
 						console.log(res);
 						let tempImagePath = res.tempFilePaths[0];
-						
+
 						wx.getFileSystemManager().readFile({
-						    filePath: tempImagePath,  //这里做示例，所以就选取第一张图片
-						    success: buffer => {
-						        console.log(buffer.data);
+							filePath: tempImagePath, //这里做示例，所以就选取第一张图片
+							success: buffer => {
+								console.log(buffer.data);
 								uni.showLoading({
-								    title: '添福中...'
+									title: '添福中...'
 								});
-						        //这里是 云函数调用方法
-						        wx.cloud.callFunction({
-						            name: 'contentCheck',
-						            data: {
-						                value: buffer.data
-						            },
-						            success(json) {
-						                console.log("checkContent result", json)
-						                if (json.result.errCode == 87014) {
-						                    // uni.showToast({
-						                    //     title: '图片含有违法违规内容'
-						                    // });
+								//这里是 云函数调用方法
+								wx.cloud.callFunction({
+									name: 'contentCheck',
+									data: {
+										value: buffer.data
+									},
+									success(json) {
+										console.log("checkContent result", json)
+										if (json.result.errCode == 87014) {
+											// uni.showToast({
+											//     title: '图片含有违法违规内容'
+											// });
 											uni.showModal({
 												title: '请勿使用违法违规内容',
 												content: '图片含有违法违规内容',
 												showCancel: false,
 												confirmText: '知道了',
 											});
-						                    console.log("bad")
-						                } else {
+											console.log("bad")
+										} else {
 											console.log("good")
-						                    //图片正常
-											self.drawCansBgImg(tempImagePath);
-											self.drawDefaultTextBg();
-											self.drawDefaultText();
-						                }
-						            },
-									fail(e){
+											//图片正常
+											self.avatarPath = tempImagePath;
+											self.paint();
+										}
+									},
+									fail(e) {
 										console.log(e);
 										uni.showModal({
 											title: '请重试',
@@ -401,16 +337,24 @@
 											confirmText: '好的',
 										});
 									},
-									complete(){
+									complete() {
 										uni.hideLoading();
 									}
-						        })
-						    }
+								})
+							}
 						})
-
-						// self.downloadImageAndDrawWithText(res.tempFilePaths[0]);
-				    }
+					}
 				});
+			},
+			changeHappiness(e) {
+				this.happinessIndex = parseInt(e.currentTarget.dataset.target, 10);
+				this.happinessPath = this.happinessPathList[this.happinessIndex];
+				this.paint();
+			},
+			nextHappiness() {
+				this.happinessIndex = (this.happinessIndex + 1) % 5;
+				this.happinessPath = this.happinessPathList[this.happinessIndex];
+				this.paint();
 			},
 			/**
 			 * 保存
@@ -474,7 +418,7 @@
 					}
 				}, this)
 			},
-			showModal: function(e){
+			showModal: function(e) {
 				console.log(e.currentTarget.dataset);
 				this.modalName = e.currentTarget.dataset.target;
 			},
@@ -486,16 +430,16 @@
 </script>
 
 <style lang="scss" scoped>
-	.main{
+	.main {
 		background-color: #C12928;
 	}
-	
+
 	.userinfo-avatar {
 		border-radius: 128upx;
 		width: 128upx;
 		height: 128upx;
 	}
-	
+
 	.bg {
 		width: 100vw;
 		height: 100vh;
@@ -506,7 +450,7 @@
 		// background-color: rgba(0, 0, 0, 0.8);
 	}
 
-	.isCan {
+	.isCan22 {
 		border: 6px solid white;
 		border-radius: 10px;
 		position: fixed;
@@ -515,16 +459,66 @@
 		width: 270px;
 		height: 270px;
 		right: 0;
-		top: 50upx;
+		top: 200upx;
 		bottom: 130upx;
 		margin: 0 auto;
 		background-size: 100%;
 	}
-	.actions{
-		position: absolute;
-		top: 440px;
+	.isCan{
+		border: 6px solid white;
+		border-radius: 10px;
+		width: 270px;
+		height: 270px;
+		margin-top: 150rpx;
+		margin-left: auto;
+		margin-right: auto;
+		background-size: 100%;
+
+	}
+
+	@media (min-width: 320px) {
+	  /* 仅在 320px 或更宽的屏幕上生效的样式规则 */
+	  .action-wrapper {
+	  	padding-top: 100rpx;
+	  	padding-left: 100rpx;
+	  	padding-right: 100rpx;
+	  	font-weight: 800;
+	  }
+	  
+	  .action-btn {
+	  	background-color: #FFC700;
+	  	color: white;
+	  }
+	}
+
+	.action-wrapper {
+		padding-top: 100rpx;
 		padding-left: 100rpx;
 		padding-right: 100rpx;
 		font-weight: 800;
+	}
+
+	.action-btn {
+		background-color: #FFC700;
+		color: white;
+	}
+	
+	.share-wrapper {
+		padding-top: 50rpx;
+		padding-left: 100rpx;
+		padding-right: 100rpx;
+		font-weight: 800;
+	}
+
+	.happiness-option-wrapper {
+		position: absolute;
+		z-index: 2000;
+		width: 200rpx;
+		margin-top: 25px;
+	}
+
+	.happiness-option {
+		width: 60px;
+		height: 60px;
 	}
 </style>
