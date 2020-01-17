@@ -35,17 +35,36 @@
 				<button class="cu-btn round action-btn shadow animation-scale-down animation-delay-1 animation-speed-2" @click="chooseImage">选择图片</button>
 			</view>
 		</view>
-		<view class="grid justify-center share-wrapper">
+		<view class="grid justify-around share-wrapper">
 			<view class="grid col-1 animation-shake animation-speed-2 animation-delay-3">
 				<!-- <button class="cu-btn block shaline-orange lg" open-type="share"> -->
 				<button class="cu-btn round action-btn shadow" open-type="share">
 					推荐给朋友<text class="cuIcon-forward"></text></button>
-					
 			</view>
+			<view class="grid col- 2 animation-shake animation-speed-2 animation-delay-3">
+				<!-- <button class="cu-btn block shaline-orange lg" open-type="share"> -->
+				<button class="cu-btn round action-btn shadow" @click="toSharePage" data-target="image">
+					分享朋友圈<text class="cuIcon-forward"></text></button>
+			</view>
+			
 		</view>
 		<!-- <view @click="showModal" data-target="Modal"> -->
 		<view>
 			<tui-footer :fixed="true" :copyright="copyright"></tui-footer>
+		</view>
+		<view class="cu-modal" :class="modalName=='image'?'show':''">
+			<view class="cu-dialog">
+				<view class="bg-img" style="background-image: url('/static/image/minicode.jpg');height:200px;">
+					<view class="cu-bar justify-end text-white">
+						<view class="action" @tap="hideModal">
+							<text class="cuIcon-close "></text>
+						</view>
+					</view>
+				</view>
+				<view class="cu-bar bg-white">
+					<view class="action margin-0 flex-sub  solid-left" @tap="hideModal">我知道了</view>
+				</view>
+			</view>
 		</view>
 		<view class="cu-modal" :class="modalName=='Modal'?'show':''">
 			<view class="cu-dialog">
@@ -424,6 +443,11 @@
 			},
 			hideModal: function(e) {
 				this.modalName = null;
+			},
+			toSharePage: function(){
+				uni.navigateTo({
+				    url: '/pages/share/share'
+				});
 			}
 		}
 	}

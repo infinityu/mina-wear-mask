@@ -9,14 +9,6 @@
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/crop/crop",
-			"style": {
-				"navigationBarBackgroundColor": "#C12928",
-				"disableScroll": true,
-				"navigationStyle": "custom"
-			}
-		},
-		{
 			"path": "pages/happiness/add-happiness",
 			"style": {
 				"navigationBarBackgroundColor": "#C12928",
@@ -25,7 +17,18 @@
 			}
 		},
 		{
-			"path": "pages/happiness/introduction"
+			"path": "pages/crop/crop",
+			"style": {
+				"navigationBarBackgroundColor": "#C12928",
+				"disableScroll": true,
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/share/share",
+			"style":{
+				"navigationBarTitleText": "分享朋友圈，送出独特的祝福"
+			}
 		},
 		{
 			"path": "pages/about/about",
