@@ -1,12 +1,12 @@
 <template>
 	<view class="main" :style="{height:windowHeight+'px'}"  style="overflow: hidden">
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
-		<view style="margin-top: 100rpx;" class="grid justify-around" @click="showModal" data-target="Modal">
+		<view style="margin-top: 75px;" class="grid justify-around" @click="showModal" data-target="Modal">
 			<view class="grid col-1">
-				<image style="width:270px; height:270px; margin-top: 75px" mode="aspectFill" src="/static/image/official-account.png"></image>
+				<image style="width:270px; height:270px;" mode="aspectFill" src="/static/image/official-account.png"></image>
 			</view>
 			<view class="grid col-1">
-				<text class="text-grey margin-top"> 更多精彩，请关注公众号【人文之窗】 </text>
+				<text class="text-grey margin-top animation-shake animation-speed-2 animation-delay-1"> 更多精彩，请关注公众号【人文之窗】 </text>
 			</view>	
 		</view>
 		

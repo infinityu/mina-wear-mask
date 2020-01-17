@@ -3,24 +3,24 @@
 		<view class="page-body uni-content-info">
 			<view class='cropper-content'>
 				<view v-if="isShowImg" class="uni-corpper" :style="'width:'+cropperInitW+'px;height:'+cropperInitH+'px;background:#000'">
-					<view class="uni-corpper-content" :style="'width:'+cropperW+'px;height:'+cropperH+'px;left:'+cropperL+'px;top:'+cropperT+'px'">
+					<view class="uni-corpper-content" :style="'width:'+cropperW+'px;height:'+cropperH+'px;'">
 						<image :src="imageSrc" :style="'width:'+cropperW+'px;height:'+cropperH+'px'"></image>
 						<view class="uni-corpper-crop-box" @touchstart.stop="contentStartMove" @touchmove.stop="contentMoveing" @touchend.stop="contentTouchEnd"
-						    :style="'left:'+cutL+'px;top:'+cutT+'px;right:'+cutR+'px;bottom:'+cutB+'px'">
+						    :style="'left:'+cutL+'px;top:'+cutT+'px; width:270px; height: 270px'">
 							<view class="uni-cropper-view-box">
 								<view class="uni-cropper-dashed-h"></view>
 								<view class="uni-cropper-dashed-v"></view>
-								<view class="uni-cropper-line-t" data-drag="top" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
-								<view class="uni-cropper-line-r" data-drag="right" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
-								<view class="uni-cropper-line-b" data-drag="bottom" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
-								<view class="uni-cropper-line-l" data-drag="left" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
-								<view class="uni-cropper-point point-t" data-drag="top" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
+								<!-- <view class="uni-cropper-line-t" data-drag="top" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view> -->
+								<!-- <view class="uni-cropper-line-r" data-drag="right" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view> -->
+								<!-- <view class="uni-cropper-line-b" data-drag="bottom" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view> -->
+								<!-- <view class="uni-cropper-line-l" data-drag="left" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view> -->
+								<!-- <view class="uni-cropper-point point-t" data-drag="top" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view> -->
 								<view class="uni-cropper-point point-tr" data-drag="topTight"></view>
-								<view class="uni-cropper-point point-r" data-drag="right" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
-								<view class="uni-cropper-point point-rb" data-drag="rightBottom" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
-								<view class="uni-cropper-point point-b" data-drag="bottom" @touchstart.stop="dragStart" @touchmove.stop="dragMove" @touchend.stop="dragEnd"></view>
-								<view class="uni-cropper-point point-bl" data-drag="bottomLeft"></view>
-								<view class="uni-cropper-point point-l" data-drag="left" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
+								<!-- <view class="uni-cropper-point point-r" data-drag="right" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view> -->
+								<!-- <view class="uni-cropper-point point-rb" data-drag="rightBottom" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view> -->
+								<!-- <view class="uni-cropper-point point-b" data-drag="bottom" @touchstart.stop="dragStart" @touchmove.stop="dragMove" @touchend.stop="dragEnd"></view> -->
+								<!-- <view class="uni-cropper-point point-bl" data-drag="bottomLeft"></view> -->
+								<!-- <view class="uni-cropper-point point-l" data-drag="left" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view> -->
 								<view class="uni-cropper-point point-lt" data-drag="leftTop"></view>
 							</view>
 						</view>
@@ -84,7 +84,7 @@
 				// 裁剪框 宽高
 				cutL: 0,
 				cutT: 0,
-				cutB: SCREEN_WIDTH,
+				cutB: 270,
 				cutR: '100%',
 				qualityWidth: DRAW_IMAGE_W,
 				innerAspectRadio: DRAFG_MOVE_RATIO
@@ -111,6 +111,22 @@
 				var _this = this
 				uni.chooseImage({
 					success: function (res) {
+						uni.getImageInfo({
+							src: res.tempFilePaths[0],
+							success: function (image) {
+								let width = image.width;
+								let height = image.height;
+								if(width < height) {
+									_this.cropperW = 270.0;
+									_this.cropperH = height.toFixed(3)/width.toFixed(3) * 270.0;
+								} else {
+									_this.cropperH = 270.0;
+									_this.cropperW = width.toFixed(3)/height.toFixed(3) * 270.0;
+								}
+								console.log(image.width);
+								console.log(image.height);
+							}
+						});
 						_this.setData({
 							imageSrc: res.tempFilePaths[0],
 						})
@@ -237,8 +253,10 @@
 					// 获取画布要裁剪的位置和宽度   均为百分比 * 画布中图片的宽度    保证了在微信小程序中裁剪的图片模糊  位置不对的问题 canvasT = (_this.cutT / _this.cropperH) * (_this.imageH / pixelRatio)
 					var canvasW = ((_this.cropperW - _this.cutL - _this.cutR) / _this.cropperW) * IMG_REAL_W;
 					var canvasH = ((_this.cropperH - _this.cutT - _this.cutB) / _this.cropperH) * IMG_REAL_H;
+					canvasW = canvasH = 270;
 					var canvasL = (_this.cutL / _this.cropperW) * IMG_REAL_W;
 					var canvasT = (_this.cutT / _this.cropperH) * IMG_REAL_H;
+					console.log("IMG_REAL_H", IMG_REAL_H);
 					uni.canvasToTempFilePath({
 						x: canvasL,
 						y: canvasT,
@@ -339,7 +357,7 @@
 		padding: 20upx 40upx;
 	}
 	.cropper-content {
-		min-height: 750upx;
+		/* min-height: 750upx; */
 		width: 100%;
 	}
 	.uni-corpper {
@@ -355,6 +373,7 @@
 	}
 	.uni-corpper-content {
 		position: relative;
+		
 	}
 	.uni-corpper-content image {
 		display: block;
