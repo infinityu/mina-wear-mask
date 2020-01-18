@@ -25,25 +25,24 @@
 		</view>
 		<view class="grid justify-around action-wrapper">
 			<view class="grid col-1">
-				<button class="cu-btn round action-btn shadow animation-scale-down animation-delay-1 animation-speed-2" open-type="getUserInfo" @getuserinfo="getUserInfoCallBack">我的头像</button>
+				<button class="cu-btn round action-btn bg-yellow shadow animation-scale-down animation-delay-1 animation-speed-2" open-type="getUserInfo" @getuserinfo="getUserInfoCallBack">我的头像</button>
 			</view>
 			<view class="grid col-2">
-				<button class="cu-btn round action-btn shadow animation-slide-top animation-delay-2" @click="saveCans">
+				<button class="cu-btn round action-btn bg-yellow shadow animation-slide-top animation-delay-2" @click="saveCans">
 					<text class="cuIcon-down"></text>保存</button>
 			</view>
 			<view class="grid col-3">
-				<button class="cu-btn round action-btn shadow animation-scale-down animation-delay-1 animation-speed-2" @click="chooseImage">选择图片</button>
+				<button class="cu-btn round action-btn bg-yellow shadow animation-scale-down animation-delay-1 animation-speed-2" @click="chooseImage">选择图片</button>
 			</view>
 		</view>
 		<view class="grid justify-around share-wrapper">
 			<view class="grid col-1 animation-shake animation-speed-2 animation-delay-3">
 				<!-- <button class="cu-btn block shaline-orange lg" open-type="share"> -->
-				<button class="cu-btn round action-btn shadow" open-type="share">
+				<button class="cu-btn round action-btn bg-yellow shadow" open-type="share">
 					推荐给朋友<text class="cuIcon-forward"></text></button>
 			</view>
 			<view class="grid col- 2 animation-shake animation-speed-2 animation-delay-3">
-				<!-- <button class="cu-btn block shaline-orange lg" open-type="share"> -->
-				<button class="cu-btn round action-btn shadow" @click="toSharePage" data-target="image">
+				<button class="cu-btn round action-btn bg-yellow shadow" @click="toSharePage" data-target="image">
 					分享朋友圈<text class="cuIcon-forward"></text></button>
 			</view>
 			
@@ -313,56 +312,67 @@
 					success: function(res) {
 						console.log(res);
 						let tempImagePath = res.tempFilePaths[0];
-
-						wx.getFileSystemManager().readFile({
-							filePath: tempImagePath, //这里做示例，所以就选取第一张图片
-							success: buffer => {
-								console.log(buffer.data);
-								uni.showLoading({
-									title: '添福中...'
-								});
-								//这里是 云函数调用方法
-								wx.cloud.callFunction({
-									name: 'contentCheck',
-									data: {
-										value: buffer.data
-									},
-									success(json) {
-										console.log("checkContent result", json)
-										if (json.result.errCode == 87014) {
-											// uni.showToast({
-											//     title: '图片含有违法违规内容'
-											// });
-											uni.showModal({
-												title: '请勿使用违法违规内容',
-												content: '图片含有违法违规内容',
-												showCancel: false,
-												confirmText: '知道了',
-											});
-											console.log("bad")
-										} else {
-											console.log("good")
-											//图片正常
-											self.avatarPath = tempImagePath;
-											self.paint();
-										}
-									},
-									fail(e) {
-										console.log(e);
-										uni.showModal({
-											title: '请重试',
-											content: '对不起，服务器开了小差',
-											showCancel: false,
-											confirmText: '好的',
+						let tempFilePathCompressed = tempImagePath;
+						
+						uni.compressImage({
+						  src: tempImagePath,
+						  quality: 1,
+						  success: res => {
+							  tempFilePathCompressed = res.tempFilePath;
+						    // console.log(res.tempFilePath)
+							wx.getFileSystemManager().readFile({
+									filePath: tempFilePathCompressed, //这里做示例，所以就选取第一张图片
+									success: buffer => {
+										console.log(buffer.data);
+										uni.showLoading({
+											title: '添福中...'
 										});
-									},
-									complete() {
-										uni.hideLoading();
+										//这里是 云函数调用方法
+										wx.cloud.callFunction({
+											name: 'contentCheck',
+											data: {
+												value: buffer.data
+											},
+											success(json) {
+												console.log("checkContent result", json)
+												if (json.result.errCode == 87014) {
+													// uni.showToast({
+													//     title: '图片含有违法违规内容'
+													// });
+													uni.showModal({
+														title: '请勿使用违法违规内容',
+														content: '图片含有违法违规内容',
+														showCancel: false,
+														confirmText: '知道了',
+													});
+													console.log("bad")
+												} else {
+													console.log("good")
+													//图片正常
+													self.avatarPath = tempImagePath;
+													self.paint();
+												}
+											},
+											fail(e) {
+												console.log(e);
+												uni.showModal({
+													title: '请重试',
+													content: '对不起，服务器开了小差',
+													showCancel: false,
+													confirmText: '好的',
+												});
+											},
+											complete() {
+												uni.hideLoading();
+											}
+										})
 									}
 								})
-							}
+							
+						  }
 						})
-					}
+
+						}
 				});
 			},
 			changeHappiness(e) {
@@ -509,10 +519,10 @@
 	  	font-weight: 800;
 	  }
 	  
-	  .action-btn {
-	  	background-color: #FFC700;
-	  	color: white;
-	  }
+	  // .action-btn {
+	  // 	background-color: #FFC700;
+	  // 	color: white;
+	  // }
 	}
 
 	.action-wrapper {
@@ -522,10 +532,10 @@
 		font-weight: 800;
 	}
 
-	.action-btn {
-		background-color: #FFC700;
-		color: white;
-	}
+	// .action-btn {
+	// 	background-color: #FFC700;
+	// 	color: white;
+	// }
 	
 	.share-wrapper {
 		padding-top: 50rpx;

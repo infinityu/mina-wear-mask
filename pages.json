@@ -27,7 +27,7 @@
 		{
 			"path": "pages/share/share",
 			"style":{
-				"navigationBarTitleText": "分享朋友圈，送出独特的祝福"
+				"navigationBarTitleText": "送出你的祝福吧"
 			}
 		},
 		{
@@ -97,12 +97,12 @@
 			// 	"selectedIconPath": "static/tabbar/happiness.png",
 			// 	"text": "祝福记录"
 			// }, 
-			{
-				"pagePath": "pages/crop/crop",
-				"iconPath": "static/tabbar/happiness3.png",
-				"selectedIconPath": "static/tabbar/happiness.png",
-				"text": " 剪裁"
-			},
+			// {
+			// 	"pagePath": "pages/crop/crop",
+			// 	"iconPath": "static/tabbar/happiness3.png",
+			// 	"selectedIconPath": "static/tabbar/happiness.png",
+			// 	"text": " 剪裁"
+			// },
 			{
 				"pagePath": "pages/happiness/add-happiness",
 				"iconPath": "static/tabbar/happiness3.png",
