@@ -1,23 +1,31 @@
 <template>
 	<view class="main" :style="{height:windowHeight+'px'}"  style="overflow: hidden">
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
-		<view style="margin-top: 75px;" class="grid justify-around" @click="showModal" data-target="Modal">
+		<!-- <view style="margin-top: 75px;" class="grid justify-around" data-target="Modal">
 			<view class="grid col-1">
 				<image style="width:270px; height:270px;" mode="aspectFill" src="/static/image/official-account.png"></image>
 			</view>
 			<view class="grid col-1">
 				<text class="text-grey margin-top animation-shake animation-speed-2 animation-delay-1"> 更多精彩，请关注公众号【人文之窗】 </text>
 			</view>	
+		</view> -->
+		<view class="grid justify-center" style="margin-top: 75rpx;">
+			<view>
+				<image class="animation-speed-2 animation-slide-right" style="height: 470rpx;" mode="aspectFit" src="/static/image/mouse-2020.png"></image>
+			</view>
+			<view style="margin-top: -50rpx;">
+				<image class="animation-speed-2 animation-slide-left" style="height: 335rpx;" mode="aspectFit" src="/static/image/wish5happiness.png"></image>
+			</view>
 		</view>
 		
-		<view class="cu-list menu aboutContent margin-top-xl" :class="[menuBorder?'sm-border':'',menuCard?'card-menu margin-top':'']">
-			<!-- <view class="cu-item" :class="menuArrow?'arrow':''">
-				<view class="content">
+		<view class="cu-list menu sm-border card-menu margin-top animation-shake animation-speed-2 animation-delay-3" style="width: 525rpx;">
+			<!-- <view class="cu-item arrow">
+				<view class="content" @click="showModal" data-target="Modal">
 					<text class="cuIcon-btn text-green"></text>
-					<text class="text-grey">申请公众号关联小程序</text>
+					<text class="text-grey">申请关联公众号</text>
 				</view>
 			</view> -->
-			<view class="cu-item" :class="menuArrow?'arrow':''" @click="tucao">
+			<view class="cu-item arrow" @click="tucao">
 				<view class="content">
 					<text class="cuIcon-comment text-green"></text>
 					<text class="text-grey">意见反馈</text>
@@ -92,10 +100,7 @@
                         color: '#FF3333'
                     }
                 },
-				modalName: null,
-				menuBorder: true,
-				menuCard: true,
-				menuArrow: true
+				modalName: null
             }
         },
 		onShow() {
@@ -122,15 +127,15 @@
     }
 </script>
 
-<style>
+<style scoped>
 	.main{
 		background-color: #C12928;
 		height: 1334rpx;
 		width: 750rpx;
 	}
 	
-	.aboutContent{
-		width: 690rpx;
-		/* margin-top: 75px; */
+	.card-menu{
+		margin-left: auto;
+		margin-right: auto;
 	}
 </style>

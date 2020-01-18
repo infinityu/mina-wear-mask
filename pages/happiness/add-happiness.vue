@@ -4,24 +4,29 @@
 		<cover-view class="happiness-option-wrapper animation-slide-left animation-speed-2">
 			<cover-view class="padding">
 				<cover-view class="grid col-4 grid-square margin-top-sm" @click="changeHappiness" data-target="0">
-					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h0.png"></cover-image>
+					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h0.jpg"></cover-image>
 				</cover-view>
 				<cover-view class="grid col-4 grid-square margin-top-sm" @click="changeHappiness" data-target="1">
-					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h1.png"></cover-image>
+					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h1.jpg"></cover-image>
 				</cover-view>
 				<cover-view class="grid col-4 grid-square margin-top-sm" @click="changeHappiness" data-target="2">
-					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h2.png"></cover-image>
+					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h2.jpg"></cover-image>
 				</cover-view>
 				<cover-view class="grid col-4 grid-square margin-top-sm" @click="changeHappiness" data-target="3">
-					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h3.png"></cover-image>
+					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h3.jpg"></cover-image>
 				</cover-view>
 				<cover-view class="grid col-4 grid-square margin-top-sm" @click="changeHappiness" data-target="4">
-					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h4.png"></cover-image>
+					<cover-image class="happiness-option" mode="aspectFill" src="/static/image/h4.jpg"></cover-image>
 				</cover-view>
 			</cover-view>
 		</cover-view>
 		<view @click="nextHappiness">
 			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px;" class="isCan"></canvas>
+		</view>
+		<view class="flex-sub text-center">
+			<view class="solid-bottom  padding">
+				<text class="text-orange">点击头像或摇一摇，集福字！</text>
+			</view>
 		</view>
 		<view class="grid justify-around action-wrapper">
 			<view class="grid col-1 animation-scale-down animation-delay-1 animation-speed-2">
@@ -38,22 +43,22 @@
 		</view>
 		<view class="grid justify-around share-wrapper">
 
-			<view class="grid col-3 animation-shake animation-speed-2 animation-delay-3">
+			<!-- <view class="grid col-3 animation-shake animation-speed-2 animation-delay-3">
 				<button class="cu-btn round action-btn bg-yellow shadow a" @click="nextHappiness">换个福字</button>
-			</view>
+			</view> -->
 			<view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
 				<!-- <button class="cu-btn block shaline-orange lg" open-type="share"> -->
-				<button class="cu-btn round action-btn bg-yellow shadow" @click="showModal" data-target="bottomModal">
-					分享<text class="cuIcon-forward"></text></button>
+				<button class="cu-btn block line-orange lg" open-type="share">
+					<text class="cuIcon-upload"></text> 分享给好友</button>
 			</view>
 			<!-- <view class="grid col-3 animation-shake animation-speed-2 animation-delay-3">
 				<button class="cu-btn round action-btn bg-yellow shadow" @click="toSharePage" data-target="image">
 					分享朋友圈<text class="cuIcon-forward"></text></button>
 			</view> -->
 		</view>
-		<view>
+		<!-- <view>
 			<tui-footer :fixed="true" :copyright="copyright"></tui-footer>
-		</view>
+		</view> -->
 		<!-- <view @click="showModal" data-target="Modal"> -->
 		<view class="cu-modal bottom-modal" :class="modalName=='bottomModal'?'show':''">
 			<view class="cu-dialog">
@@ -83,6 +88,7 @@
 		mapMutations
 	} from "vuex";
 	import tuiFooter from "@/components/footer";
+	
 	export default {
 		components: {
 			tuiFooter
@@ -104,7 +110,18 @@
 				],
 				happinessIndex: 0,
 				copyright: " Copyright © 2016-2020 人文之窗公众号",
-				modalName: null
+				modalName: null,
+				//首先定义一下，全局变量
+				lastTime: 0, //此变量用来记录上次摇动的时间
+				x:0,
+				y:0,
+				z:0,
+				lastX:0,
+				lastY:0,
+				lastZ:0, //此组变量分别记录对应 x、y、z 三轴的数值和上次的数值
+				shaking: false,
+				shakeSpeed: 110 //设置阈值
+				
 			}
 		},
 		computed: {
@@ -130,11 +147,19 @@
 			let defaultAvatarIndex = Math.round(Math.random());
 			console.log(defaultAvatarIndex);
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
+			wx.startAccelerometer({
+			  interval: 'normal'
+			});
+			wx.onAccelerometerChange(this.shake);
+		},
+		onHide(){
+			wx.stopAccelerometer();
 		},
 		onShareAppMessage() {
 			return {
 				title: ' 头像加福贺新春',
 				desc: '为头像添加一个福字儿',
+				imageUrl: '/static/image/redirect-cover.jpg',
 				path: '/pages/happiness/add-happiness',
 				success: function(res) {
 					console.log(res);
@@ -143,6 +168,33 @@
 		},
 		methods: {
 			...mapMutations(["saveLoginUserInfo"]),
+			shake(acceleration){
+				console.log('shake', acceleration);
+				var nowTime = new Date().getTime(); //记录当前时间
+				  //如果这次摇的时间距离上次摇的时间有一定间隔 才执行
+				if (nowTime - this.lastTime > 100) {
+					var diffTime = nowTime - this.lastTime; //记录时间段
+					this.lastTime = nowTime; //记录本次摇动时间，为下次计算摇动时间做准备
+					this.x = acceleration.x; //获取 x 轴数值，x 轴为垂直于北轴，向东为正
+					this.y = acceleration.y; //获取 y 轴数值，y 轴向正北为正
+					this.z = acceleration.z; //获取 z 轴数值，z 轴垂直于地面，向上为正
+					//计算 公式的意思是 单位时间内运动的路程，即为我们想要的速度
+					var speed = Math.abs(this.x + this.y + this.z - this.lastX - this.lastY - this.lastZ) / diffTime * 10000;
+					//console.log(speed)
+					if (speed > this.shakeSpeed) {
+						this.shaking = true;
+						// this.nextHappiness();
+					} else{
+						if(this.shaking){
+							this.shaking = false;
+							this.nextHappiness();
+						}
+					}
+					this.lastX = this.x; //赋值，为下一次计算做准备
+					this.lastY = this.y; //赋值，为下一次计算做准备
+					this.lastZ = this.z; //赋值，为下一次计算做准备
+				}
+			},
 			paint(avatarFilePath, happinessFilePath) {
 				if (!avatarFilePath) {
 					avatarFilePath = this.avatarPath;
@@ -506,7 +558,7 @@
 
 		/* 仅在 320px 或更宽的屏幕上生效的样式规则 */
 		.action-wrapper {
-			padding-top: 100rpx;
+			padding-top: 50rpx;
 			padding-left: 100rpx;
 			padding-right: 100rpx;
 			font-weight: 800;
@@ -519,7 +571,7 @@
 	}
 
 	.action-wrapper {
-		padding-top: 100rpx;
+		padding-top: 50rpx;
 		padding-left: 100rpx;
 		padding-right: 100rpx;
 		font-weight: 800;

@@ -112,12 +112,12 @@
 				"selectedIconPath": "static/tabbar/happiness.png",
 				"text": "加福字"
 			}, 
-			{
-				"pagePath": "pages/share/share",
-				"iconPath": "static/tabbar/happiness3.png",
-				"selectedIconPath": "static/tabbar/happiness.png",
-				"text": "送福字"
-			},
+			// {
+			// 	"pagePath": "pages/share/share",
+			// 	"iconPath": "static/tabbar/happiness3.png",
+			// 	"selectedIconPath": "static/tabbar/happiness.png",
+			// 	"text": "送福字"
+			// },
 			{
 				"pagePath": "pages/about/about",
 				"iconPath": "static/tabbar/happiness3.png",
