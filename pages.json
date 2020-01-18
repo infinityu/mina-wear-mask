@@ -26,8 +26,10 @@
 		},
 		{
 			"path": "pages/share/share",
-			"style":{
-				"navigationBarTitleText": "送出你的祝福吧"
+			"style": {
+				"navigationBarBackgroundColor": "#C12928",
+				"disableScroll": true,
+				"navigationStyle": "custom"
 			}
 		},
 		{
@@ -103,28 +105,24 @@
 			// 	"selectedIconPath": "static/tabbar/happiness.png",
 			// 	"text": " 剪裁"
 			// },
+			
 			{
 				"pagePath": "pages/happiness/add-happiness",
 				"iconPath": "static/tabbar/happiness3.png",
 				"selectedIconPath": "static/tabbar/happiness.png",
-				"text": "头像添福"
-			// }, {
-			// 	"pagePath": "pages/happiness/add-text",
-			// 	"iconPath": "static/tabbar/happiness3.png",
-			// 	"selectedIconPath": "static/tabbar/happiness.png",
-			// 	"text": "头像加字"
+				"text": "加福字"
 			}, 
-			// {
-			// 	"pagePath": "pages/happiness/introduction",
-			// 	"iconPath": "static/tabbar/happiness3.png",
-			// 	"selectedIconPath": "static/tabbar/happiness.png",
-			// 	"text": "使用介绍"
-			// }, 
+			{
+				"pagePath": "pages/share/share",
+				"iconPath": "static/tabbar/happiness3.png",
+				"selectedIconPath": "static/tabbar/happiness.png",
+				"text": "送福字"
+			},
 			{
 				"pagePath": "pages/about/about",
 				"iconPath": "static/tabbar/happiness3.png",
 				"selectedIconPath": "static/tabbar/happiness.png",
-				"text": "关于"
+				"text": "过大年"
 			}
 		]
 	}

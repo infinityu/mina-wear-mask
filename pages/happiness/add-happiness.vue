@@ -24,68 +24,56 @@
 			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px;" class="isCan"></canvas>
 		</view>
 		<view class="grid justify-around action-wrapper">
-			<view class="grid col-1">
-				<button class="cu-btn round action-btn bg-yellow shadow animation-scale-down animation-delay-1 animation-speed-2" open-type="getUserInfo" @getuserinfo="getUserInfoCallBack">我的头像</button>
+			<view class="grid col-1 animation-scale-down animation-delay-1 animation-speed-2">
+				<button class="cu-btn round action-btn bg-yellow shadow " open-type="getUserInfo" @getuserinfo="getUserInfoCallBack">我的头像</button>
 			</view>
-			<view class="grid col-2">
-				<button class="cu-btn round action-btn bg-yellow shadow animation-slide-top animation-delay-2" @click="saveCans">
-					<text class="cuIcon-down"></text>保存</button>
+			<view class="grid col-2 animation-scale-down animation-delay-1 animation-speed-2">
+				<button class="cu-btn round action-btn bg-yellow shadow" @click="saveCans">
+					<!-- <text class="cuIcon-down"> -->
+					</text>保存</button>
 			</view>
-			<view class="grid col-3">
-				<button class="cu-btn round action-btn bg-yellow shadow animation-scale-down animation-delay-1 animation-speed-2" @click="chooseImage">选择图片</button>
+			<view class="grid col-3 animation-scale-down animation-delay-1 animation-speed-2">
+				<button class="cu-btn round action-btn bg-yellow shadow" @click="chooseImage">选择图片</button>
 			</view>
 		</view>
 		<view class="grid justify-around share-wrapper">
-			<view class="grid col-1 animation-shake animation-speed-2 animation-delay-3">
-				<!-- <button class="cu-btn block shaline-orange lg" open-type="share"> -->
-				<button class="cu-btn round action-btn bg-yellow shadow" open-type="share">
-					推荐给朋友<text class="cuIcon-forward"></text></button>
+
+			<view class="grid col-3 animation-shake animation-speed-2 animation-delay-3">
+				<button class="cu-btn round action-btn bg-yellow shadow a" @click="nextHappiness">换个福字</button>
 			</view>
-			<view class="grid col- 2 animation-shake animation-speed-2 animation-delay-3">
+			<view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
+				<!-- <button class="cu-btn block shaline-orange lg" open-type="share"> -->
+				<button class="cu-btn round action-btn bg-yellow shadow" @click="showModal" data-target="bottomModal">
+					分享<text class="cuIcon-forward"></text></button>
+			</view>
+			<!-- <view class="grid col-3 animation-shake animation-speed-2 animation-delay-3">
 				<button class="cu-btn round action-btn bg-yellow shadow" @click="toSharePage" data-target="image">
 					分享朋友圈<text class="cuIcon-forward"></text></button>
-			</view>
-			
+			</view> -->
 		</view>
-		<!-- <view @click="showModal" data-target="Modal"> -->
 		<view>
 			<tui-footer :fixed="true" :copyright="copyright"></tui-footer>
 		</view>
-		<view class="cu-modal" :class="modalName=='image'?'show':''">
+		<!-- <view @click="showModal" data-target="Modal"> -->
+		<view class="cu-modal bottom-modal" :class="modalName=='bottomModal'?'show':''">
 			<view class="cu-dialog">
-				<view class="bg-img" style="background-image: url('/static/image/minicode.jpg');height:200px;">
-					<view class="cu-bar justify-end text-white">
-						<view class="action" @tap="hideModal">
-							<text class="cuIcon-close "></text>
-						</view>
-					</view>
-				</view>
 				<view class="cu-bar bg-white">
-					<view class="action margin-0 flex-sub  solid-left" @tap="hideModal">我知道了</view>
+					<view class="action text-green">分享"福气"给好友</view>
+					<view class="action text-blue" @tap="hideModal">关闭</view>
 				</view>
-			</view>
-		</view>
-		<view class="cu-modal" :class="modalName=='Modal'?'show':''">
-			<view class="cu-dialog">
-				<view class="cu-bar bg-white justify-end">
-					<view class="content">微信搜索《人文之窗》</view>
-					<view class="action" @tap="hideModal">
-						<text class="cuIcon-close text-red"></text>
+				<view class="padding-xl grid justify-around">
+					<view>
+						<button class="cu-btn round action-btn bg-yellow shadow" open-type="share">
+							分享小程序给好友<text class="cuIcon-forward"></text></button>
 					</view>
-				</view>
-				<view class="padding-xl">
-					中外名曲，经典老歌，电影故事，夜读美文，戏剧唱段，名家书画，摄影佳作。
-				</view>
-				<view class="padding">
-					人文之窗综艺微刊，每晚与您不见不散。
-				</view>
-				<view class="cu-bar bg-white justify-end">
-					<view class="action">
-						<button class="cu-btn line-green text-green" @tap="hideModal">我知道了</button>
+					<view>
+						<button class="cu-btn round action-btn bg-yellow shadow" @click="toSharePage">
+							精彩祝福海报<text class="cuIcon-forward"></text></button>
 					</view>
 				</view>
 			</view>
 		</view>
+
 	</view>
 </template>
 <script>
@@ -176,10 +164,12 @@
 				this.ctx.draw(false);
 			},
 			drawCornerBg() {
-				this._drawCircleWithBoarder(this.cornerBgBoarderColor, this.cornerBgColor, this.cornerX, this.cornerY, this.r, this.boarderWidth);
+				this._drawCircleWithBoarder(this.cornerBgBoarderColor, this.cornerBgColor, this.cornerX, this.cornerY, this.r, this
+					.boarderWidth);
 			},
 			drawHappiness(happinessFilePath) {
-				this.ctx.drawImage(happinessFilePath, this.cornerX + 5, this.cornerY + 7, this.cansWidth * 0.25, this.cansHeight * 0.25);
+				this.ctx.drawImage(happinessFilePath, this.cornerX + 5, this.cornerY + 7, this.cansWidth * 0.25, this.cansHeight *
+					0.25);
 				this.ctx.draw(true);
 			},
 			/**
@@ -313,14 +303,14 @@
 						console.log(res);
 						let tempImagePath = res.tempFilePaths[0];
 						let tempFilePathCompressed = tempImagePath;
-						
+
 						uni.compressImage({
-						  src: tempImagePath,
-						  quality: 1,
-						  success: res => {
-							  tempFilePathCompressed = res.tempFilePath;
-						    // console.log(res.tempFilePath)
-							wx.getFileSystemManager().readFile({
+							src: tempImagePath,
+							quality: 1,
+							success: res => {
+								tempFilePathCompressed = res.tempFilePath;
+								// console.log(res.tempFilePath)
+								wx.getFileSystemManager().readFile({
 									filePath: tempFilePathCompressed, //这里做示例，所以就选取第一张图片
 									success: buffer => {
 										console.log(buffer.data);
@@ -368,11 +358,11 @@
 										})
 									}
 								})
-							
-						  }
+
+							}
 						})
 
-						}
+					}
 				});
 			},
 			changeHappiness(e) {
@@ -454,10 +444,11 @@
 			hideModal: function(e) {
 				this.modalName = null;
 			},
-			toSharePage: function(){
-				uni.navigateTo({
-				    url: '/pages/share/share'
+			toSharePage: function() {
+				uni.switchTab({
+					url: '/pages/share/share'
 				});
+				this.hideModal();
 			}
 		}
 	}
@@ -498,7 +489,8 @@
 		margin: 0 auto;
 		background-size: 100%;
 	}
-	.isCan{
+
+	.isCan {
 		border: 6px solid white;
 		border-radius: 10px;
 		width: 270px;
@@ -511,18 +503,19 @@
 	}
 
 	@media (min-width: 320px) {
-	  /* 仅在 320px 或更宽的屏幕上生效的样式规则 */
-	  .action-wrapper {
-	  	padding-top: 100rpx;
-	  	padding-left: 100rpx;
-	  	padding-right: 100rpx;
-	  	font-weight: 800;
-	  }
-	  
-	  // .action-btn {
-	  // 	background-color: #FFC700;
-	  // 	color: white;
-	  // }
+
+		/* 仅在 320px 或更宽的屏幕上生效的样式规则 */
+		.action-wrapper {
+			padding-top: 100rpx;
+			padding-left: 100rpx;
+			padding-right: 100rpx;
+			font-weight: 800;
+		}
+
+		// .action-btn {
+		// 	background-color: #FFC700;
+		// 	color: white;
+		// }
 	}
 
 	.action-wrapper {
@@ -536,7 +529,7 @@
 	// 	background-color: #FFC700;
 	// 	color: white;
 	// }
-	
+
 	.share-wrapper {
 		padding-top: 50rpx;
 		padding-left: 100rpx;
@@ -546,7 +539,7 @@
 
 	.happiness-option-wrapper {
 		position: absolute;
-		z-index: 2000;
+		z-index: 1000;
 		width: 200rpx;
 		margin-top: 25px;
 	}

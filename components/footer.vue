@@ -69,7 +69,7 @@
 
 	.tui-fixed {
 		position: fixed;
-		z-index: 9999;
+		/* z-index: 9999; */
 		bottom: 30px;
 		/* bottom: calc(50rpx + env(safe-area-inset-bottom)); */
 	}
