@@ -25,7 +25,7 @@
 		</view>
 		<view class="flex-sub text-center">
 			<view class="solid-bottom  padding">
-				<text class="text-orange">点击头像或摇一摇，集福字！</text>
+				<text class="text-orange">点击头像或摇一摇换福字！</text>
 			</view>
 		</view>
 		<view class="grid justify-around action-wrapper">
@@ -157,7 +157,7 @@
 		},
 		onShareAppMessage() {
 			return {
-				title: ' 头像加福贺新春',
+				title: '头像加福贺新春',
 				desc: '为头像添加一个福字儿',
 				imageUrl: '/static/image/redirect-cover.jpg',
 				path: '/pages/happiness/add-happiness',
@@ -169,7 +169,6 @@
 		methods: {
 			...mapMutations(["saveLoginUserInfo"]),
 			shake(acceleration){
-				console.log('shake', acceleration);
 				var nowTime = new Date().getTime(); //记录当前时间
 				  //如果这次摇的时间距离上次摇的时间有一定间隔 才执行
 				if (nowTime - this.lastTime > 100) {
@@ -180,14 +179,13 @@
 					this.z = acceleration.z; //获取 z 轴数值，z 轴垂直于地面，向上为正
 					//计算 公式的意思是 单位时间内运动的路程，即为我们想要的速度
 					var speed = Math.abs(this.x + this.y + this.z - this.lastX - this.lastY - this.lastZ) / diffTime * 10000;
-					//console.log(speed)
 					if (speed > this.shakeSpeed) {
 						this.shaking = true;
-						// this.nextHappiness();
 					} else{
 						if(this.shaking){
 							this.shaking = false;
 							this.nextHappiness();
+							console.log("换了一下");
 						}
 					}
 					this.lastX = this.x; //赋值，为下一次计算做准备
@@ -207,7 +205,7 @@
 				this.drawHappiness(happinessFilePath);
 				uni.vibrateShort({
 					success: function() {
-						console.log('success');
+						console.log('vibrateShort');
 					}
 				});
 			},
@@ -240,7 +238,7 @@
 				this._drawText(textOption);
 				uni.vibrateShort({
 					success: function() {
-						console.log('success');
+						console.log('vibrateShort');
 					}
 				});
 			},
@@ -419,12 +417,12 @@
 			},
 			changeHappiness(e) {
 				this.happinessIndex = parseInt(e.currentTarget.dataset.target, 10);
-				this.happinessPath = this.happinessPathList[this.happinessIndex];
+				// this.happinessPath = this.happinessPathList[this.happinessIndex];
 				this.paint();
 			},
 			nextHappiness() {
 				this.happinessIndex = (this.happinessIndex + 1) % 5;
-				this.happinessPath = this.happinessPathList[this.happinessIndex];
+				// this.happinessPath = this.happinessPathList[this.happinessIndex];
 				this.paint();
 			},
 			/**
@@ -454,7 +452,7 @@
 								})
 								uni.vibrateShort({
 									success: function() {
-										console.log('success');
+										console.log('vibrateShort');
 									}
 								});
 								// uni.switchTab({
