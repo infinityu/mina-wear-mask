@@ -20,7 +20,7 @@
 				</cover-view>
 			</cover-view>
 		</cover-view>
-		<view @click="nextHappiness">
+		<view id="avatar-section" @click="nextHappiness">
 			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px;" class="isCan"></canvas>
 		</view>
 		<view class="flex-sub text-center">
@@ -30,15 +30,15 @@
 		</view>
 		<view class="grid justify-around action-wrapper">
 			<view class="grid col-1 animation-scale-down animation-delay-1 animation-speed-2">
-				<button class="cu-btn round action-btn bg-yellow shadow " open-type="getUserInfo" @getuserinfo="getUserInfoCallBack">我的头像</button>
+				<button id="btn-my-avatar" class="cu-btn round action-btn bg-yellow shadow " open-type="getUserInfo" @getuserinfo="getUserInfoCallBack">我的头像</button>
 			</view>
 			<view class="grid col-2 animation-scale-down animation-delay-1 animation-speed-2">
-				<button class="cu-btn round action-btn bg-yellow shadow" @click="saveCans">
+				<button id="btn-save" class="cu-btn round action-btn bg-yellow shadow" @click="saveCans">
 					<!-- <text class="cuIcon-down"> -->
 					</text>保存</button>
 			</view>
 			<view class="grid col-3 animation-scale-down animation-delay-1 animation-speed-2">
-				<button class="cu-btn round action-btn bg-yellow shadow" @click="chooseImage">选择图片</button>
+				<button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow" @click="chooseImage">选择图片</button>
 			</view>
 		</view>
 		<view class="grid justify-around share-wrapper">
@@ -120,7 +120,9 @@
 				lastY:0,
 				lastZ:0, //此组变量分别记录对应 x、y、z 三轴的数值和上次的数值
 				shaking: false,
-				shakeSpeed: 110 //设置阈值
+				shakeSpeed: 70, //设置阈值
+				lastChangeTime: 0,
+				showGentleMessage: false
 				
 			}
 		},
@@ -184,7 +186,16 @@
 					} else{
 						if(this.shaking){
 							this.shaking = false;
-							this.nextHappiness();
+							if(nowTime - this.lastChangeTime >  800){
+								this.nextHappiness();
+								this.lastChangeTime = nowTime;
+								if(!this.showGentleMessage){
+									this.showGentleMessage = true;
+									uni.showToast({
+									    title: '轻轻摇就可以了哦'
+									});
+								}
+							}
 							console.log("换了一下");
 						}
 					}

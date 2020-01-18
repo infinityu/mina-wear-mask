@@ -1,5 +1,5 @@
 <template>
-	<view class="main" :style="{height:windowHeight+'px'}"  style="overflow: hidden">
+	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: hidden">
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
 		<!-- <view style="margin-top: 75px;" class="grid justify-around" data-target="Modal">
 			<view class="grid col-1">
@@ -17,8 +17,8 @@
 				<image class="animation-speed-2 animation-slide-left" style="height: 335rpx;" mode="aspectFit" src="/static/image/wish5happiness.png"></image>
 			</view>
 		</view>
-		
-		<view class="cu-list menu sm-border card-menu margin-top animation-shake animation-speed-2 animation-delay-3" style="width: 525rpx;">
+
+		<view class="cu-list menu sm-border card-menu animation-shake animation-speed-2 animation-delay-3" style="width: 525rpx; margin-top: 150rpx;">
 			<!-- <view class="cu-item arrow">
 				<view class="content" @click="showModal" data-target="Modal">
 					<text class="cuIcon-btn text-green"></text>
@@ -55,8 +55,8 @@
 				</view>
 			</view> -->
 		</view>
-		
-		<view @click="showModal" data-target="Modal">
+
+		<view @click="showModal" data-target="Modal" id="btn-footer-oa">
 			<tui-footer :fixed="true" :copyright="copyright"></tui-footer>
 		</view>
 		<view class="cu-modal" :class="modalName=='Modal'?'show':''">
@@ -80,43 +80,51 @@
 				</view>
 			</view>
 		</view>
-    </view>
+	</view>
 </template>
 
 <script>
-	import { mapGetters, mapState, mapMutations } from "vuex";
+	import {
+		mapGetters,
+		mapState,
+		mapMutations
+	} from "vuex";
 	import tuiFooter from "@/components/footer";
-    export default {
+	export default {
 		components: {
 			tuiFooter
 		},
-        data() {
-            return {
+		data() {
+			return {
 				copyright: " Copyright © 2016-2020 人文之窗公众号",
 				officialAccountUrl: "https://mina-img-store-1258554429.cos.ap-shanghai.myqcloud.com/new-year-wish/renwenzhichuang.png",
 				windowHeight: 0,
-                webviewStyles: {
-                    progress: {
-                        color: '#FF3333'
-                    }
-                },
+				webviewStyles: {
+					progress: {
+						color: '#FF3333'
+					}
+				},
 				modalName: null
-            }
-        },
+			}
+		},
 		onShow() {
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
 		},
 		computed: {
-			...mapState({userInfo:'userInfo'})
+			...mapState({
+				userInfo: 'userInfo'
+			})
 		},
 		methods: {
-			tucao: function(){
+			tucao: function() {
 				const Tucao = requirePlugin('tucao').default;
 				// 初始化并触发跳转，支持链式调用
 				this.wx = uni;
-				Tucao.init(this, {productId:117112}).go();
+				Tucao.init(this, {
+					productId: 117112
+				}).go();
 			},
-			showModal: function(e){
+			showModal: function(e) {
 				console.log(e.currentTarget.dataset);
 				this.modalName = e.currentTarget.dataset.target;
 			},
@@ -124,17 +132,17 @@
 				this.modalName = null;
 			}
 		}
-    }
+	}
 </script>
 
 <style scoped>
-	.main{
+	.main {
 		background-color: #C12928;
 		height: 1334rpx;
 		width: 750rpx;
 	}
-	
-	.card-menu{
+
+	.card-menu {
 		margin-left: auto;
 		margin-right: auto;
 	}
