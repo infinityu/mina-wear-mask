@@ -5,6 +5,8 @@
 	export default {
 		globalData: {  
 		    WINDOW_HEIGHT: WINDOW_HEIGHT,
+			cropImageUrl: '',
+			rapaintAfterCrop: false,
 			PAGE_BG_COLOR: '#C12928'
 		},
 		onLaunch: function() {

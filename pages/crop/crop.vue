@@ -1,12 +1,12 @@
 <template>
 	<view class="container">
-		<view class="page-body uni-content-info">
+		<view class="page-body uni-content-info" :style="{height:windowHeight+'px'}">
 			<view class='cropper-content'>
 				<view v-if="isShowImg" class="uni-corpper" :style="'width:'+cropperInitW+'px;height:'+cropperInitH+'px;background:#000'">
 					<view class="uni-corpper-content" :style="'width:'+cropperW+'px;height:'+cropperH+'px;'">
 						<image :src="imageSrc" :style="'width:'+cropperW+'px;height:'+cropperH+'px'"></image>
-						<view class="uni-corpper-crop-box" @touchstart.stop="contentStartMove" @touchmove.stop="contentMoveing" @touchend.stop="contentTouchEnd"
-						    :style="'left:'+cutL+'px;top:'+cutT+'px; width:270px; height: 270px'">
+						<view class="uni-corpper-crop-box" @touchstart.stop="contentStartMove" @touchmove.stop="contentMoveing"
+						 @touchend.stop="contentTouchEnd" :style="'left:'+cutL+'px;top:'+cutT+'px; width:'+ cropBoxW +'px; height: '+ cropBoxW +'px'">
 							<view class="uni-cropper-view-box">
 								<view class="uni-cropper-dashed-h"></view>
 								<view class="uni-cropper-dashed-v"></view>
@@ -27,9 +27,11 @@
 					</view>
 				</view>
 			</view>
-			<view class='cropper-config'>
-				<button type="primary reverse" @click="getImage" style='margin-top: 30upx;'> 选择图片 </button>
-				<button type="warn" @click="getImageInfo" style='margin-top: 30upx;'> 点击生成图片 </button>
+			<!-- <view class='cropper-config'> -->
+			<view class="grid justify-between cropper-config" >
+				<button class="action-btn lg" @click="cancel" style='margin-top: 30upx;'> 取消 </button>
+				<button class="action-btn lg" @click="chooseImage" style='margin-top: 30upx;'> 选择图片 </button>
+				<button class="action-btn lg" @click="cropImage" style='margin-top: 30upx;'> 确定 </button>
 			</view>
 			<canvas canvas-id="myCanvas" :style="'position:absolute;border: 1px solid red; width:'+imageW+'px;height:'+imageH+'px;top:-9999px;left:-9999px;'"></canvas>
 		</view>
@@ -39,7 +41,8 @@
 
 <script>
 	let sysInfo = uni.getSystemInfoSync();
-	let SCREEN_WIDTH = sysInfo.screenWidth
+	let SCREEN_WIDTH = sysInfo.screenWidth;
+	let SCREEN_HEIGHT = sysInfo.screenHeight;
 	let PAGE_X, // 手按下的x位置
 		PAGE_Y, // 手按下y的位置 
 		PR = sysInfo.pixelRatio, // dpi
@@ -63,7 +66,8 @@
 		 */
 		data() {
 			return {
-				name:'杨大宝',
+				windowHeight: 0,
+				name: '薛大宝',
 				imageSrc: 'https://img-cdn-qiniu.dcloud.net.cn/demo_crop.jpg',
 				isShowImg: false,
 				// 初始化的宽高
@@ -82,6 +86,8 @@
 				imageW: 0,
 				imageH: 0,
 				// 裁剪框 宽高
+				cropBoxW:270,
+				// cropBoxH:270,
 				cutL: 0,
 				cutT: 0,
 				cutB: 270,
@@ -93,36 +99,96 @@
 		/**
 		 * 生命周期函数--监听页面加载
 		 */
-		onLoad: function (options) {},
+		onLoad: function(option) {
+			console.log('onLoad');
+			// this.getImage(); //这里定义为从前页面跳转过来，所以默认打开相册选择
+			console.log('option.tempFilePath', option.tempFilePath);
+			this.getImageFromFront(option.tempFilePath);
+		},
 		/**
 		 * 生命周期函数--监听页面初次渲染完成
 		 */
-		onReady: function () {
-			this.loadImage();
+		onReady: function() {
+			// this.loadImage();
+		},
+		onShow: function() {
+			// this.getImageFromFront(option.tempFilePath);
+			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
 		},
 		methods: {
-			setData: function (obj) {
+			setData: function(obj) {
 				let that = this;
-				Object.keys(obj).forEach(function (key) {
+				Object.keys(obj).forEach(function(key) {
 					that.$set(that.$data, key, obj[key])
 				});
 			},
-			getImage: function () {
+			getImageFromFront: function(tempFilePath) {
+				var _this = this
+				uni.getImageInfo({
+					src: tempFilePath,
+					success: function(image) {
+						let width = image.width;
+						let height = image.height;
+						if (width < height) { // 等比缩放
+							_this.cropperW = 270.0;
+							_this.cropperH = height.toFixed(3) / width.toFixed(3) * 270.0;
+						} else {
+							_this.cropperH = 270.0;
+							_this.cropperW = width.toFixed(3) / height.toFixed(3) * 270.0;
+						}
+						// 如果比例不合适，缩放后超出了可视区域，则进行进一步缩小，同时缩小剪裁口径
+						if (_this.cropperH > SCREEN_WIDTH) {
+							_this.cropperH = SCREEN_WIDTH;
+							_this.cropperW = width.toFixed(3) / height.toFixed(3) * SCREEN_WIDTH;
+							_this.cropBoxW = _this.cropperW;
+						}
+						if (_this.cropperW > SCREEN_WIDTH) {
+							_this.cropperW = SCREEN_WIDTH;
+							_this.cropperH = height.toFixed(3) / width.toFixed(3) * SCREEN_WIDTH;
+							_this.cropBoxW = _this.cropperH;
+						}
+				
+						console.log(image.width);
+						console.log(image.height);
+					}
+				});
+				_this.setData({
+					imageSrc: tempFilePath,
+				})
+				_this.loadImage();
+			},
+			cancel: function(){
+				uni.navigateBack({
+				  delta: 1
+				})
+			},
+			chooseImage: function() {
 				var _this = this
 				uni.chooseImage({
-					success: function (res) {
+					success: function(res) {
 						uni.getImageInfo({
 							src: res.tempFilePaths[0],
-							success: function (image) {
+							success: function(image) {
 								let width = image.width;
 								let height = image.height;
-								if(width < height) {
+								if (width < height) { // 等比缩放
 									_this.cropperW = 270.0;
-									_this.cropperH = height.toFixed(3)/width.toFixed(3) * 270.0;
+									_this.cropperH = height.toFixed(3) / width.toFixed(3) * 270.0;
 								} else {
 									_this.cropperH = 270.0;
-									_this.cropperW = width.toFixed(3)/height.toFixed(3) * 270.0;
+									_this.cropperW = width.toFixed(3) / height.toFixed(3) * 270.0;
 								}
+								// 如果比例不合适，缩放后超出了可视区域，则进行进一步缩小，同时缩小剪裁口径
+								if (_this.cropperH > SCREEN_WIDTH) {
+									_this.cropperH = SCREEN_WIDTH;
+									_this.cropperW = width.toFixed(3) / height.toFixed(3) * SCREEN_WIDTH;
+									_this.cropBoxW = _this.cropperW;
+								} else if (_this.cropperW > SCREEN_WIDTH) {
+									_this.cropperW = SCREEN_WIDTH;
+									_this.cropperH = height.toFixed(3) / width.toFixed(3) * SCREEN_WIDTH;
+									_this.cropBoxW = _this.cropperH;
+								}
+
 								console.log(image.width);
 								console.log(image.height);
 							}
@@ -134,7 +200,7 @@
 					},
 				})
 			},
-			loadImage: function () {
+			loadImage: function() {
 				var _this = this
 				uni.showLoading({
 					title: '图片加载中...',
@@ -154,7 +220,8 @@
 						INIT_DRAG_POSITION = minRange > INIT_DRAG_POSITION ? INIT_DRAG_POSITION : minRange
 						// 根据图片的宽高显示不同的效果   保证图片可以正常显示
 						if (IMG_RATIO >= 1) {
-							let cutT = Math.ceil((SCREEN_WIDTH / IMG_RATIO - (SCREEN_WIDTH / IMG_RATIO - INIT_DRAG_POSITION)) / 2);
+							// let cutT = Math.ceil((SCREEN_WIDTH / IMG_RATIO - (SCREEN_WIDTH / IMG_RATIO - INIT_DRAG_POSITION)) / 2);
+							let cutT = 0;
 							let cutB = cutT;
 							let cutL = Math.ceil((SCREEN_WIDTH - SCREEN_WIDTH + INIT_DRAG_POSITION) / 2);
 							let cutR = cutL;
@@ -241,7 +308,7 @@
 				console.log("contentTouchEnd");
 			},
 			// 获取图片
-			getImageInfo() {
+			cropImage() {
 				var _this = this;
 				uni.showLoading({
 					title: '图片生成中...',
@@ -266,13 +333,18 @@
 						destHeight: canvasH,
 						quality: 0.5,
 						canvasId: 'myCanvas',
-						success: function (res) {
-							uni.hideLoading()
-							// 成功获得地址的地方
-							uni.previewImage({
-								current: '', // 当前显示图片的http链接
-								urls: [res.tempFilePath] // 需要预览的图片http链接列表
+						success: function(res) {
+							uni.hideLoading();
+							getApp().globalData.cropImageUrl = res.tempFilePath;
+							getApp().globalData.rapaintAfterCrop = true;
+							uni.navigateBack({
+							  delta: 1
 							})
+							// 成功获得地址的地方
+							// uni.previewImage({
+							// 	current: '', // 当前显示图片的http链接
+							// 	urls: [res.tempFilePath] // 需要预览的图片http链接列表
+							// })
 						}
 					});
 				});
@@ -353,13 +425,16 @@
 		align-items: center;
 		flex-direction: column; */
 	}
+
 	.cropper-config {
 		padding: 20upx 40upx;
 	}
+
 	.cropper-content {
 		/* min-height: 750upx; */
 		width: 100%;
 	}
+
 	.uni-corpper {
 		position: relative;
 		overflow: hidden;
@@ -371,10 +446,12 @@
 		-webkit-touch-callout: none;
 		box-sizing: border-box;
 	}
+
 	.uni-corpper-content {
 		position: relative;
-		
+		margin: 0 auto;
 	}
+
 	.uni-corpper-content image {
 		display: block;
 		width: 100%;
@@ -386,6 +463,7 @@
 		image-orientation: 0deg !important;
 		margin: 0 auto;
 	}
+
 	/* 移动图片效果 */
 	.uni-cropper-drag-box {
 		position: absolute;
@@ -397,21 +475,24 @@
 		background: rgba(0, 0, 0, 0.6);
 		z-index: 1;
 	}
+
 	/* 内部的信息 */
 	.uni-corpper-crop-box {
 		position: absolute;
 		background: rgba(255, 255, 255, 0.3);
 		z-index: 2;
 	}
+
 	.uni-corpper-crop-box .uni-cropper-view-box {
 		position: relative;
 		display: block;
 		width: 100%;
 		height: 100%;
 		overflow: visible;
-		outline: 1upx solid #69f;
-		outline-color: rgba(102, 153, 255, .75)
+		outline: 2px solid #C12928;
+		box-shadow: 0px 0px 5px #888888;
 	}
+
 	/* 横向虚线 */
 	.uni-cropper-dashed-h {
 		position: absolute;
@@ -422,6 +503,7 @@
 		border-top: 1upx dashed rgba(255, 255, 255, 0.5);
 		border-bottom: 1upx dashed rgba(255, 255, 255, 0.5);
 	}
+
 	/* 纵向虚线 */
 	.uni-cropper-dashed-v {
 		position: absolute;
@@ -432,6 +514,7 @@
 		border-left: 1upx dashed rgba(255, 255, 255, 0.5);
 		border-right: 1upx dashed rgba(255, 255, 255, 0.5);
 	}
+
 	/* 四个方向的线  为了之后的拖动事件*/
 	.uni-cropper-line-t {
 		position: absolute;
@@ -444,6 +527,7 @@
 		opacity: 0.1;
 		cursor: n-resize;
 	}
+
 	.uni-cropper-line-t::before {
 		content: '';
 		position: absolute;
@@ -457,6 +541,7 @@
 		background: transparent;
 		z-index: 11;
 	}
+
 	.uni-cropper-line-r {
 		position: absolute;
 		display: block;
@@ -468,6 +553,7 @@
 		height: 100%;
 		cursor: e-resize;
 	}
+
 	.uni-cropper-line-r::before {
 		content: '';
 		position: absolute;
@@ -481,6 +567,7 @@
 		background: transparent;
 		z-index: 11;
 	}
+
 	.uni-cropper-line-b {
 		position: absolute;
 		display: block;
@@ -492,6 +579,7 @@
 		opacity: 0.1;
 		cursor: s-resize;
 	}
+
 	.uni-cropper-line-b::before {
 		content: '';
 		position: absolute;
@@ -505,6 +593,7 @@
 		background: transparent;
 		z-index: 11;
 	}
+
 	.uni-cropper-line-l {
 		position: absolute;
 		display: block;
@@ -516,6 +605,7 @@
 		height: 100%;
 		cursor: w-resize;
 	}
+
 	.uni-cropper-line-l::before {
 		content: '';
 		position: absolute;
@@ -529,6 +619,7 @@
 		background: transparent;
 		z-index: 11;
 	}
+
 	.uni-cropper-point {
 		width: 5upx;
 		height: 5upx;
@@ -537,18 +628,21 @@
 		position: absolute;
 		z-index: 3;
 	}
+
 	.point-t {
 		top: -3upx;
 		left: 50%;
 		margin-left: -3upx;
 		cursor: n-resize;
 	}
+
 	.point-tr {
 		top: -3upx;
 		left: 100%;
 		margin-left: -3upx;
 		cursor: n-resize;
 	}
+
 	.point-r {
 		top: 50%;
 		left: 100%;
@@ -556,6 +650,7 @@
 		margin-top: -3upx;
 		cursor: n-resize;
 	}
+
 	.point-rb {
 		left: 100%;
 		top: 100%;
@@ -569,6 +664,7 @@
 		z-index: 1112;
 		opacity: 1;
 	}
+
 	.point-b {
 		left: 50%;
 		top: 100%;
@@ -576,6 +672,7 @@
 		margin-top: -3upx;
 		cursor: n-resize;
 	}
+
 	.point-bl {
 		left: 0%;
 		top: 100%;
@@ -583,6 +680,7 @@
 		margin-top: -3upx;
 		cursor: n-resize;
 	}
+
 	.point-l {
 		left: 0%;
 		top: 50%;
@@ -590,6 +688,7 @@
 		margin-top: -3upx;
 		cursor: n-resize;
 	}
+
 	.point-lt {
 		left: 0%;
 		top: 0%;
@@ -597,6 +696,7 @@
 		margin-top: -3upx;
 		cursor: n-resize;
 	}
+
 	/* 裁剪框预览内容 */
 	.uni-cropper-viewer {
 		position: relative;
@@ -604,8 +704,20 @@
 		height: 100%;
 		overflow: hidden;
 	}
+
 	.uni-cropper-viewer image {
 		position: absolute;
 		z-index: 2;
+	}
+	
+	.container{
+		padding-top: 200rpx;
+		background-color: black;
+	}
+	
+	.action-btn{
+		background-color: transparent;
+		border-style: none;
+		color: white;
 	}
 </style>

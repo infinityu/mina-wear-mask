@@ -19,9 +19,7 @@
 		{
 			"path": "pages/crop/crop",
 			"style": {
-				"navigationBarBackgroundColor": "#C12928",
-				"disableScroll": true,
-				"navigationStyle": "custom"
+				"navigationBarTitleText": "贺新春，加福字"
 			}
 		},
 		{
@@ -103,9 +101,8 @@
 			// 	"pagePath": "pages/crop/crop",
 			// 	"iconPath": "static/tabbar/happiness3.png",
 			// 	"selectedIconPath": "static/tabbar/happiness.png",
-			// 	"text": " 剪裁"
+			// 	"text": "剪裁"
 			// },
-			
 			{
 				"pagePath": "pages/happiness/add-happiness",
 				"iconPath": "static/tabbar/happiness3.png",

@@ -140,14 +140,78 @@
 				return Math.ceil(this.cansHeight * 0.7);
 			}
 		},
-		onLoad() {
+		onLoad(option) {
 			this.ctx = uni.createCanvasContext('cans-id-happines', this);
+			if(option.from == 'crop'){
+				this.avatarPath = getApp().globalData.cropImageUrl;
+			}
 			this.paint();
 		},
 		onShow() {
 			console.log("onshow");
-			let defaultAvatarIndex = Math.round(Math.random());
-			console.log(defaultAvatarIndex);
+			// let defaultAvatarIndex = Math.round(Math.random());
+			// console.log(defaultAvatarIndex);
+			if(getApp().globalData.rapaintAfterCrop){
+				getApp().globalData.rapaintAfterCrop = false;
+				let tempImagePath = getApp().globalData.cropImageUrl;
+				let self = this;
+				let tempFilePathCompressed = tempImagePath;
+				uni.compressImage({
+					src: tempImagePath,
+					quality: 1,
+					success: res => {
+						tempFilePathCompressed = res.tempFilePath;
+						// console.log(res.tempFilePath)
+						wx.getFileSystemManager().readFile({
+							filePath: tempFilePathCompressed, //这里做示例，所以就选取第一张图片
+							success: buffer => {
+								console.log(buffer.data);
+								uni.showLoading({
+									title: '添福中...'// 实际在进行内容安全检测
+								});
+								//这里是 云函数调用方法
+								wx.cloud.callFunction({
+									name: 'contentCheck',
+									data: {
+										value: buffer.data
+									},
+									success(json) {
+										console.log("checkContent result", json)
+										if (json.result.errCode == 87014) {
+											uni.showModal({
+												title: '请选择其他图片',
+												content: '图片含有违法违规内容',
+												showCancel: false,
+												confirmText: '知道了',
+											});
+											console.log("bad")
+										} else {
+											console.log("good")
+											//图片合规则进行进一步处理
+											self.avatarPath = tempImagePath;
+											self.paint();
+										}
+									},
+									fail(e) {
+										console.log(e);
+										uni.showModal({
+											title: '请重试',
+											content: '对不起，服务器开了小差',
+											showCancel: false,
+											confirmText: '好的',
+										});
+									},
+									complete() {
+										uni.hideLoading();
+									}
+								})
+							}
+						})
+				
+					}
+				})
+				
+			}
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
 			wx.startAccelerometer({
 			  interval: 'normal'
@@ -363,65 +427,71 @@
 					success: function(res) {
 						console.log(res);
 						let tempImagePath = res.tempFilePaths[0];
-						let tempFilePathCompressed = tempImagePath;
-
-						uni.compressImage({
-							src: tempImagePath,
-							quality: 1,
-							success: res => {
-								tempFilePathCompressed = res.tempFilePath;
-								// console.log(res.tempFilePath)
-								wx.getFileSystemManager().readFile({
-									filePath: tempFilePathCompressed, //这里做示例，所以就选取第一张图片
-									success: buffer => {
-										console.log(buffer.data);
-										uni.showLoading({
-											title: '添福中...'
-										});
-										//这里是 云函数调用方法
-										wx.cloud.callFunction({
-											name: 'contentCheck',
-											data: {
-												value: buffer.data
-											},
-											success(json) {
-												console.log("checkContent result", json)
-												if (json.result.errCode == 87014) {
-													// uni.showToast({
-													//     title: '图片含有违法违规内容'
-													// });
-													uni.showModal({
-														title: '请勿使用违法违规内容',
-														content: '图片含有违法违规内容',
-														showCancel: false,
-														confirmText: '知道了',
-													});
-													console.log("bad")
-												} else {
-													console.log("good")
-													//图片正常
-													self.avatarPath = tempImagePath;
-													self.paint();
-												}
-											},
-											fail(e) {
-												console.log(e);
-												uni.showModal({
-													title: '请重试',
-													content: '对不起，服务器开了小差',
-													showCancel: false,
-													confirmText: '好的',
-												});
-											},
-											complete() {
-												uni.hideLoading();
-											}
-										})
-									}
-								})
-
-							}
+						uni.navigateTo({
+						  url: '/pages/crop/crop?tempFilePath=' + tempImagePath
 						})
+						
+						// let tempFilePathCompressed = tempImagePath;
+						// uni.compressImage({
+						// 	src: tempImagePath,
+						// 	quality: 1,
+						// 	success: res => {
+						// 		tempFilePathCompressed = res.tempFilePath;
+						// 		// console.log(res.tempFilePath)
+						// 		wx.getFileSystemManager().readFile({
+						// 			filePath: tempFilePathCompressed, //这里做示例，所以就选取第一张图片
+						// 			success: buffer => {
+						// 				console.log(buffer.data);
+						// 				uni.showLoading({
+						// 					title: '添福中...'
+						// 				});
+						// 				//这里是 云函数调用方法
+						// 				wx.cloud.callFunction({
+						// 					name: 'contentCheck',
+						// 					data: {
+						// 						value: buffer.data
+						// 					},
+						// 					success(json) {
+						// 						console.log("checkContent result", json)
+						// 						if (json.result.errCode == 87014) {
+						// 							// uni.showToast({
+						// 							//     title: '图片含有违法违规内容'
+						// 							// });
+						// 							uni.showModal({
+						// 								title: '请勿使用违法违规内容',
+						// 								content: '图片含有违法违规内容',
+						// 								showCancel: false,
+						// 								confirmText: '知道了',
+						// 							});
+						// 							console.log("bad")
+						// 						} else {
+						// 							console.log("good")
+						// 							//图片合规则进行进一步处理
+						// 							// self.avatarPath = tempImagePath;
+						// 							// self.paint();
+						// 							uni.navigateTo({
+						// 							  url: '/pages/crop/crop?tempFilePath=' + tempImagePath
+						// 							})
+						// 						}
+						// 					},
+						// 					fail(e) {
+						// 						console.log(e);
+						// 						uni.showModal({
+						// 							title: '请重试',
+						// 							content: '对不起，服务器开了小差',
+						// 							showCancel: false,
+						// 							confirmText: '好的',
+						// 						});
+						// 					},
+						// 					complete() {
+						// 						uni.hideLoading();
+						// 					}
+						// 				})
+						// 			}
+						// 		})
+
+						// 	}
+						// })
 
 					}
 				});
