@@ -24,7 +24,7 @@
 			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px;" class="isCan"></canvas>
 		</view>
 		<view class="flex-sub text-center">
-			<view class="solid-bottom  padding">
+			<view class="solid-bottom padding">
 				<text class="text-orange">点击头像或摇一摇换福字！</text>
 			</view>
 		</view>
@@ -142,9 +142,6 @@
 		},
 		onLoad(option) {
 			this.ctx = uni.createCanvasContext('cans-id-happines', this);
-			if(option.from == 'crop'){
-				this.avatarPath = getApp().globalData.cropImageUrl;
-			}
 			this.paint();
 		},
 		onShow() {
@@ -153,64 +150,8 @@
 			// console.log(defaultAvatarIndex);
 			if(getApp().globalData.rapaintAfterCrop){
 				getApp().globalData.rapaintAfterCrop = false;
-				let tempImagePath = getApp().globalData.cropImageUrl;
-				let self = this;
-				let tempFilePathCompressed = tempImagePath;
-				uni.compressImage({
-					src: tempImagePath,
-					quality: 1,
-					success: res => {
-						tempFilePathCompressed = res.tempFilePath;
-						// console.log(res.tempFilePath)
-						wx.getFileSystemManager().readFile({
-							filePath: tempFilePathCompressed, //这里做示例，所以就选取第一张图片
-							success: buffer => {
-								console.log(buffer.data);
-								uni.showLoading({
-									title: '添福中...'// 实际在进行内容安全检测
-								});
-								//这里是 云函数调用方法
-								wx.cloud.callFunction({
-									name: 'contentCheck',
-									data: {
-										value: buffer.data
-									},
-									success(json) {
-										console.log("checkContent result", json)
-										if (json.result.errCode == 87014) {
-											uni.showModal({
-												title: '请选择其他图片',
-												content: '图片含有违法违规内容',
-												showCancel: false,
-												confirmText: '知道了',
-											});
-											console.log("bad")
-										} else {
-											console.log("good")
-											//图片合规则进行进一步处理
-											self.avatarPath = tempImagePath;
-											self.paint();
-										}
-									},
-									fail(e) {
-										console.log(e);
-										uni.showModal({
-											title: '请重试',
-											content: '对不起，服务器开了小差',
-											showCancel: false,
-											confirmText: '好的',
-										});
-									},
-									complete() {
-										uni.hideLoading();
-									}
-								})
-							}
-						})
-				
-					}
-				})
-				
+				this.avatarPath = getApp().globalData.cropImageUrl;;
+				this.paint();
 			}
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
 			wx.startAccelerometer({
@@ -224,7 +165,7 @@
 		onShareAppMessage() {
 			return {
 				title: '头像加福贺新春',
-				desc: '为头像添加一个福字儿',
+				desc: '贺新春，贴福字，为你的头像加个福字吧',
 				imageUrl: '/static/image/redirect-cover.jpg',
 				path: '/pages/happiness/add-happiness',
 				success: function(res) {
@@ -427,71 +368,26 @@
 					success: function(res) {
 						console.log(res);
 						let tempImagePath = res.tempFilePaths[0];
-						uni.navigateTo({
-						  url: '/pages/crop/crop?tempFilePath=' + tempImagePath
-						})
 						
-						// let tempFilePathCompressed = tempImagePath;
-						// uni.compressImage({
-						// 	src: tempImagePath,
-						// 	quality: 1,
-						// 	success: res => {
-						// 		tempFilePathCompressed = res.tempFilePath;
-						// 		// console.log(res.tempFilePath)
-						// 		wx.getFileSystemManager().readFile({
-						// 			filePath: tempFilePathCompressed, //这里做示例，所以就选取第一张图片
-						// 			success: buffer => {
-						// 				console.log(buffer.data);
-						// 				uni.showLoading({
-						// 					title: '添福中...'
-						// 				});
-						// 				//这里是 云函数调用方法
-						// 				wx.cloud.callFunction({
-						// 					name: 'contentCheck',
-						// 					data: {
-						// 						value: buffer.data
-						// 					},
-						// 					success(json) {
-						// 						console.log("checkContent result", json)
-						// 						if (json.result.errCode == 87014) {
-						// 							// uni.showToast({
-						// 							//     title: '图片含有违法违规内容'
-						// 							// });
-						// 							uni.showModal({
-						// 								title: '请勿使用违法违规内容',
-						// 								content: '图片含有违法违规内容',
-						// 								showCancel: false,
-						// 								confirmText: '知道了',
-						// 							});
-						// 							console.log("bad")
-						// 						} else {
-						// 							console.log("good")
-						// 							//图片合规则进行进一步处理
-						// 							// self.avatarPath = tempImagePath;
-						// 							// self.paint();
-						// 							uni.navigateTo({
-						// 							  url: '/pages/crop/crop?tempFilePath=' + tempImagePath
-						// 							})
-						// 						}
-						// 					},
-						// 					fail(e) {
-						// 						console.log(e);
-						// 						uni.showModal({
-						// 							title: '请重试',
-						// 							content: '对不起，服务器开了小差',
-						// 							showCancel: false,
-						// 							confirmText: '好的',
-						// 						});
-						// 					},
-						// 					complete() {
-						// 						uni.hideLoading();
-						// 					}
-						// 				})
-						// 			}
-						// 		})
-
-						// 	}
-						// })
+						uni.getImageInfo({
+							src: res.tempFilePaths[0],
+							success: function(image) {
+								let width = image.width;
+								let height = image.height;
+								let delta = (width - height) / width.toFixed(3);
+								console.log('delta', delta);
+								// 如果是正方形或者接近正放心则直接加载不进行剪裁
+								if ((-0.02 <= delta && delta <=0) || (0<delta && delta <= 0.02)) {
+									let tempFilePathCompressed = tempImagePath;
+									self.avatarPath = tempImagePath;
+									self.paint();
+								} else{
+									uni.navigateTo({
+									  url: '/pages/crop/crop?tempFilePath=' + tempImagePath
+									})
+								}
+							}
+						});
 
 					}
 				});

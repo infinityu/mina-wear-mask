@@ -132,6 +132,17 @@
 				this.modalName = null;
 			}
 		}
+		,onShareAppMessage() {
+			return {
+				title: '头像加福贺新春',
+				desc: '贺新春，贴福字，为你的头像加个福字吧',
+				imageUrl: '/static/image/redirect-cover.jpg',
+				path: '/pages/happiness/add-happiness',
+				success: function(res) {
+					console.log(res);
+				}
+			}
+		}
 	}
 </script>
 

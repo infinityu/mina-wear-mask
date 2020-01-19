@@ -1,6 +1,9 @@
 <template>
 	<view class="container">
 		<view class="page-body uni-content-info" :style="{height:windowHeight+'px'}">
+			<view class="grid justify-center padding">
+				<text class="text-white">请拖动红框选择所要截取的区域</text>
+			</view>
 			<view class='cropper-content'>
 				<view v-if="isShowImg" class="uni-corpper" :style="'width:'+cropperInitW+'px;height:'+cropperInitH+'px;background:#000'">
 					<view class="uni-corpper-content" :style="'width:'+cropperW+'px;height:'+cropperH+'px;'">
@@ -42,7 +45,11 @@
 <script>
 	let sysInfo = uni.getSystemInfoSync();
 	let SCREEN_WIDTH = sysInfo.screenWidth;
-	let SCREEN_HEIGHT = sysInfo.screenHeight;
+	let paddingPreSet = 80;// container padding-top + action-config height
+	let SCREEN_HEIGHT = sysInfo.screenHeight - paddingPreSet;
+	console.log('SCREEN_HEIGHT', SCREEN_HEIGHT);
+	let SCREEN_RATIO = SCREEN_WIDTH.toFixed(3) / SCREEN_HEIGHT.toFixed(3);
+	console.log('SCREEN_RATIO', SCREEN_RATIO);
 	let PAGE_X, // 手按下的x位置
 		PAGE_Y, // 手按下y的位置 
 		PR = sysInfo.pixelRatio, // dpi
@@ -50,10 +57,10 @@
 		T_PAGE_Y, // 手移动的时候Y的位置
 		CUT_L, // 初始化拖拽元素的left值
 		CUT_T, // 初始化拖拽元素的top值
-		CUT_R, // 初始化拖拽元素的
-		CUT_B, // 初始化拖拽元素的
+		CUT_R, // 初始化拖拽元素的right
+		CUT_B, // 初始化拖拽元素的bottom
 		CUT_W, // 初始化拖拽元素的宽度
-		CUT_H, //  初始化拖拽元素的高度
+		CUT_H, // 初始化拖拽元素的高度
 		IMG_RATIO, // 图片比例
 		IMG_REAL_W, // 图片实际的宽度
 		IMG_REAL_H, // 图片实际的高度
@@ -86,11 +93,11 @@
 				imageW: 0,
 				imageH: 0,
 				// 裁剪框 宽高
-				cropBoxW:270,
-				// cropBoxH:270,
+				cropBoxW:SCREEN_WIDTH,
+				// cropBoxH:SCREEN_WIDTH,
 				cutL: 0,
 				cutT: 0,
-				cutB: 270,
+				cutB: SCREEN_WIDTH,
 				cutR: '100%',
 				qualityWidth: DRAW_IMAGE_W,
 				innerAspectRadio: DRAFG_MOVE_RATIO
@@ -127,29 +134,7 @@
 				uni.getImageInfo({
 					src: tempFilePath,
 					success: function(image) {
-						let width = image.width;
-						let height = image.height;
-						if (width < height) { // 等比缩放
-							_this.cropperW = 270.0;
-							_this.cropperH = height.toFixed(3) / width.toFixed(3) * 270.0;
-						} else {
-							_this.cropperH = 270.0;
-							_this.cropperW = width.toFixed(3) / height.toFixed(3) * 270.0;
-						}
-						// 如果比例不合适，缩放后超出了可视区域，则进行进一步缩小，同时缩小剪裁口径
-						if (_this.cropperH > SCREEN_WIDTH) {
-							_this.cropperH = SCREEN_WIDTH;
-							_this.cropperW = width.toFixed(3) / height.toFixed(3) * SCREEN_WIDTH;
-							_this.cropBoxW = _this.cropperW;
-						}
-						if (_this.cropperW > SCREEN_WIDTH) {
-							_this.cropperW = SCREEN_WIDTH;
-							_this.cropperH = height.toFixed(3) / width.toFixed(3) * SCREEN_WIDTH;
-							_this.cropBoxW = _this.cropperH;
-						}
-				
-						console.log(image.width);
-						console.log(image.height);
+						_this._adjustParameters(image, _this);
 					}
 				});
 				_this.setData({
@@ -169,28 +154,7 @@
 						uni.getImageInfo({
 							src: res.tempFilePaths[0],
 							success: function(image) {
-								let width = image.width;
-								let height = image.height;
-								if (width < height) { // 等比缩放
-									_this.cropperW = 270.0;
-									_this.cropperH = height.toFixed(3) / width.toFixed(3) * 270.0;
-								} else {
-									_this.cropperH = 270.0;
-									_this.cropperW = width.toFixed(3) / height.toFixed(3) * 270.0;
-								}
-								// 如果比例不合适，缩放后超出了可视区域，则进行进一步缩小，同时缩小剪裁口径
-								if (_this.cropperH > SCREEN_WIDTH) {
-									_this.cropperH = SCREEN_WIDTH;
-									_this.cropperW = width.toFixed(3) / height.toFixed(3) * SCREEN_WIDTH;
-									_this.cropBoxW = _this.cropperW;
-								} else if (_this.cropperW > SCREEN_WIDTH) {
-									_this.cropperW = SCREEN_WIDTH;
-									_this.cropperH = height.toFixed(3) / width.toFixed(3) * SCREEN_WIDTH;
-									_this.cropBoxW = _this.cropperH;
-								}
-
-								console.log(image.width);
-								console.log(image.height);
+								_this._adjustParameters(image, _this);
 							}
 						});
 						_this.setData({
@@ -199,6 +163,36 @@
 						_this.loadImage();
 					},
 				})
+			},
+			_adjustParameters: function(image, _this){
+				let width = image.width;
+				let height = image.height;
+				if (width < height) { // 等比缩放
+					_this.cropperW = SCREEN_WIDTH;
+					_this.cropperH = height.toFixed(3) / width.toFixed(3) * SCREEN_WIDTH;
+				} else {
+					_this.cropperH = SCREEN_WIDTH;
+					_this.cropperW = width.toFixed(3) / height.toFixed(3) * SCREEN_WIDTH;
+				}
+				// 如果比例不合适，缩放后超出了可视区域，则进行进一步缩小，同时缩小剪裁口径
+				if (_this.cropperH > SCREEN_WIDTH) {
+					_this.cropperH = SCREEN_WIDTH;
+					_this.cropperW = width.toFixed(3) / height.toFixed(3) * SCREEN_WIDTH;
+					_this.cropBoxW = _this.cropperW;
+					
+					_this.cropperInitW = _this.cropperW;
+					_this.cropperInitH = _this.cropperH;
+				} else if (_this.cropperW > SCREEN_WIDTH) {
+					_this.cropperW = SCREEN_WIDTH;
+					_this.cropperH = height.toFixed(3) / width.toFixed(3) * SCREEN_WIDTH;
+					_this.cropBoxW = _this.cropperH;
+					
+					_this.cropperInitW = _this.cropperW;
+					_this.cropperInitH = _this.cropperH;
+				}
+				
+				console.log(image.width);
+				console.log(image.height);
 			},
 			loadImage: function() {
 				var _this = this
@@ -209,6 +203,21 @@
 					src: _this.imageSrc,
 					success: function success(res) {
 						IMG_RATIO = res.width / res.height
+						console.log('IMG_RATIO', IMG_RATIO);
+						// if(IMG_RATIO < 1) { //  竖图形式下，用高作为显示框范围
+						// console.log('竖图参数调整中');
+						// 	if(IMG_RATIO > SCREEN_RATIO){
+						// 		console.log('图片更宽');
+						// 		_this.cropperInitW = _this.cropperInitW.toFixed(3) / IMG_RATIO;
+						// 		_this.cropBoxH = SCREEN_WIDTH;
+						// 		SCREEN_WIDTH = SCREEN_HEIGHT;
+						// 	} else{
+						// 		console.log('图片没有可视区域宽');
+						// 		_this.cropperInitH = SCREEN_HEIGHT;
+						// 		_this.cropBoxW = _this.cropperInitH * IMG_RATIO;
+						// 		SCREEN_WIDTH = SCREEN_HEIGHT;
+						// 	}
+						// }
 						if (IMG_RATIO >= 1) {
 							IMG_REAL_W = SCREEN_WIDTH
 							IMG_REAL_H = SCREEN_WIDTH / IMG_RATIO
@@ -223,7 +232,8 @@
 							// let cutT = Math.ceil((SCREEN_WIDTH / IMG_RATIO - (SCREEN_WIDTH / IMG_RATIO - INIT_DRAG_POSITION)) / 2);
 							let cutT = 0;
 							let cutB = cutT;
-							let cutL = Math.ceil((SCREEN_WIDTH - SCREEN_WIDTH + INIT_DRAG_POSITION) / 2);
+							// let cutL = Math.ceil((SCREEN_WIDTH - SCREEN_WIDTH + INIT_DRAG_POSITION) / 2);
+							let cutL = Math.ceil((SCREEN_WIDTH - _this.cropBoxW) / 2);
 							let cutR = cutL;
 							_this.setData({
 								cropperW: SCREEN_WIDTH,
@@ -245,7 +255,7 @@
 						} else {
 							let cutL = Math.ceil((SCREEN_WIDTH * IMG_RATIO - (SCREEN_WIDTH * IMG_RATIO)) / 2);
 							let cutR = cutL;
-							let cutT = Math.ceil((SCREEN_WIDTH - INIT_DRAG_POSITION) / 2);
+							let cutT = Math.ceil((SCREEN_WIDTH - _this.cropBoxW) / 2);
 							let cutB = cutT;
 							_this.setData({
 								cropperW: SCREEN_WIDTH * IMG_RATIO,
@@ -320,7 +330,11 @@
 					// 获取画布要裁剪的位置和宽度   均为百分比 * 画布中图片的宽度    保证了在微信小程序中裁剪的图片模糊  位置不对的问题 canvasT = (_this.cutT / _this.cropperH) * (_this.imageH / pixelRatio)
 					var canvasW = ((_this.cropperW - _this.cutL - _this.cutR) / _this.cropperW) * IMG_REAL_W;
 					var canvasH = ((_this.cropperH - _this.cutT - _this.cutB) / _this.cropperH) * IMG_REAL_H;
-					canvasW = canvasH = 270;
+					if(IMG_RATIO > 1){
+						canvasW = canvasH;
+					} else{
+						canvasH = canvasW;
+					}
 					var canvasL = (_this.cutL / _this.cropperW) * IMG_REAL_W;
 					var canvasT = (_this.cutT / _this.cropperH) * IMG_REAL_H;
 					console.log("IMG_REAL_H", IMG_REAL_H);
@@ -329,8 +343,8 @@
 						y: canvasT,
 						width: canvasW,
 						height: canvasH,
-						destWidth: canvasW,
-						destHeight: canvasH,
+						destWidth: canvasW*3,
+						destHeight: canvasH*3,
 						quality: 0.5,
 						canvasId: 'myCanvas',
 						success: function(res) {
@@ -427,7 +441,11 @@
 	}
 
 	.cropper-config {
-		padding: 20upx 40upx;
+		padding: 20upx 0upx;
+		position: fixed;
+		bottom: 0px;
+		width: 750upx;
+		heigh: 80px;
 	}
 
 	.cropper-content {
@@ -445,6 +463,7 @@
 		-webkit-tap-highlight-color: transparent;
 		-webkit-touch-callout: none;
 		box-sizing: border-box;
+		margin: 0 auto;
 	}
 
 	.uni-corpper-content {
@@ -711,7 +730,7 @@
 	}
 	
 	.container{
-		padding-top: 200rpx;
+		padding-top: 50px;
 		background-color: black;
 	}
 	
