@@ -349,7 +349,7 @@
 						canvasId: 'myCanvas',
 						success: function(res) {
 							uni.hideLoading();
-							getApp().globalData.cropImageUrl = res.tempFilePath;
+							getApp().globalData.cropImageFilePath = res.tempFilePath;
 							getApp().globalData.rapaintAfterCrop = true;
 							uni.navigateBack({
 							  delta: 1

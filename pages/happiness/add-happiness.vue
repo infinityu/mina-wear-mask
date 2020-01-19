@@ -48,7 +48,7 @@
 			</view> -->
 			<view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
 				<!-- <button class="cu-btn block shaline-orange lg" open-type="share"> -->
-				<button class="cu-btn block line-orange lg" open-type="share">
+				<button class="cu-btn block line-orange lg share-btn" open-type="share">
 					<text class="cuIcon-upload"></text> 分享给好友</button>
 			</view>
 			<!-- <view class="grid col-3 animation-shake animation-speed-2 animation-delay-3">
@@ -150,7 +150,7 @@
 			// console.log(defaultAvatarIndex);
 			if(getApp().globalData.rapaintAfterCrop){
 				getApp().globalData.rapaintAfterCrop = false;
-				this.avatarPath = getApp().globalData.cropImageUrl;;
+				this.avatarPath = getApp().globalData.cropImageFilePath;;
 				this.paint();
 			}
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
@@ -318,6 +318,15 @@
 						uni.hideLoading();
 						self.avatarPath = res.tempFilePath;
 						self.paint();
+						// wx.getImageInfo({
+						//   src: res.tempFilePath,
+						//   success (res) {
+						// 	  console.log('getImageInfo');
+						//     console.log(res.width)
+						//     console.log(res.height)
+						//   }
+						// })
+						
 					},
 					fail: function(e) {
 						console.log(e);

@@ -25,7 +25,7 @@
 					<text class="text-grey">申请关联公众号</text>
 				</view>
 			</view> -->
-			<view class="cu-item arrow" @click="tucao">
+			<view class="cu-item arrow feedback-btn" @click="tucao">
 				<view class="content">
 					<text class="cuIcon-comment text-green"></text>
 					<text class="text-grey">意见反馈</text>
@@ -131,8 +131,7 @@
 			hideModal: function(e) {
 				this.modalName = null;
 			}
-		}
-		,onShareAppMessage() {
+		},onShareAppMessage() {
 			return {
 				title: '头像加福贺新春',
 				desc: '贺新春，贴福字，为你的头像加个福字吧',
