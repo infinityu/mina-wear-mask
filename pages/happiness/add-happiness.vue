@@ -25,19 +25,19 @@
 		</view>
 		<view class="flex-sub text-center">
 			<view class="solid-bottom padding">
-				<text class="text-orange">点击头像或摇一摇换福字！</text>
+				<text class="text-orange">点击头像或摇一摇换福字</text>
 			</view>
 		</view>
 		<view class="grid justify-around action-wrapper">
-			<view class="grid col-1 animation-scale-down animation-delay-1 animation-speed-2">
+			<view class="grid col-1">
 				<button id="btn-my-avatar" class="cu-btn round action-btn bg-yellow shadow " open-type="getUserInfo" @getuserinfo="getUserInfoCallBack">我的头像</button>
 			</view>
-			<view class="grid col-2 animation-scale-down animation-delay-1 animation-speed-2">
-				<button id="btn-save" class="cu-btn round action-btn bg-yellow shadow" @click="saveCans">
+			<view class="grid col-2">
+				<button id="btn-save" class="cu-btn round action-btn bg-yellow shadow" @click="checkAdBeforeSave">
 					<!-- <text class="cuIcon-down"> -->
 					</text>保存</button>
 			</view>
-			<view class="grid col-3 animation-scale-down animation-delay-1 animation-speed-2">
+			<view class="grid col-3">
 				<button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow" @click="chooseImage">选择图片</button>
 			</view>
 		</view>
@@ -88,7 +88,10 @@
 		mapMutations
 	} from "vuex";
 	import tuiFooter from "@/components/footer";
-	
+
+	// 在页面中定义激励视频广告
+	let videoAd = null
+
 	export default {
 		components: {
 			tuiFooter
@@ -113,17 +116,25 @@
 				modalName: null,
 				//首先定义一下，全局变量
 				lastTime: 0, //此变量用来记录上次摇动的时间
-				x:0,
-				y:0,
-				z:0,
-				lastX:0,
-				lastY:0,
-				lastZ:0, //此组变量分别记录对应 x、y、z 三轴的数值和上次的数值
+				x: 0,
+				y: 0,
+				z: 0,
+				lastX: 0,
+				lastY: 0,
+				lastZ: 0, //此组变量分别记录对应 x、y、z 三轴的数值和上次的数值
 				shaking: false,
 				shakeSpeed: 70, //设置阈值
 				lastChangeTime: 0,
-				showGentleMessage: false
-				
+				showGentleMessage: false,
+				savedCounts: 0,
+				freeCount: 1,
+				enableRewardedVideoAd: false,
+				adAlreadyShow: false,
+				ownImageUsed: false,
+				envId: 'happiness-production-yy81s',
+				collectionName: 'ad_config',
+				docId: 'add_happiness_rwzc'
+
 			}
 		},
 		computed: {
@@ -143,23 +154,64 @@
 		onLoad(option) {
 			this.ctx = uni.createCanvasContext('cans-id-happines', this);
 			this.paint();
+
+			const db = wx.cloud.database({
+				env: this.envId,
+				traceUser: true
+			});
+
+			let _this = this;
+			db.collection(this.collectionName).doc(this.docId).get().then(res => {
+				// res.data 包含该记录的数据
+				console.log('res.data.free_count', res.data.free_count);
+				_this.freeCount = res.data.free_count;
+				_this.enableRewardedVideoAd = res.data.enableRewardedVideoAd;
+			})
+
+			// 在页面onLoad回调事件中创建激励视频广告实例
+			if (wx.createRewardedVideoAd) {
+				videoAd = wx.createRewardedVideoAd({
+					adUnitId: 'adunit-e79298021d1311a7'
+				})
+				videoAd.onLoad(() => {})
+				videoAd.onError((err) => {
+					// 广告组件出现错误，直接允许用户保存，不做其他复杂处理
+					console.log('videoAd.onError', err);
+					this.adAlreadyShow = true; // 本次使用不再展示广告
+					this.saveCans();
+				})
+				videoAd.onClose((res) => {
+					if (res && res.isEnded || res === undefined) {
+						// 正常播放结束，下发奖励
+						console.log('正常播放结束，下发奖励');
+						this.adAlreadyShow = true; // 本次使用不再展现广告
+						this.saveCans();
+					} else {
+						// 播放中途退出，进行提示
+						console.log('播放中途退出，重新提示');
+						console.log('adAlreadyShow', this.adAlreadyShow);
+						this.checkAdBeforeSave();
+					}
+
+				})
+			}
 		},
 		onShow() {
 			console.log("onshow");
 			// let defaultAvatarIndex = Math.round(Math.random());
 			// console.log(defaultAvatarIndex);
-			if(getApp().globalData.rapaintAfterCrop){
+			if (getApp().globalData.rapaintAfterCrop) {
 				getApp().globalData.rapaintAfterCrop = false;
 				this.avatarPath = getApp().globalData.cropImageFilePath;;
 				this.paint();
 			}
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
 			wx.startAccelerometer({
-			  interval: 'normal'
+				interval: 'normal'
 			});
 			wx.onAccelerometerChange(this.shake);
 		},
-		onHide(){
+		onHide() {
 			wx.stopAccelerometer();
 		},
 		onShareAppMessage() {
@@ -175,9 +227,9 @@
 		},
 		methods: {
 			...mapMutations(["saveLoginUserInfo"]),
-			shake(acceleration){
+			shake(acceleration) {
 				var nowTime = new Date().getTime(); //记录当前时间
-				  //如果这次摇的时间距离上次摇的时间有一定间隔 才执行
+				//如果这次摇的时间距离上次摇的时间有一定间隔 才执行
 				if (nowTime - this.lastTime > 100) {
 					var diffTime = nowTime - this.lastTime; //记录时间段
 					this.lastTime = nowTime; //记录本次摇动时间，为下次计算摇动时间做准备
@@ -188,16 +240,16 @@
 					var speed = Math.abs(this.x + this.y + this.z - this.lastX - this.lastY - this.lastZ) / diffTime * 10000;
 					if (speed > this.shakeSpeed) {
 						this.shaking = true;
-					} else{
-						if(this.shaking){
+					} else {
+						if (this.shaking) {
 							this.shaking = false;
-							if(nowTime - this.lastChangeTime >  800){
+							if (nowTime - this.lastChangeTime > 800) {
 								this.nextHappiness();
 								this.lastChangeTime = nowTime;
-								if(!this.showGentleMessage){
+								if (!this.showGentleMessage) {
 									this.showGentleMessage = true;
 									uni.showToast({
-									    title: '轻轻摇就可以了哦'
+										title: '轻轻摇就可以了哦'
 									});
 								}
 							}
@@ -326,14 +378,14 @@
 						//     console.log(res.height)
 						//   }
 						// })
-						
+
 					},
 					fail: function(e) {
 						console.log(e);
 						uni.hideLoading();
 						uni.showModal({
 							title: '图片加载超时',
-							content: '请检查网络，点击确定重新加载',
+							content: '检查网络，点击确定重新加载',
 							success(res) {
 								if (res.confirm) {
 									self.downloadAvatarAndPaintAll(imageUrl);
@@ -359,6 +411,7 @@
 					});
 					return;
 				}
+				this.ownImageUsed = true;
 				let userInfo = result.detail.userInfo;
 				console.log(userInfo);
 				userInfo.avatarUrl = userInfo.avatarUrl.replace("132", "0"); // 使用最大分辨率头像 959 * 959
@@ -369,6 +422,7 @@
 			 *  选择图片
 			 */
 			chooseImage() {
+				this.ownImageUsed = true;
 				let self = this;
 				uni.chooseImage({
 					count: 1, // 默认9
@@ -377,7 +431,7 @@
 					success: function(res) {
 						console.log(res);
 						let tempImagePath = res.tempFilePaths[0];
-						
+
 						uni.getImageInfo({
 							src: res.tempFilePaths[0],
 							success: function(image) {
@@ -386,13 +440,13 @@
 								let delta = (width - height) / width.toFixed(3);
 								console.log('delta', delta);
 								// 如果是正方形或者接近正放心则直接加载不进行剪裁
-								if ((-0.02 <= delta && delta <=0) || (0<delta && delta <= 0.02)) {
+								if ((-0.02 <= delta && delta <= 0) || (0 < delta && delta <= 0.02)) {
 									let tempFilePathCompressed = tempImagePath;
 									self.avatarPath = tempImagePath;
 									self.paint();
-								} else{
+								} else {
 									uni.navigateTo({
-									  url: '/pages/crop/crop?tempFilePath=' + tempImagePath
+										url: '/pages/crop/crop?tempFilePath=' + tempImagePath
 									})
 								}
 							}
@@ -411,13 +465,54 @@
 				// this.happinessPath = this.happinessPathList[this.happinessIndex];
 				this.paint();
 			},
+			checkAdBeforeSave() {
+				console.log('enableRewardedVideoAd', this.enableRewardedVideoAd);
+				console.log('videoAd', videoAd);
+				console.log('adAlreadyShow', this.adAlreadyShow);
+				console.log('ownImageUsed', this.ownImageUsed);
+				console.log('exceed', this.savedCounts >= this.freeCount);
+				console.log('this.savedCounts', this.savedCounts);
+				console.log('this.freeCount', this.freeCount);
+				if (this.enableRewardedVideoAd && !!videoAd && !this.adAlreadyShow 
+					&& this.savedCounts >= this.freeCount && this.ownImageUsed) {
+					uni.showModal({
+						title: '获取无限使用次数',
+						content: '请完整观看趣味广告视频',
+						success: function(res) {
+							if (res.confirm) {
+								console.log('用户点击确定');
+								// 用户触发广告后，显示激励视频广告
+								if (videoAd) {
+									videoAd.show().catch(() => {
+										// 失败重试
+										videoAd.load()
+											.then(() => {
+												videoAd.show();
+											})
+											.catch(err => {
+												console.log(err);
+												console.log('激励视频 广告显示失败')
+											})
+									})
+								}
+							} else if (res.cancel) {
+								console.log('用户点击取消');
+								return;
+							}
+						}
+					});
+				} else {
+					this.saveCans();
+				}
+			},
 			/**
 			 * 保存
 			 */
 			saveCans() {
 				console.log('保存...')
+				let _this = this;
 				uni.showLoading({
-					title: '保存ing...',
+					title: '保存...',
 					mask: true
 				})
 				uni.canvasToTempFilePath({
@@ -441,6 +536,7 @@
 										console.log('vibrateShort');
 									}
 								});
+								_this.savedCounts++;
 								// uni.switchTab({
 								// 	url: '/pages/happiness/introduction'
 								// });

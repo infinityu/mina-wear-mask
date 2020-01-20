@@ -90,6 +90,10 @@
 		mapMutations
 	} from "vuex";
 	import tuiFooter from "@/components/footer";
+	
+	// 在页面中定义插屏广告
+	let interstitialAd = null
+	
 	export default {
 		components: {
 			tuiFooter
@@ -107,8 +111,26 @@
 				modalName: null
 			}
 		},
-		onShow() {
+		onLoad() {
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
+			// 在页面onLoad回调事件中创建插屏广告实例
+			if (wx.createInterstitialAd) {
+			  interstitialAd = wx.createInterstitialAd({
+			    adUnitId: 'adunit-beed4816676d471a'
+			  })
+			  interstitialAd.onLoad(() => {})
+			  interstitialAd.onError((err) => {})
+			  interstitialAd.onClose(() => {})
+			}
+		},
+		onShow() {
+			// 在适合的场景显示插屏广告
+			console.log('interstitialAd', !!interstitialAd);
+			if (interstitialAd) {
+			  interstitialAd.show().catch((err) => {
+			    console.error(err)
+			  })
+			}
 		},
 		computed: {
 			...mapState({
