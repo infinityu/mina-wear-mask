@@ -110,6 +110,7 @@
 			console.log('onLoad');
 			// this.getImage(); //这里定义为从前页面跳转过来，所以默认打开相册选择
 			console.log('option.tempFilePath', option.tempFilePath);
+			// this.imageCheck(option.tempFilePath, this.getImageFromFront);
 			this.getImageFromFront(option.tempFilePath);
 		},
 		/**
@@ -119,7 +120,6 @@
 			// this.loadImage();
 		},
 		onShow: function() {
-			// this.getImageFromFront(option.tempFilePath);
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
 		},
 		methods: {
@@ -137,10 +137,8 @@
 						_this._adjustParameters(image, _this);
 					}
 				});
-				_this.setData({
-					imageSrc: tempFilePath,
-				})
-				_this.loadImage();
+				// _this.imageCheck(tempFilePath, _this.loadAndShowImage)
+				_this.loadAndShowImage(tempFilePath);
 			},
 			cancel: function(){
 				uni.navigateBack({
@@ -157,12 +155,16 @@
 								_this._adjustParameters(image, _this);
 							}
 						});
-						_this.setData({
-							imageSrc: res.tempFilePaths[0],
-						})
-						_this.loadImage();
+						
+						_this.imageCheck(res.tempFilePaths[0], _this.loadAndShowImage)
 					},
 				})
+			},
+			loadAndShowImage(imagePath){
+				this.setData({
+					imageSrc: imagePath,
+				})
+				this.loadImage(imagePath);
 			},
 			_adjustParameters: function(image, _this){
 				let width = image.width;
@@ -194,13 +196,13 @@
 				console.log(image.width);
 				console.log(image.height);
 			},
-			loadImage: function() {
+			loadImage: function(imagePath) {
 				var _this = this
 				uni.showLoading({
-					title: '图片加载中...',
+					title: '加载中...',
 				})
 				uni.getImageInfo({
-					src: _this.imageSrc,
+					src: imagePath,
 					success: function success(res) {
 						IMG_RATIO = res.width / res.height
 						console.log('IMG_RATIO', IMG_RATIO);
@@ -422,7 +424,68 @@
 					default:
 						break;
 				}
+			},
+			imageCheck: function(tempImagePath, callback){
+				if(!getApp().globalData.enableSecurityCheck){
+					callback(tempImagePath);
+					return;
+				}
+				let _this = this;
+				uni.compressImage({
+					src: tempImagePath,
+					quality: 1,
+					success: res => {
+						let tempFilePathCompressed = res.tempFilePath;
+						console.log('tempFilePath size', res.size);
+						wx.getFileSystemManager().readFile({
+							filePath: tempFilePathCompressed, // 压缩图片，然后安全检测
+							success: buffer => {
+								console.log(buffer.data);
+								uni.showLoading({
+									title: '加载中...'
+								});
+								//这里是 云函数调用方法
+								wx.cloud.callFunction({
+									name: 'contentCheck',
+									data: {
+										value: buffer.data
+									},
+									success(json) {
+										console.log("checkContent result", json)
+										if (json.result.errCode == 87014) {
+											uni.showModal({
+												title: '请勿使用违法违规内容',
+												content: '图片含有违法违规内容',
+												showCancel: false,
+												confirmText: '知道了',
+											});
+											console.log("bad")
+										} else {
+											console.log("good")
+											//图片合规则进行进一步处理
+											callback(tempImagePath);
+										}
+									},
+									fail(e) {
+										console.log(e);
+										uni.showModal({
+											title: '请重试',
+											content: '对不起，服务器开了小差',
+											showCancel: false,
+											confirmText: '好的',
+										});
+									},
+									complete() {
+										uni.hideLoading();
+									}
+								})
+							}
+						})
+				
+					}
+				})
 			}
+		
 		}
 	}
 </script>

@@ -37,6 +37,9 @@
 				"disableScroll": true,
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/happiness/introduction"
 		}
 		
 		// {
@@ -48,10 +51,7 @@
 		// 		}
 		// 	}
 		// },
-		// {
-		// 	"path": "pages/wish/wish-send",
-		// 	"style": {}
-		// },
+		
 		// {
 		// 	"path": "pages/wish/wish-history",
 		// 	"style": {}

@@ -23,9 +23,11 @@
 		<view id="avatar-section" @click="nextHappiness">
 			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px;" class="isCan"></canvas>
 		</view>
-		<view class="flex-sub text-center">
+		<!-- <view class="flex-sub text-center" @click="openIntroduction"> -->
+		<view class="flex-sub text-center" >
 			<view class="solid-bottom padding">
-				<text class="text-orange">点击头像或摇一摇换福字</text>
+				<text class="text-orange">点击头像或摇一摇换福字</text> 
+				<text class="lg text-orange cuIcon-question" style="margin-left: 5px;"></text>
 			</view>
 		</view>
 		<view class="grid justify-around action-wrapper">
@@ -166,6 +168,7 @@
 				console.log('res.data.free_count', res.data.free_count);
 				_this.freeCount = res.data.free_count;
 				_this.enableRewardedVideoAd = res.data.enableRewardedVideoAd;
+				getApp().globalData.enableSecurityCheck = res.data.enableSecurityCheck;
 			})
 
 			// 在页面onLoad回调事件中创建激励视频广告实例
@@ -227,6 +230,12 @@
 		},
 		methods: {
 			...mapMutations(["saveLoginUserInfo"]),
+			openIntroduction(){
+				console.log('click');
+				uni.navigateTo({
+					url: '/pages/happiness/introduction'
+				})
+			},
 			shake(acceleration) {
 				var nowTime = new Date().getTime(); //记录当前时间
 				//如果这次摇的时间距离上次摇的时间有一定间隔 才执行
@@ -422,7 +431,6 @@
 			 *  选择图片
 			 */
 			chooseImage() {
-				this.ownImageUsed = true;
 				let self = this;
 				uni.chooseImage({
 					count: 1, // 默认9
@@ -431,27 +439,31 @@
 					success: function(res) {
 						console.log(res);
 						let tempImagePath = res.tempFilePaths[0];
-
-						uni.getImageInfo({
-							src: res.tempFilePaths[0],
-							success: function(image) {
-								let width = image.width;
-								let height = image.height;
-								let delta = (width - height) / width.toFixed(3);
-								console.log('delta', delta);
-								// 如果是正方形或者接近正放心则直接加载不进行剪裁
-								if ((-0.02 <= delta && delta <= 0) || (0 < delta && delta <= 0.02)) {
-									let tempFilePathCompressed = tempImagePath;
-									self.avatarPath = tempImagePath;
-									self.paint();
-								} else {
-									uni.navigateTo({
-										url: '/pages/crop/crop?tempFilePath=' + tempImagePath
-									})
-								}
-							}
-						});
-
+						self.imageCheck(tempImagePath, self.loadRecImageOrStartToCrop);
+						// self.loadRecImageOrStartToCrop(tempImagePath);
+					}
+				});
+			},
+			loadRecImageOrStartToCrop(tempImagePath){
+				this.ownImageUsed = true;
+				let self = this;
+				uni.getImageInfo({
+					src: tempImagePath,
+					success: function(image) {
+						let width = image.width;
+						let height = image.height;
+						let delta = (width - height) / width.toFixed(3);
+						console.log('delta', delta);
+						// 如果是正方形或者接近正放心则直接加载不进行剪裁
+						if ((-0.02 <= delta && delta <= 0) || (0 < delta && delta <= 0.02)) {
+							let tempFilePathCompressed = tempImagePath;
+							self.avatarPath = tempImagePath;
+							self.paint();
+						} else {
+							uni.navigateTo({
+								url: '/pages/crop/crop?tempFilePath=' + tempImagePath
+							})
+						}
 					}
 				});
 			},
@@ -473,8 +485,8 @@
 				console.log('exceed', this.savedCounts >= this.freeCount);
 				console.log('this.savedCounts', this.savedCounts);
 				console.log('this.freeCount', this.freeCount);
-				if (this.enableRewardedVideoAd && !!videoAd && !this.adAlreadyShow 
-					&& this.savedCounts >= this.freeCount && this.ownImageUsed) {
+				if (this.enableRewardedVideoAd && !!videoAd && !this.adAlreadyShow &&
+					this.savedCounts >= this.freeCount && this.ownImageUsed) {
 					uni.showModal({
 						title: '获取无限使用次数',
 						content: '请完整观看趣味广告视频',
@@ -581,6 +593,66 @@
 					url: '/pages/share/share'
 				});
 				this.hideModal();
+			},
+			imageCheck: function(tempImagePath, callback){
+				if(!getApp().globalData.enableSecurityCheck){
+					callback(tempImagePath);
+					return;
+				}
+				let _this = this;
+				uni.compressImage({
+					src: tempImagePath,
+					quality: 1,
+					success: res => {
+						let tempFilePathCompressed = res.tempFilePath;
+						// console.log(res.tempFilePath)
+						wx.getFileSystemManager().readFile({
+							filePath: tempFilePathCompressed, // 压缩图片，然后安全检测
+							success: buffer => {
+								console.log(buffer.data);
+								uni.showLoading({
+									title: '加载中...'
+								});
+								//这里是 云函数调用方法
+								wx.cloud.callFunction({
+									name: 'contentCheck',
+									data: {
+										value: buffer.data
+									},
+									success(json) {
+										console.log("checkContent result", json)
+										if (json.result.errCode == 87014) {
+											uni.showModal({
+												title: '请勿使用违法违规内容',
+												content: '图片含有违法违规内容',
+												showCancel: false,
+												confirmText: '知道了',
+											});
+											console.log("bad")
+										} else {
+											console.log("good")
+											//图片合规则进行进一步处理
+											callback(tempImagePath);
+										}
+									},
+									fail(e) {
+										console.log(e);
+										uni.showModal({
+											title: '请重试',
+											content: '对不起，服务器开了小差',
+											showCancel: false,
+											confirmText: '好的',
+										});
+									},
+									complete() {
+										uni.hideLoading();
+									}
+								})
+							}
+						})
+				
+					}
+				})
 			}
 		}
 	}

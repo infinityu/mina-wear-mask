@@ -7,7 +7,8 @@
 		    WINDOW_HEIGHT: WINDOW_HEIGHT,
 			cropImageFilePath: '',
 			rapaintAfterCrop: false,
-			PAGE_BG_COLOR: '#C12928'
+			PAGE_BG_COLOR: '#C12928',
+			enableSecurityCheck: true
 		},
 		onLaunch: function() {
 			console.log('App Launch');
