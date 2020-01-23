@@ -26,16 +26,16 @@
 		<!-- <view class="flex-sub text-center" @click="openIntroduction"> -->
 		<view v-if="showQuestion" class="flex-sub text-center" @click="openIntroduction">
 			<view class="solid-bottom padding">
-				<text class="text-orange">点击头像或摇一摇换福字</text> 
+				<text class="text-orange">点击头像或摇一摇换福字</text>
 				<text class="lg text-orange cuIcon-question" style="margin-left: 5px;"></text>
 			</view>
 		</view>
-		<view v-else class="flex-sub text-center" >
+		<view v-else class="flex-sub text-center">
 			<view class="solid-bottom padding">
-				<text class="text-orange">点击头像或摇一摇换福字</text> 
+				<text class="text-orange">点击头像或摇一摇换福字</text>
 			</view>
 		</view>
-		
+
 		<view class="grid justify-around action-wrapper">
 			<view class="grid col-1">
 				<button id="btn-my-avatar" class="cu-btn round action-btn bg-yellow shadow " open-type="getUserInfo" @getuserinfo="getUserInfoCallBack">我的头像</button>
@@ -139,9 +139,11 @@
 				savedCounts: 0,
 				freeCount: 1,
 				enableRewardedVideoAd: true,
-				showQuestion: false,
-				adAlreadyShow: false,
+				enableInterstitialAd: true,
+				rewardedVideoAdAlreadyShow: false,
+				interstitialAdAlreadyShow: false,
 				ownImageUsed: false,
+				showQuestion: false,
 				envId: 'happiness-production-yy81s',
 				collectionName: 'ad_config',
 				docId: 'add_happiness_rwzc'
@@ -177,6 +179,7 @@
 				console.log('res.data.free_count', res.data.free_count);
 				_this.freeCount = res.data.free_count;
 				_this.enableRewardedVideoAd = res.data.enableRewardedVideoAd;
+				_this.enableInterstitialAd = res.data.enableInterstitialAd;
 				_this.showQuestion = res.data.show_question;
 				getApp().globalData.showQuestion = res.data.show_question;
 				getApp().globalData.questionUrl = res.data.question_url;
@@ -185,12 +188,12 @@
 
 			// 在页面onLoad回调事件中创建插屏广告实例
 			if (wx.createInterstitialAd) {
-			  interstitialAd = wx.createInterstitialAd({
-			    adUnitId: 'adunit-beed4816676d471a'
-			  })
-			  interstitialAd.onLoad(() => {})
-			  interstitialAd.onError((err) => {})
-			  interstitialAd.onClose(() => {})
+				interstitialAd = wx.createInterstitialAd({
+					adUnitId: 'adunit-beed4816676d471a'
+				})
+				interstitialAd.onLoad(() => {})
+				interstitialAd.onError((err) => {})
+				interstitialAd.onClose(() => {})
 			}
 
 			// 在页面onLoad回调事件中创建激励视频广告实例
@@ -198,28 +201,31 @@
 				videoAd = wx.createRewardedVideoAd({
 					adUnitId: 'adunit-e79298021d1311a7'
 				})
-				videoAd.onLoad(() => {})
+				videoAd.onLoad(() => {
+					_this.rewardedVideoAdLoaded = true;
+				})
 				videoAd.onError((err) => {
 					// 广告组件出现错误，直接允许用户保存，不做其他复杂处理
 					console.log('videoAd.onError', err);
-					this.adAlreadyShow = true; // 本次使用不再展示广告
-					this.saveCans();
+					_this.rewardedVideoAdLoaded = false;
 				})
 				videoAd.onClose((res) => {
 					if (res && res.isEnded || res === undefined) {
 						// 正常播放结束，下发奖励
 						console.log('正常播放结束，下发奖励');
-						this.adAlreadyShow = true; // 本次使用不再展现广告
-						this.saveCans();
+						_this.rewardedVideoAdAlreadyShow = true; // 本次使用不再展现激励广告
+						_this.saveCans();
 					} else {
 						// 播放中途退出，进行提示
 						console.log('播放中途退出，重新提示');
-						console.log('adAlreadyShow', this.adAlreadyShow);
-						this.checkAdBeforeSave();
+						console.log('rewardedVideoAdAlreadyShow', _this.rewardedVideoAdAlreadyShow);
+						_this.rewardedVideoAdAlreadyShow = false;
+						_this.checkAdBeforeSave();
 					}
 
 				})
 			}
+		
 		},
 		onShow() {
 			console.log("onshow");
@@ -229,20 +235,23 @@
 				getApp().globalData.rapaintAfterCrop = false;
 				this.avatarPath = getApp().globalData.cropImageFilePath;;
 				this.paint();
+			} else { 
+				//从剪裁页面跳转回来时不用展示，其他情况下，页面打开时展示插屏广告
+				if (interstitialAd && this.enableInterstitialAd && !this.interstitialAdAlreadyShow) {
+					interstitialAd.show()
+					.then(()=>{
+						this.interstitialAdAlreadyShow = true;
+					})
+					.catch((err) => {
+						console.error(err)
+					})
+				}
 			}
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
 			wx.startAccelerometer({
 				interval: 'normal'
 			});
 			wx.onAccelerometerChange(this.shake);
-			
-			// 在适合的场景显示插屏广告
-			if (interstitialAd) {
-				this.adAlreadyShow = true;
-				interstitialAd.show().catch((err) => {
-					console.error(err)
-				})
-			}
 		},
 		onHide() {
 			wx.stopAccelerometer();
@@ -260,7 +269,7 @@
 		},
 		methods: {
 			...mapMutations(["saveLoginUserInfo"]),
-			openIntroduction(){
+			openIntroduction() {
 				console.log('click');
 				uni.navigateTo({
 					url: '/pages/happiness/introduction'
@@ -474,7 +483,7 @@
 					}
 				});
 			},
-			loadRecImageOrStartToCrop(tempImagePath){
+			loadRecImageOrStartToCrop(tempImagePath) {
 				this.ownImageUsed = true;
 				let self = this;
 				uni.getImageInfo({
@@ -510,13 +519,17 @@
 			checkAdBeforeSave() {
 				console.log('enableRewardedVideoAd', this.enableRewardedVideoAd);
 				console.log('videoAd', videoAd);
-				console.log('adAlreadyShow', this.adAlreadyShow);
 				console.log('ownImageUsed', this.ownImageUsed);
-				console.log('exceed', this.savedCounts >= this.freeCount);
 				console.log('this.savedCounts', this.savedCounts);
 				console.log('this.freeCount', this.freeCount);
-				if (this.enableRewardedVideoAd && !!videoAd && !this.adAlreadyShow &&
-					this.savedCounts >= this.freeCount && this.ownImageUsed) {
+				console.log('this.savedCounts >= this.freeCount', this.savedCounts >= this.freeCount);
+				console.log('interstitialAdAlreadyShow', this.interstitialAdAlreadyShow);
+				console.log('this.rewardedVideoAdAlreadyShow', this.rewardedVideoAdAlreadyShow);
+				console.log('this.rewardedVideoAdLoaded', this.rewardedVideoAdLoaded);
+				// 有成功加载的激励视频，才展现提示框
+				let _this = this;
+				if (!!videoAd && this.enableRewardedVideoAd && this.rewardedVideoAdLoaded 
+				&& !this.rewardedVideoAdAlreadyShow && this.savedCounts >= this.freeCount) {
 					uni.showModal({
 						title: '获取无限使用次数',
 						content: '请完整观看趣味广告视频',
@@ -539,6 +552,7 @@
 								}
 							} else if (res.cancel) {
 								console.log('用户点击取消');
+								// _this.saveCans();
 								return;
 							}
 						}
@@ -579,12 +593,22 @@
 									}
 								});
 								_this.savedCounts++;
-								// 在适合的场景显示插屏广告
-								if (interstitialAd) {
-								  _this.adAlreadyShow = true;
-								  interstitialAd.show().catch((err) => {
-								    console.error(err)
-								  })
+								// 保存时，如果没有激励广告则展示一次插屏广告，因为一个完整操作流程已结束，提升广告曝光
+								if (interstitialAd && _this.enableInterstitialAd && !_this.interstitialAdAlreadyShow
+									&& !_this.rewardedVideoAdAlreadyShow) {// 没有激励广告才在保存时展示插屏广告
+									interstitialAd.show()
+									.then(()=>{
+										_this.interstitialAdAlreadyShow = true;
+									})
+									.catch((err) => {
+										interstitialAd.load().then(() => {
+											interstitialAd.show();
+										}).catch(err => {
+											console.log(err);
+											console.log('插屏广告显示失败')
+										})
+										console.error(err)
+									})
 								}
 								console.log('保存成功')
 							},
@@ -628,8 +652,8 @@
 				});
 				this.hideModal();
 			},
-			imageCheck: function(tempImagePath, callback){
-				if(!getApp().globalData.enableSecurityCheck){
+			imageCheck: function(tempImagePath, callback) {
+				if (!getApp().globalData.enableSecurityCheck) {
 					callback(tempImagePath);
 					return;
 				}
@@ -684,7 +708,7 @@
 								})
 							}
 						})
-				
+
 					}
 				})
 			}

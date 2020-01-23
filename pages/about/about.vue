@@ -119,7 +119,9 @@
 			    adUnitId: 'adunit-beed4816676d471a'
 			  })
 			  interstitialAd.onLoad(() => {})
-			  interstitialAd.onError((err) => {})
+			  interstitialAd.onError((err) => {
+				  console.log(err);
+			  })
 			  interstitialAd.onClose(() => {})
 			}
 		},
