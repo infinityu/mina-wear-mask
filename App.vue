@@ -8,7 +8,9 @@
 			cropImageFilePath: '',
 			rapaintAfterCrop: false,
 			PAGE_BG_COLOR: '#C12928',
-			enableSecurityCheck: true
+			enableSecurityCheck: true,
+			showQuestion: false,
+			questionUrl: ''
 		},
 		onLaunch: function() {
 			console.log('App Launch');

@@ -24,12 +24,18 @@
 			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px;" class="isCan"></canvas>
 		</view>
 		<!-- <view class="flex-sub text-center" @click="openIntroduction"> -->
-		<view class="flex-sub text-center" >
+		<view v-if="showQuestion" class="flex-sub text-center" @click="openIntroduction">
 			<view class="solid-bottom padding">
 				<text class="text-orange">点击头像或摇一摇换福字</text> 
 				<text class="lg text-orange cuIcon-question" style="margin-left: 5px;"></text>
 			</view>
 		</view>
+		<view v-else class="flex-sub text-center" >
+			<view class="solid-bottom padding">
+				<text class="text-orange">点击头像或摇一摇换福字</text> 
+			</view>
+		</view>
+		
 		<view class="grid justify-around action-wrapper">
 			<view class="grid col-1">
 				<button id="btn-my-avatar" class="cu-btn round action-btn bg-yellow shadow " open-type="getUserInfo" @getuserinfo="getUserInfoCallBack">我的头像</button>
@@ -92,7 +98,9 @@
 	import tuiFooter from "@/components/footer";
 
 	// 在页面中定义激励视频广告
-	let videoAd = null
+	let videoAd = null;
+	// 在页面中定义插屏广告
+	let interstitialAd = null
 
 	export default {
 		components: {
@@ -130,7 +138,8 @@
 				showGentleMessage: false,
 				savedCounts: 0,
 				freeCount: 1,
-				enableRewardedVideoAd: false,
+				enableRewardedVideoAd: true,
+				showQuestion: false,
 				adAlreadyShow: false,
 				ownImageUsed: false,
 				envId: 'happiness-production-yy81s',
@@ -168,8 +177,21 @@
 				console.log('res.data.free_count', res.data.free_count);
 				_this.freeCount = res.data.free_count;
 				_this.enableRewardedVideoAd = res.data.enableRewardedVideoAd;
+				_this.showQuestion = res.data.show_question;
+				getApp().globalData.showQuestion = res.data.show_question;
+				getApp().globalData.questionUrl = res.data.question_url;
 				getApp().globalData.enableSecurityCheck = res.data.enableSecurityCheck;
 			})
+
+			// 在页面onLoad回调事件中创建插屏广告实例
+			if (wx.createInterstitialAd) {
+			  interstitialAd = wx.createInterstitialAd({
+			    adUnitId: 'adunit-beed4816676d471a'
+			  })
+			  interstitialAd.onLoad(() => {})
+			  interstitialAd.onError((err) => {})
+			  interstitialAd.onClose(() => {})
+			}
 
 			// 在页面onLoad回调事件中创建激励视频广告实例
 			if (wx.createRewardedVideoAd) {
@@ -213,6 +235,14 @@
 				interval: 'normal'
 			});
 			wx.onAccelerometerChange(this.shake);
+			
+			// 在适合的场景显示插屏广告
+			if (interstitialAd) {
+				this.adAlreadyShow = true;
+				interstitialAd.show().catch((err) => {
+					console.error(err)
+				})
+			}
 		},
 		onHide() {
 			wx.stopAccelerometer();
@@ -549,9 +579,13 @@
 									}
 								});
 								_this.savedCounts++;
-								// uni.switchTab({
-								// 	url: '/pages/happiness/introduction'
-								// });
+								// 在适合的场景显示插屏广告
+								if (interstitialAd) {
+								  _this.adAlreadyShow = true;
+								  interstitialAd.show().catch((err) => {
+								    console.error(err)
+								  })
+								}
 								console.log('保存成功')
 							},
 							fail(res) {
