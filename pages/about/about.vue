@@ -18,42 +18,28 @@
 			</view>
 		</view>
 
-		<view class="cu-list menu sm-border card-menu animation-shake animation-speed-2 animation-delay-3" style="width: 525rpx; margin-top: 150rpx;">
-			<!-- <view class="cu-item arrow">
-				<view class="content" @click="showModal" data-target="Modal">
-					<text class="cuIcon-btn text-green"></text>
-					<text class="text-grey">申请关联公众号</text>
-				</view>
-			</view> -->
-			<view class="cu-item arrow feedback-btn" @click="tucao">
+		<view class="margin-top cu-list menu sm-border card-menu animation-shake animation-speed-2 animation-delay-3" style="width: 525rpx;">
+			<view class="cu-item arrow feedback-btn">
 				<view class="content">
-					<text class="cuIcon-comment text-green"></text>
-					<text class="text-grey">意见反馈</text>
-				</view>
-				<view class="action">
-					<text class="text-grey text-sm"></text>
+					<button class="free-btn-bordernone" open-type="contact" >
+						<tui-icon name="kefu" color="green" :size="20"></tui-icon>
+						<text style="color: grey; padding-left: 10px;" class="text-sm">
+							联系客服
+						</text>
+					</button>
 				</view>
 			</view>
-			<!-- <view class="cu-item" :class="menuArrow?'arrow':''">
+			<view class="cu-item arrow feedback-btn" @click="tucao">
 				<view class="content">
-					<text class="cuIcon-more text-red  margin-right-xs"></text>
-					<text class="text-grey">更多小程序</text>
+					<button class="free-btn-bordernone">
+						<tui-icon name="message" color="green" :size="20"></tui-icon>
+						<text style="color: grey; padding-left: 10px;" class="text-sm">
+							产品建议
+						</text>
+					</button>
+					<!-- <text class="cuIcon-comment text-green"></text> -->
 				</view>
-				<view class="action">
-					<text class="text-grey text-sm"> 敬请期待！</text>
-				</view>
-			</view> -->
-			<!-- <view class="cu-item">
-				<view class="content padding-tb-sm">
-					<view>
-						<text class="cuIcon-clothesfill text-blue margin-right-xs"></text> 多行Item</view>
-					<view class="text-gray text-sm">
-						<text class="cuIcon-infofill margin-right-xs"></text> 小目标还没有实现！</view>
-				</view>
-				<view class="action">
-					<switch class="switch-sex" @change="SwitchSex" :class="skin?'checked':''" :checked="skin?true:false"></switch>
-				</view>
-			</view> -->
+			</view>
 		</view>
 
 		<view @click="showModal" data-target="Modal" id="btn-footer-oa">
@@ -89,14 +75,16 @@
 		mapState,
 		mapMutations
 	} from "vuex";
-	import tuiFooter from "@/components/footer";
-	
+	import tuiFooter from "@/components/tui/footer";
+	import tuiIcon from "@/components/tui/icon"
+
 	// 在页面中定义插屏广告
 	let interstitialAd = null
-	
+
 	export default {
 		components: {
-			tuiFooter
+			tuiFooter,
+			tuiIcon
 		},
 		data() {
 			return {
@@ -115,23 +103,23 @@
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
 			// 在页面onLoad回调事件中创建插屏广告实例
 			if (wx.createInterstitialAd) {
-			  interstitialAd = wx.createInterstitialAd({
-			    adUnitId: 'adunit-beed4816676d471a'
-			  })
-			  interstitialAd.onLoad(() => {})
-			  interstitialAd.onError((err) => {
-				  console.log(err);
-			  })
-			  interstitialAd.onClose(() => {})
+				interstitialAd = wx.createInterstitialAd({
+					adUnitId: 'adunit-beed4816676d471a'
+				})
+				interstitialAd.onLoad(() => {})
+				interstitialAd.onError((err) => {
+					console.log(err);
+				})
+				interstitialAd.onClose(() => {})
 			}
 		},
 		onShow() {
 			// 在适合的场景显示插屏广告
 			console.log('interstitialAd', !!interstitialAd);
 			if (interstitialAd) {
-			  interstitialAd.show().catch((err) => {
-			    console.error(err)
-			  })
+				interstitialAd.show().catch((err) => {
+					console.error(err)
+				})
 			}
 		},
 		computed: {
@@ -154,8 +142,13 @@
 			},
 			hideModal: function(e) {
 				this.modalName = null;
+			},
+			handleContact: function(e) {
+				console.log(e.detail.path)
+				console.log(e.detail.query)
 			}
-		},onShareAppMessage() {
+		},
+		onShareAppMessage() {
 			return {
 				title: '头像加福贺新春',
 				desc: '贺新春，贴福字，为你的头像加个福字吧',
@@ -179,5 +172,15 @@
 	.card-menu {
 		margin-left: auto;
 		margin-right: auto;
+	}
+
+	.free-btn-bordernone {
+		background: none !important;
+		color: #000 !important;
+		display: inline-block !important;
+	}
+
+	.free-btn-bordernone::after {
+		border: none;
 	}
 </style>

@@ -43,7 +43,7 @@
 		mapState,
 		mapMutations
 	} from "vuex";
-	import tuiFooter from "@/components/footer";
+	import tuiFooter from "@/components/tui/footer";
 	export default {
 		components: {
 			tuiFooter

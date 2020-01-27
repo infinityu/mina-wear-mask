@@ -1,9 +1,9 @@
 {
 	"condition": { //模式配置，仅开发期间生效
-		"current": 4, //当前激活的模式(list 的索引项)
+		"current": 0, //当前激活的模式(list 的索引项)
 		"list": [{
-			"name": "", //模式名称
-			"path": "", //启动页面，必选
+			"name": "About", //模式名称
+			"path": "pages/about/about", //启动页面，必选
 			"query": "" //启动参数，在页面的onLoad函数里面得到
 		}]
 	},
@@ -42,31 +42,6 @@
 			"path": "pages/happiness/introduction"
 		}
 		
-		// {
-		// 	"path": "pages/wish/wish-swiper",
-		// 	"style": {
-		// 		"navigationStyle": "custom",
-		// 		"app-plus": {
-		// 			"titleView": false
-		// 		}
-		// 	}
-		// },
-		
-		// {
-		// 	"path": "pages/wish/wish-history",
-		// 	"style": {}
-		// },
-
-		// {
-		// 	"path": "pages/news/list",
-		// 	"style": {
-		// 		"navigationBarTitleText": "Wish",
-		// 		"enablePullDownRefresh": true
-		// 	}
-		// }, {
-		// 	"path": "pages/news/info",
-		// 	"style": {}
-		// }
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
@@ -81,40 +56,12 @@
 		"borderStyle": "black",
 		"backgroundColor": "#ffffff",
 		"list": [
-			// {
-			// 	"pagePath": "pages/wish/wish-swiper",
-			// 	"iconPath": "static/tabbar/happiness3.png",
-			// 	"selectedIconPath": "static/tabbar/happiness.png",
-			// 	"text": "收祝福"
-			// }, {
-			// 	"pagePath": "pages/wish/wish-send",
-			// 	"iconPath": "static/tabbar/happiness3.png",
-			// 	"selectedIconPath": "static/tabbar/happiness.png",
-			// 	"text": "送祝福"
-			// }, {
-			// 	"pagePath": "pages/wish/wish-history",
-			// 	"iconPath": "static/tabbar/happiness3.png",
-			// 	"selectedIconPath": "static/tabbar/happiness.png",
-			// 	"text": "祝福记录"
-			// }, 
-			// {
-			// 	"pagePath": "pages/crop/crop",
-			// 	"iconPath": "static/tabbar/happiness3.png",
-			// 	"selectedIconPath": "static/tabbar/happiness.png",
-			// 	"text": "剪裁"
-			// },
 			{
 				"pagePath": "pages/happiness/add-happiness",
 				"iconPath": "static/tabbar/happiness3.png",
 				"selectedIconPath": "static/tabbar/happiness.png",
 				"text": "加福字"
 			}, 
-			// {
-			// 	"pagePath": "pages/share/share",
-			// 	"iconPath": "static/tabbar/happiness3.png",
-			// 	"selectedIconPath": "static/tabbar/happiness.png",
-			// 	"text": "送福字"
-			// },
 			{
 				"pagePath": "pages/about/about",
 				"iconPath": "static/tabbar/happiness3.png",

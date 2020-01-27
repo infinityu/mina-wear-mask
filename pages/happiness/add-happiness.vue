@@ -95,7 +95,7 @@
 		mapState,
 		mapMutations
 	} from "vuex";
-	import tuiFooter from "@/components/footer";
+	import tuiFooter from "@/components/tui/footer";
 
 	// 在页面中定义激励视频广告
 	let videoAd = null;
