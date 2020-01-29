@@ -14,6 +14,8 @@
 			PAGE_BG_COLOR: '#C12928',
 			enableSecurityCheck: true,
 			showQuestion: false,
+			userAvatarUrl: null,
+			userAvatarFilePath: null,
 			questionUrl: ''
 		},
 		onLaunch: function() {

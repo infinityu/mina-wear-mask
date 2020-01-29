@@ -107,6 +107,9 @@
 		},
 		onLoad(option) {
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
+			if(!!getApp().globalData.userAvatarFilePath){
+				this.avatarPath = getApp().globalData.userAvatarFilePath;
+			}
 		},
 		onShow() {
 			if (getApp().globalData.rapaintAfterCrop) {
@@ -114,6 +117,7 @@
 				this.avatarPath = getApp().globalData.cropImageFilePath;
 				this.paint();
 			}
+			
 		},
 		onShareAppMessage() {
 			return {
@@ -208,12 +212,14 @@
 				}
 				let userInfo = result.detail.userInfo;
 				userInfo.avatarUrl = userInfo.avatarUrl.replace("132", "0"); // 使用最大分辨率头像 959 * 959
+				getApp().globalData.userAvatarUrl = userInfo.avatarUrl;
 				let self = this;
 				uni.downloadFile({
 					url: userInfo.avatarUrl,
 					success: function(res) {
 						uni.hideLoading();
 						self.avatarPath = res.tempFilePath;
+						getApp().globalData.userAvatarFilePath = res.tempFilePath;
 					},
 					fail: function(e) {
 						console.log(e);

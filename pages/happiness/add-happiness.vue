@@ -64,6 +64,9 @@
 					分享朋友圈<text class="cuIcon-forward"></text></button>
 			</view> -->
 		</view>
+
+		<tui-fab :left="left" :right="fabRight" :bottom="fabBottom" :bgColor="fabBgColor" :btnList="btnList" @click="onClickFab"></tui-fab>
+
 		<!-- <view>
 			<tui-footer :fixed="true" :copyright="copyright"></tui-footer>
 		</view> -->
@@ -96,6 +99,7 @@
 		mapMutations
 	} from "vuex";
 	import tuiFooter from "@/components/tui/footer";
+	import tuiFab from "@/components/tui/tui-fab"
 
 	// 在页面中定义激励视频广告
 	let videoAd = null;
@@ -104,10 +108,23 @@
 
 	export default {
 		components: {
-			tuiFooter
+			tuiFooter,
+			tuiFab
 		},
 		data() {
 			return {
+				fabBgColor: "#FFD314",
+				fabRight: 50,
+				fabBottom: 50,
+				btnList: [{
+					bgColor: "#64B532",
+					//名称
+					text: "戴口罩",
+					//字体大小
+					fontSize: 28,
+					//字体颜色
+					color: "#fff"
+				}],
 				windowHeight: 0,
 				cansWidth: 270, // 宽度 px
 				cansHeight: 270, // 高度 px
@@ -165,6 +182,10 @@
 			}
 		},
 		onLoad(option) {
+			if (!!getApp().globalData.userAvatarFilePath) {
+				this.avatarPath = getApp().globalData.userAvatarFilePath;
+			}
+
 			this.ctx = uni.createCanvasContext('cans-id-happines', this);
 			this.paint();
 
@@ -225,7 +246,7 @@
 
 				})
 			}
-		
+
 		},
 		onShow() {
 			console.log("onshow");
@@ -235,16 +256,16 @@
 				getApp().globalData.rapaintAfterCrop = false;
 				this.avatarPath = getApp().globalData.cropImageFilePath;;
 				this.paint();
-			} else { 
+			} else {
 				//从剪裁页面跳转回来时不用展示，其他情况下，页面打开时展示插屏广告
 				if (interstitialAd && this.enableInterstitialAd && !this.interstitialAdAlreadyShow) {
 					interstitialAd.show()
-					.then(()=>{
-						this.interstitialAdAlreadyShow = true;
-					})
-					.catch((err) => {
-						console.error(err)
-					})
+						.then(() => {
+							this.interstitialAdAlreadyShow = true;
+						})
+						.catch((err) => {
+							console.error(err)
+						})
 				}
 			}
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
@@ -417,16 +438,8 @@
 					success: function(res) {
 						uni.hideLoading();
 						self.avatarPath = res.tempFilePath;
+						getApp().globalData.userAvatarFilePath = res.tempFilePath;
 						self.paint();
-						// wx.getImageInfo({
-						//   src: res.tempFilePath,
-						//   success (res) {
-						// 	  console.log('getImageInfo');
-						//     console.log(res.width)
-						//     console.log(res.height)
-						//   }
-						// })
-
 					},
 					fail: function(e) {
 						console.log(e);
@@ -463,6 +476,7 @@
 				let userInfo = result.detail.userInfo;
 				console.log(userInfo);
 				userInfo.avatarUrl = userInfo.avatarUrl.replace("132", "0"); // 使用最大分辨率头像 959 * 959
+				getApp().globalData.userAvatarUrl = userInfo.avatarUrl;
 				this.downloadAvatarAndPaintAll(userInfo.avatarUrl);
 				this.saveLoginUserInfo(userInfo);
 			},
@@ -528,8 +542,8 @@
 				console.log('this.rewardedVideoAdLoaded', this.rewardedVideoAdLoaded);
 				// 有成功加载的激励视频，才展现提示框
 				let _this = this;
-				if (!!videoAd && this.enableRewardedVideoAd && this.rewardedVideoAdLoaded 
-				&& !this.rewardedVideoAdAlreadyShow && this.savedCounts >= this.freeCount) {
+				if (!!videoAd && this.enableRewardedVideoAd && this.rewardedVideoAdLoaded &&
+					!this.rewardedVideoAdAlreadyShow && this.savedCounts >= this.freeCount) {
 					uni.showModal({
 						title: '获取无限使用次数',
 						content: '请完整观看趣味广告视频',
@@ -594,21 +608,21 @@
 								});
 								_this.savedCounts++;
 								// 保存时，如果没有激励广告则展示一次插屏广告，因为一个完整操作流程已结束，提升广告曝光
-								if (interstitialAd && _this.enableInterstitialAd && !_this.interstitialAdAlreadyShow
-									&& !_this.rewardedVideoAdAlreadyShow) {// 没有激励广告才在保存时展示插屏广告
+								if (interstitialAd && _this.enableInterstitialAd && !_this.interstitialAdAlreadyShow &&
+									!_this.rewardedVideoAdAlreadyShow) { // 没有激励广告才在保存时展示插屏广告
 									interstitialAd.show()
-									.then(()=>{
-										_this.interstitialAdAlreadyShow = true;
-									})
-									.catch((err) => {
-										interstitialAd.load().then(() => {
-											interstitialAd.show();
-										}).catch(err => {
-											console.log(err);
-											console.log('插屏广告显示失败')
+										.then(() => {
+											_this.interstitialAdAlreadyShow = true;
 										})
-										console.error(err)
-									})
+										.catch((err) => {
+											interstitialAd.load().then(() => {
+												interstitialAd.show();
+											}).catch(err => {
+												console.log(err);
+												console.log('插屏广告显示失败')
+											})
+											console.error(err)
+										})
 								}
 								console.log('保存成功')
 							},
@@ -711,8 +725,45 @@
 
 					}
 				})
+			},
+			onClickFab(e) {
+				let index = e.index
+
+				switch (index) {
+					case -1:
+						break;
+					case 0:
+						uni.switchTab({
+							url: "/pages/happiness/add-mask"
+						})
+						break;
+					case 1:
+						// #ifdef MP || H5
+						this.clipboard("https://thorui.cn/")
+						// #endif
+						//#ifdef APP-PLUS
+						plus.share.sendWithSystem({
+							content: "ThorUI组件库",
+							href: 'https://thorui.cn/'
+						}, function() {
+							console.log('分享成功');
+						}, function(e) {
+							console.log('分享失败：' + JSON.stringify(e));
+						});
+						//#endif
+						break;
+					case 2:
+						uni.previewImage({
+							urls: ["https://thorui.cn/img/reward.jpg"]
+						})
+						break;
+					default:
+						break;
+				}
 			}
-		}
+
+		},
+
 	}
 </script>
 
