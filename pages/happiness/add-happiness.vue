@@ -57,7 +57,7 @@
 			<view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
 				<!-- <button class="cu-btn block shaline-orange lg" open-type="share"> -->
 				<button class="cu-btn block line-orange lg share-btn" open-type="share">
-					<text class="cuIcon-upload"></text> 分享给好友</button>
+					<text class="cuIcon-upload"></text> 送福给好友</button>
 			</view>
 			<!-- <view class="grid col-3 animation-shake animation-speed-2 animation-delay-3">
 				<button class="cu-btn round action-btn bg-yellow shadow" @click="toSharePage" data-target="image">
@@ -189,7 +189,7 @@
 			// 在页面onLoad回调事件中创建插屏广告实例
 			if (wx.createInterstitialAd) {
 				interstitialAd = wx.createInterstitialAd({
-					adUnitId: 'adunit-beed4816676d471a'
+					adUnitId: 'adunit-6a39f22d22569c87'
 				})
 				interstitialAd.onLoad(() => {})
 				interstitialAd.onError((err) => {})

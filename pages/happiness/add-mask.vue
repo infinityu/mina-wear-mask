@@ -38,7 +38,8 @@
 		<scroll-view class="scrollView mask-scroll-view" scroll-x="true">
 			<view v-for="(item,index) in imgList" :key="index" style="display: inline-flex;">
 
-				<text v-if="currentMaskId == index && isAndroid" class="cuIcon-order cancel circle" @click="flipHorizontal" id="cancel" :style="{transform: 'rotate(' +90+ 'deg)'}"></text>
+				<text v-if="currentMaskId == index && isAndroid" class="cuIcon-order cancel circle" @click="flipHorizontal" id="cancel"
+				 :style="{transform: 'rotate(' +90+ 'deg)'}"></text>
 				<image class="imgList" :src="'/static/image/mask/mask'+ index +'.png'" :data-mask-id="index" @tap="changeMask"></image>
 			</view>
 		</scroll-view>
@@ -71,7 +72,7 @@
 				avatarPath: '/static/image/mask/avatar_mask.png',
 				imgList: [0, 1, 2, 3, 4],
 				currentMaskId: -1,
-				showBorder: false, 
+				showBorder: false,
 				maskCenterX: wx.getSystemInfoSync().windowWidth / 2,
 				maskCenterY: 250,
 				cancelCenterX: wx.getSystemInfoSync().windowWidth / 2 - 50 - 2,
@@ -127,9 +128,8 @@
 		},
 		methods: {
 			...mapMutations(["saveLoginUserInfo"]),
-			paint() {
-			},
-			touchAvatarBg(){
+			paint() {},
+			touchAvatarBg() {
 				this.showBorder = false;
 			},
 			touchStart(e) {
@@ -155,12 +155,9 @@
 				this.cancel_center_y = this.cancelCenterY;
 				this.handle_center_x = this.handleCenterX;
 				this.handle_center_y = this.handleCenterY;
-				// }
 				this.touch_target = "";
 				this.scaleCurrent = this.scale;
 				this.rotateCurrent = this.rotate;
-				console.log('this.scale', this.scale);
-				console.log('this.rotate', this.rotate);
 			},
 			touchMove(e) {
 				var current_x = e.touches[0].clientX;
@@ -174,8 +171,6 @@
 					this.cancelCenterY = this.cancelCenterY + moved_y;
 					this.handleCenterX = this.handleCenterX + moved_x;
 					this.handleCenterY = this.handleCenterY + moved_y;
-					console.log('maskCenterX', this.maskCenterX);
-					console.log('maskCenterY', this.maskCenterY);
 				};
 				if (this.touch_target == "handle") {
 					this.handleCenterX = this.handleCenterX + moved_x;
@@ -192,9 +187,6 @@
 					let angle_after = Math.atan2(diff_y_after, diff_x_after) / Math.PI * 180;
 
 					this.scale = distance_after / distance_before * this.scaleCurrent;
-					console.log('distance_after', distance_after);
-					console.log('distance_before', distance_before);
-					console.log('this.scaleCurrent', this.scaleCurrent);
 					this.rotate = angle_after - angle_before + this.rotateCurrent;
 				}
 				this.start_x = current_x;
@@ -215,7 +207,6 @@
 					return;
 				}
 				let userInfo = result.detail.userInfo;
-				console.log(userInfo);
 				userInfo.avatarUrl = userInfo.avatarUrl.replace("132", "0"); // 使用最大分辨率头像 959 * 959
 				let self = this;
 				uni.downloadFile({
@@ -252,10 +243,8 @@
 					sizeType: ['compressed'], //可以指定是原图还是压缩图，默认二者都有
 					sourceType: ['album', 'camera'],
 					success: function(res) {
-						console.log(res);
 						let tempImagePath = res.tempFilePaths[0];
 						self.imageCheck(tempImagePath, self.loadRecImageOrStartToCrop);
-						// self.loadRecImageOrStartToCrop(tempImagePath);
 					}
 				});
 			},
@@ -283,7 +272,6 @@
 				});
 			},
 			changeMask(e) {
-				console.log(e);
 				this.currentMaskId = e.target.dataset.maskId
 			},
 			draw() {
@@ -292,17 +280,14 @@
 				let mask_center_x = this.mask_center_x;
 				let mask_center_y = this.mask_center_y;
 				let _this = this;
-				//创建节点选择器
+				// 创建节点选择器
+				// 口罩中心位置的计算是从屏幕左上角开始，所以我们需要获取头像图片的位置，来得到口罩相对头像的位置
 				var query = wx.createSelectorQuery();
 				query.select('#avatar-bg').boundingClientRect()
 				query.exec(function(res) {
 					//res就是 所有标签为#的元素的信息的数组
-					console.log(res);
-					//取高度
 					mask_center_x = mask_center_x - res[0].left;
 					mask_center_y = mask_center_y - res[0].top;
-					console.log('mask_center_x', mask_center_x);
-					console.log('mask_center_y', mask_center_y);
 					const pc = wx.createCanvasContext('cans-id-mask');
 					const windowWidth = wx.getSystemInfoSync().windowWidth;
 					const mask_size = 100 * scale;
@@ -311,7 +296,7 @@
 					pc.drawImage(_this.avatarPath, 0, 0, _this.cansWidth, _this.cansHeight);
 					pc.translate(mask_center_x, mask_center_y);
 					pc.rotate(rotate * Math.PI / 180);
-					if(_this.isAndroid) {
+					if (_this.isAndroid) {
 						_this.rotateY == 180 && pc.scale(-1, 1);
 					}
 					pc.drawImage(_this.maskPic, -mask_size / 2, -mask_size / 2, mask_size, mask_size);
@@ -321,13 +306,11 @@
 			},
 			flipHorizontal() {
 				this.rotateY = this.rotateY == 0 ? 180 : 0;
-				console.log('rotateY', this.rotateY);
 			},
 			/**
 			 * 保存
 			 */
 			saveCans() {
-				console.log('保存...')
 				let _this = this;
 				uni.showLoading({
 					title: '保存...',
@@ -402,7 +385,6 @@
 				}, this)
 			},
 			showModal: function(e) {
-				console.log(e.currentTarget.dataset);
 				this.modalName = e.currentTarget.dataset.target;
 			},
 			hideModal: function(e) {
@@ -419,11 +401,9 @@
 					quality: 1,
 					success: res => {
 						let tempFilePathCompressed = res.tempFilePath;
-						// console.log(res.tempFilePath)
 						wx.getFileSystemManager().readFile({
 							filePath: tempFilePathCompressed, // 压缩图片，然后安全检测
 							success: buffer => {
-								console.log(buffer.data);
 								uni.showLoading({
 									title: '加载中...'
 								});
@@ -484,7 +464,6 @@
 		margin-left: auto;
 		margin-right: auto;
 		// background-size: 100%;
-
 	}
 
 	.avatar-bg-border {
@@ -520,14 +499,14 @@
 		width: 100px;
 		position: absolute;
 		top: 100px;
-		border: 3px;
+		border: 3px solid rgba(255, 255, 255, 0.0);
 	}
-	
-	.maskWithBorder{
+
+	.maskWithBorder {
 		border: dashed 3px white;
 	}
-	
-	.hideHandle{
+
+	.hideHandle {
 		display: none;
 	}
 
@@ -569,7 +548,6 @@
 		top: 2000px;
 		left: 1000px;
 	}
-
 
 	.flip-horizontal {
 		-moz-transform: scaleX(-1);
