@@ -159,7 +159,10 @@
 				rotateCurrent: 0,
 				touch_target: "",
 				start_x: 0,
-				start_y: 0
+				start_y: 0,
+				envId: 'happiness-production-yy81s',
+				collectionName: 'ad_config',
+				docId: 'add_happiness_rwzc'
 			}
 		},
 		computed: {
@@ -175,6 +178,15 @@
 			if (!!getApp().globalData.userAvatarFilePath) {
 				this.avatarPath = getApp().globalData.userAvatarFilePath;
 			}
+			const db = wx.cloud.database({
+				env: this.envId,
+				traceUser: true
+			});
+			
+			let _this = this;
+			db.collection(this.collectionName).doc(this.docId).get().then(res => {
+				getApp().globalData.enableSecurityCheck = res.data.enableSecurityCheck;
+			})
 		},
 		onShow() {
 			if (getApp().globalData.rapaintAfterCrop) {
