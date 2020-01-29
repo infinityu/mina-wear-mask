@@ -38,14 +38,6 @@
 			}
 		},
 		{
-			"path": "pages/share/share",
-			"style": {
-				"navigationBarBackgroundColor": "#C12928",
-				"disableScroll": true,
-				"navigationStyle": "custom"
-			}
-		},
-		{
 			"path": "pages/about/about",
 			"style": {
 				"navigationBarBackgroundColor": "#C12928",

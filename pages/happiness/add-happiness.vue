@@ -124,7 +124,16 @@
 					fontSize: 28,
 					//字体颜色
 					color: "#fff"
-				}],
+				},{
+					bgColor: "#C12928",
+					//名称
+					text: "过大年",
+					//字体大小
+					fontSize: 28,
+					//字体颜色
+					color: "#fff"
+				}
+				],
 				windowHeight: 0,
 				cansWidth: 270, // 宽度 px
 				cansHeight: 270, // 高度 px
@@ -738,25 +747,15 @@
 						})
 						break;
 					case 1:
-						// #ifdef MP || H5
-						this.clipboard("https://thorui.cn/")
-						// #endif
-						//#ifdef APP-PLUS
-						plus.share.sendWithSystem({
-							content: "ThorUI组件库",
-							href: 'https://thorui.cn/'
-						}, function() {
-							console.log('分享成功');
-						}, function(e) {
-							console.log('分享失败：' + JSON.stringify(e));
-						});
-						//#endif
-						break;
-					case 2:
-						uni.previewImage({
-							urls: ["https://thorui.cn/img/reward.jpg"]
+						uni.switchTab({
+							url: "/pages/about/about"
 						})
 						break;
+					// case 2:
+					// 	uni.previewImage({
+					// 		urls: ["https://thorui.cn/img/reward.jpg"]
+					// 	})
+					// 	break;
 					default:
 						break;
 				}

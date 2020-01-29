@@ -11,6 +11,8 @@
 			<image class="mask flip-horizontal" :class="{maskWithBorder: showBorder}" id='mask' :src="maskPic" :style="{top:maskCenterY-maskSize/2-2+'px', left:maskCenterX-maskSize/2-2+'px',
 				transform: 'rotate(' +rotate+ 'deg)' + 'scale(' +scale+')' + 'rotateY('+ rotateY +'deg)'}"></image>
 			<text class="cuIcon-full handle circle" :class="{hideHandle: !showBorder}" id="handle" :style="{top:handleCenterY-10 + 'px', left:handleCenterX-10 +'px'}"></text>
+			<text class="cuIcon-order cancel circle" v-if="isAndroid" :class="{hideHandle: !showBorder}" id="cancel" @click="flipHorizontal"
+			 :style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 +'px', transform: 'rotate(' +90+ 'deg)'}"></text>
 		</view>
 		<view>
 			<canvas class="cans-id-mask" canvas-id="cans-id-mask" style="height:270px;width:270px;margin-left: auto;margin-right: auto;" />
@@ -35,14 +37,71 @@
 			</view>
 		</view>
 
+		<!-- <view class="infoView" style="display: none;">
+			<text>
+				一定要戴N95口罩才行吗？
+				国家卫健委高级别专家组组长钟南山院士接受白岩松采访时表示，实际上并不一定非要戴N95，因为病毒不是单独的存在，它常常存在飞沫里。一般的外科口罩还是能够阻挡大部分的，也就是说以自我防护、降低呼吸道感染风险为目的，佩戴医用外科口罩、N95型口罩都可以。如果是去一般露天公共场所、不与病人接触，可以选择佩戴医用外科口罩，不必过度防护，不去和专业医护人员争抢紧缺的N95口罩资源。
+			</text>
+		</view> -->
+
 		<scroll-view class="scrollView mask-scroll-view" scroll-x="true">
 			<view v-for="(item,index) in imgList" :key="index" style="display: inline-flex;">
-
 				<text v-if="currentMaskId == index && isAndroid" class="cuIcon-order cancel circle" @click="flipHorizontal" id="cancel"
 				 :style="{transform: 'rotate(' +90+ 'deg)'}"></text>
+				<!-- <text v-if="currentMaskId == index" style="margin-left: 55px;" class="cuIcon-question cancel circle" @click="showTips"
+				 id="cancel"></text> -->
 				<image class="imgList" :src="'/static/image/mask/mask'+ index +'.png'" :data-mask-id="index" @tap="changeMask"></image>
 			</view>
 		</scroll-view>
+
+		<view class="cu-modal" :class="modalName=='saveTip'?'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content"> 已保存至相册</view>
+					<view class="action" @tap="hideModal">
+						<text class="cuIcon-close text-red"></text>
+					</view>
+				</view>
+				<view class="padding-xl">
+					预防千万条，口罩第一条。
+					健康第一位，不要吃野味。
+					不往人群挤，病毒不找你。
+					洗手很重要，胜过吃补药。
+					通风也要紧，疾病无踪影。
+				</view>
+				<view class="padding">
+					祝大家平安过节！戴口罩，勤洗手，早睡早起，健康美丽！
+				</view>
+				<view class="cu-bar bg-white justify-end">
+					<view class="action">
+						<button class="cu-btn line-green text-green" @tap="hideModal">我知道了</button>
+					</view>
+				</view>
+			</view>
+		</view>
+
+		<view class="cu-modal" :class="modalName=='tips'?'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">一定要戴N95口罩吗？</view>
+					<view class="action" @tap="hideModal">
+						<text class="cuIcon-close text-red"></text>
+					</view>
+				</view>
+				<view class="padding-xl">
+					N95口罩：是美国NIOSH(国家职业安全健康研究所)对美国职业用防颗粒物呼吸器过滤效率级别的最低一档,指对非油性颗粒物(如粉尘、漆雾、酸雾、微生物等)
+					网上套路写着细菌过滤95%的，并不是符合N95标准的口罩，要注意甄别是否有GB 2626-2006标准的「KN95」或者NIOSH标准的「N95」的标识。
+				</view>
+				<view class="padding">
+					国家卫健委高级别专家组组长钟南山院士接受白岩松采访时表示，实际上并不一定非要戴N95，因为病毒不是单独的存在，它常常存在飞沫里。一般的外科口罩还是能够阻挡大部分的，也就是说以自我防护、降低呼吸道感染风险为目的，佩戴医用外科口罩、N95型口罩都可以。如果是去一般露天公共场所、不与病人接触，可以选择佩戴医用外科口罩，不必过度防护，不去和专业医护人员争抢紧缺的N95口罩资源。
+				</view>
+				<view class="cu-bar bg-white justify-end">
+					<view class="action">
+						<button class="cu-btn line-green text-green" @tap="hideModal">我知道了</button>
+					</view>
+				</view>
+			</view>
+		</view>
 
 	</view>
 </template>
@@ -60,7 +119,7 @@
 	let interstitialAd = null
 
 	const range = (start, end, step) => {
-	  return Array.from(Array.from(Array(Math.ceil((end-start)/step)).keys()), x => start+ x*step);
+		return Array.from(Array.from(Array(Math.ceil((end - start) / step)).keys()), x => start + x * step);
 	}
 
 	export default {
@@ -71,10 +130,12 @@
 			return {
 				windowHeight: 0,
 				isAndroid: getApp().globalData.IS_ANDROID,
+				modalName: null,
+				savedCounts: 0,
 				cansWidth: 270, // 宽度 px
 				cansHeight: 270, // 高度 px
 				avatarPath: '/static/image/mask/avatar_mask.png',
-				imgList: range(0, 6, 1),
+				imgList: range(0, 11, 1), // 第二个参数是个数
 				currentMaskId: -1,
 				showBorder: false,
 				maskCenterX: wx.getSystemInfoSync().windowWidth / 2,
@@ -111,7 +172,7 @@
 		},
 		onLoad(option) {
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
-			if(!!getApp().globalData.userAvatarFilePath){
+			if (!!getApp().globalData.userAvatarFilePath) {
 				this.avatarPath = getApp().globalData.userAvatarFilePath;
 			}
 		},
@@ -121,7 +182,7 @@
 				this.avatarPath = getApp().globalData.cropImageFilePath;
 				this.paint();
 			}
-			
+
 		},
 		onShareAppMessage() {
 			return {
@@ -137,6 +198,10 @@
 		methods: {
 			...mapMutations(["saveLoginUserInfo"]),
 			paint() {},
+			showTips() {
+				console.log('tips');
+				this.modalName = 'tips';
+			},
 			touchAvatarBg() {
 				this.showBorder = false;
 			},
@@ -282,7 +347,8 @@
 				});
 			},
 			changeMask(e) {
-				this.currentMaskId = e.target.dataset.maskId
+				this.currentMaskId = e.target.dataset.maskId;
+				this.showBorder = true;
 			},
 			draw() {
 				let scale = this.scale;
@@ -339,15 +405,19 @@
 						uni.saveImageToPhotosAlbum({
 							filePath: res.tempFilePath,
 							success: function(res) {
-								uni.showToast({
-									title: '请至相册查看'
-								})
+								if (_this.savedCounts == 0) {
+									_this.modalName = 'saveTip';
+								} else {
+									uni.showToast({
+										title: '请至相册查看'
+									})
+								}
+								_this.savedCounts++;
 								uni.vibrateShort({
 									success: function() {
 										console.log('vibrateShort');
 									}
 								});
-								_this.savedCounts++;
 								// 保存时，如果没有激励广告则展示一次插屏广告，因为一个完整操作流程已结束，提升广告曝光
 								if (interstitialAd && _this.enableInterstitialAd && !_this.interstitialAdAlreadyShow &&
 									!_this.rewardedVideoAdAlreadyShow) { // 没有激励广告才在保存时展示插屏广告
@@ -544,6 +614,18 @@
 		position: absolute;
 		bottom: 5px;
 		white-space: nowrap;
+	}
+
+	.infoView {
+		width: 95%;
+		position: absolute;
+		bottom: 85px;
+		white-space: nowrap;
+		background-color: white;
+		margin: 10px;
+		padding: 1px 5px;
+		border-radius: 5px;
+		white-space: pre-wrap;
 	}
 
 	.imgList {
