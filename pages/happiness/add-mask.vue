@@ -59,6 +59,10 @@
 	// 在页面中定义插屏广告
 	let interstitialAd = null
 
+	const range = (start, end, step) => {
+	  return Array.from(Array.from(Array(Math.ceil((end-start)/step)).keys()), x => start+ x*step);
+	}
+
 	export default {
 		components: {
 			tuiFooter
@@ -70,7 +74,7 @@
 				cansWidth: 270, // 宽度 px
 				cansHeight: 270, // 高度 px
 				avatarPath: '/static/image/mask/avatar_mask.png',
-				imgList: [0, 1, 2, 3, 4],
+				imgList: range(0, 6, 1),
 				currentMaskId: -1,
 				showBorder: false,
 				maskCenterX: wx.getSystemInfoSync().windowWidth / 2,
