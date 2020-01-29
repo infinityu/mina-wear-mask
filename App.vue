@@ -1,10 +1,14 @@
 <script>
 	import Vue from 'vue'
 	let sysInfo = uni.getSystemInfoSync();
+	console.log(sysInfo);
 	let WINDOW_HEIGHT = sysInfo.windowHeight;
+	let IS_ANDROID = !sysInfo.model.includes('iPhone');
+	console.log('IS_ANDROID', IS_ANDROID);
 	export default {
 		globalData: {  
 		    WINDOW_HEIGHT: WINDOW_HEIGHT,
+			IS_ANDROID: IS_ANDROID,
 			cropImageFilePath: '',
 			rapaintAfterCrop: false,
 			PAGE_BG_COLOR: '#C12928',

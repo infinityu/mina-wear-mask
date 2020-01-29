@@ -1,19 +1,48 @@
 <template>
-	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: hidden">
+	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: scroll">
+		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
+		<view class="container grid justify-center" id="container" @touchstart="touchStart" @touchend="touchEnd" @touchmove="touchMove">
+			<view class="avatar-bg-border">
+				<image @touchstart="touchAvatarBg" class="bg avatar-bg" id="avatar-bg" :src="avatarPath"></image>
+			</view>
+			<!-- <icon type="cancel" class="cancel" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 + 'px'}"></icon> -->
+			<!-- <icon type="waiting" class="handle" id="handle" color="green" :style="{top:handleCenterY-10 + 'px', left:handleCenterX-10 +'px'}"></icon> -->
+			<!-- <text class="cuIcon-order cancel circle" @click="flipHorizontal" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelterX-10 +'px'}"></text> -->
+			<image class="mask flip-horizontal" :class="{maskWithBorder: showBorder}" id='mask' :src="maskPic" :style="{top:maskCenterY-maskSize/2-2+'px', left:maskCenterX-maskSize/2-2+'px',
+				transform: 'rotate(' +rotate+ 'deg)' + 'scale(' +scale+')' + 'rotateY('+ rotateY +'deg)'}"></image>
+			<text class="cuIcon-full handle circle" :class="{hideHandle: !showBorder}" id="handle" :style="{top:handleCenterY-10 + 'px', left:handleCenterX-10 +'px'}"></text>
+		</view>
 		<view>
-			<view class="container" id="container" @touchstart="touchStart" @touchend="touchEnd" @touchmove="touchMove">
-				<image class="bg" :src="bgPic"></image>
-				<icon type="cancel" class="cancel" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 + 'px'}"></icon>
-				<!-- <icon type="waiting" class="handle" id="handle" color="green" :style="{top:handleCenterY-10 + 'px', left:handleCenterX-10 +'px'}"></icon> -->
-				<text class="cuIcon-full handle" id="handle" :style="{top:handleCenterY-10 + 'px', left:handleCenterX-10 +'px'}"></text>
-				<image class="hat" id='hat' src="/static/image/mask/mask3.png" :style="{top:hatCenterY-hatSize/2-2+'px', left:hatCenterX-hatSize/2-2+'px',
-				transform: 'rotate(' +rotate+ 'deg)' + 'scale(' +scale+')'}"></image>
+			<canvas class="cans-id-mask" canvas-id="cans-id-mask" style="height:270px;width:270px;margin-left: auto;margin-right: auto;" />
+		</view>
+		<view class="grid justify-around action-wrapper">
+			<view class="grid col-1">
+				<button id="btn-my-avatar" class="cu-btn round action-btn bg-yellow shadow " open-type="getUserInfo" @getuserinfo="getUserInfoCallBack">我的头像</button>
+			</view>
+			<view class="grid col-2">
+				<button id="btn-save" class="cu-btn round action-btn bg-yellow shadow" @click="draw">
+					<!-- <text class="cuIcon-down"> -->
+					</text>保存</button>
+			</view>
+			<view class="grid col-3">
+				<button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow" @click="chooseImage">选择图片</button>
 			</view>
 		</view>
-		<view class="grid col-1">
-			<button id="btn-my-avatar" class="cu-btn round action-btn bg-yellow shadow " open-type="getUserInfo" @getuserinfo="getUserInfoCallBack">我的头像</button>
-			<button @tap="combinePic">确定</button>
+		<view class="grid justify-around share-wrapper">
+			<view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
+				<button class="cu-btn block line-orange lg share-btn" open-type="share">
+					<text class="cuIcon-upload"></text> 分享给好友</button>
+			</view>
 		</view>
+
+		<scroll-view class="scrollView mask-scroll-view" scroll-x="true">
+			<view v-for="(item,index) in imgList" :key="index" style="display: inline-flex;">
+
+				<text v-if="currentMaskId == index && isAndroid" class="cuIcon-order cancel circle" @click="flipHorizontal" id="cancel" :style="{transform: 'rotate(' +90+ 'deg)'}"></text>
+				<image class="imgList" :src="'/static/image/mask/mask'+ index +'.png'" :data-mask-id="index" @tap="changeMask"></image>
+			</view>
+		</scroll-view>
+
 	</view>
 </template>
 <script>
@@ -36,23 +65,30 @@
 		data() {
 			return {
 				windowHeight: 0,
-				bgPic: null,
-				hatCenterX: wx.getSystemInfoSync().windowWidth / 2,
-				hatCenterY: 150,
+				isAndroid: getApp().globalData.IS_ANDROID,
+				cansWidth: 270, // 宽度 px
+				cansHeight: 270, // 高度 px
+				avatarPath: '/static/image/mask/avatar_mask.png',
+				imgList: [0, 1, 2, 3, 4],
+				currentMaskId: -1,
+				showBorder: false, 
+				maskCenterX: wx.getSystemInfoSync().windowWidth / 2,
+				maskCenterY: 250,
 				cancelCenterX: wx.getSystemInfoSync().windowWidth / 2 - 50 - 2,
-				cancelCenterY: 100,
+				cancelCenterY: 200,
 				handleCenterX: wx.getSystemInfoSync().windowWidth / 2 + 50 - 2,
-				handleCenterY: 200,
+				handleCenterY: 300,
 
-				hatSize: 100,
+				maskSize: 100,
 				scale: 1,
 				rotate: 0,
-				hat_center_x: wx.getSystemInfoSync().windowWidth / 2,
-				hat_center_y: 150,
+				rotateY: 0, // 值180时，则水平翻转
+				mask_center_x: wx.getSystemInfoSync().windowWidth / 2,
+				mask_center_y: 250,
 				cancel_center_x: wx.getSystemInfoSync().windowWidth / 2 - 50 - 2,
-				cancel_center_y: 100,
+				cancel_center_y: 200,
 				handle_center_x: wx.getSystemInfoSync().windowWidth / 2 + 50 - 2,
-				handle_center_y: 200,
+				handle_center_y: 300,
 				scaleCurrent: 1,
 				rotateCurrent: 0,
 				touch_target: "",
@@ -63,17 +99,27 @@
 		computed: {
 			...mapState({
 				userInfo: 'userInfo'
-			})
+			}),
+			maskPic: function() {
+				return '/static/image/mask/mask' + this.currentMaskId + '.png';
+			}
 		},
 		onLoad(option) {
 			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
 		},
+		onShow() {
+			if (getApp().globalData.rapaintAfterCrop) {
+				getApp().globalData.rapaintAfterCrop = false;
+				this.avatarPath = getApp().globalData.cropImageFilePath;
+				this.paint();
+			}
+		},
 		onShareAppMessage() {
 			return {
-				title: '头像加福贺新春',
-				desc: '贺新春，贴福字，为你的头像加个福字吧',
-				imageUrl: '/static/image/redirect-cover.jpg',
-				path: '/pages/happiness/add-happiness',
+				title: '我换上了口罩头像，防止疫情蔓延，保护家人朋友',
+				desc: '防传染、戴口罩，从我做起！',
+				imageUrl: '/static/image/mask/avatar_mask.png',
+				path: '/pages/happiness/add-mask',
 				success: function(res) {
 					console.log(res);
 				}
@@ -81,10 +127,16 @@
 		},
 		methods: {
 			...mapMutations(["saveLoginUserInfo"]),
+			paint() {
+			},
+			touchAvatarBg(){
+				this.showBorder = false;
+			},
 			touchStart(e) {
 				console.log('e.target.id', e.target.id);
-				if (e.target.id == "hat") {
-					this.touch_target = "hat";
+				if (e.target.id == "mask") {
+					this.touch_target = "mask";
+					this.showBorder = true;
 				} else if (e.target.id == "handle") {
 					this.touch_target = "handle"
 				} else {
@@ -97,8 +149,8 @@
 				}
 			},
 			touchEnd(e) {
-				this.hat_center_x = this.hatCenterX;
-				this.hat_center_y = this.hatCenterY;
+				this.mask_center_x = this.maskCenterX;
+				this.mask_center_y = this.maskCenterY;
 				this.cancel_center_x = this.cancelCenterX;
 				this.cancel_center_y = this.cancelCenterY;
 				this.handle_center_x = this.handleCenterX;
@@ -115,23 +167,25 @@
 				var current_y = e.touches[0].clientY;
 				var moved_x = current_x - this.start_x;
 				var moved_y = current_y - this.start_y;
-				if (this.touch_target == "hat") {
-					this.hatCenterX = this.hatCenterX + moved_x;
-					this.hatCenterY = this.hatCenterY + moved_y;
+				if (this.touch_target == "mask") {
+					this.maskCenterX = this.maskCenterX + moved_x;
+					this.maskCenterY = this.maskCenterY + moved_y;
 					this.cancelCenterX = this.cancelCenterX + moved_x;
 					this.cancelCenterY = this.cancelCenterY + moved_y;
 					this.handleCenterX = this.handleCenterX + moved_x;
 					this.handleCenterY = this.handleCenterY + moved_y;
+					console.log('maskCenterX', this.maskCenterX);
+					console.log('maskCenterY', this.maskCenterY);
 				};
 				if (this.touch_target == "handle") {
 					this.handleCenterX = this.handleCenterX + moved_x;
 					this.handleCenterY = this.handleCenterY + moved_y;
-					this.cancelCenterX = 2 * this.hatCenterX - this.handleCenterX;
-					this.cancelCenterY = 2 * this.hatCenterY - this.handleCenterY;
-					let diff_x_before = this.handle_center_x - this.hat_center_x;
-					let diff_y_before = this.handle_center_y - this.hat_center_y;
-					let diff_x_after = this.handleCenterX - this.hat_center_x;
-					let diff_y_after = this.handleCenterY - this.hat_center_y;
+					this.cancelCenterX = 2 * this.maskCenterX - this.handleCenterX;
+					this.cancelCenterY = 2 * this.maskCenterY - this.handleCenterY;
+					let diff_x_before = this.handle_center_x - this.mask_center_x;
+					let diff_y_before = this.handle_center_y - this.mask_center_y;
+					let diff_x_after = this.handleCenterX - this.mask_center_x;
+					let diff_y_after = this.handleCenterY - this.mask_center_y;
 					let distance_before = Math.sqrt(diff_x_before * diff_x_before + diff_y_before * diff_y_before);
 					let distance_after = Math.sqrt(diff_x_after * diff_x_after + diff_y_after * diff_y_after);
 					let angle_before = Math.atan2(diff_y_before, diff_x_before) / Math.PI * 180;
@@ -160,12 +214,34 @@
 					});
 					return;
 				}
-				this.ownImageUsed = true;
 				let userInfo = result.detail.userInfo;
 				console.log(userInfo);
 				userInfo.avatarUrl = userInfo.avatarUrl.replace("132", "0"); // 使用最大分辨率头像 959 * 959
-				this.bgPic = userInfo.avatarUrl;
+				let self = this;
+				uni.downloadFile({
+					url: userInfo.avatarUrl,
+					success: function(res) {
+						uni.hideLoading();
+						self.avatarPath = res.tempFilePath;
+					},
+					fail: function(e) {
+						console.log(e);
+						uni.hideLoading();
+						uni.showModal({
+							title: '图片加载超时',
+							content: '检查网络，点击确定重新加载',
+							success(res) {
+								if (res.confirm) {
+									self.downloadAvatarAndPaintAll(imageUrl);
+								} else if (res.cancel) {
+									console.log('用户点击取消');
+								}
+							}
+						})
+					}
+				})
 			},
+
 			/**
 			 *  选择图片
 			 */
@@ -206,6 +282,47 @@
 					}
 				});
 			},
+			changeMask(e) {
+				console.log(e);
+				this.currentMaskId = e.target.dataset.maskId
+			},
+			draw() {
+				let scale = this.scale;
+				let rotate = this.rotate;
+				let mask_center_x = this.mask_center_x;
+				let mask_center_y = this.mask_center_y;
+				let _this = this;
+				//创建节点选择器
+				var query = wx.createSelectorQuery();
+				query.select('#avatar-bg').boundingClientRect()
+				query.exec(function(res) {
+					//res就是 所有标签为#的元素的信息的数组
+					console.log(res);
+					//取高度
+					mask_center_x = mask_center_x - res[0].left;
+					mask_center_y = mask_center_y - res[0].top;
+					console.log('mask_center_x', mask_center_x);
+					console.log('mask_center_y', mask_center_y);
+					const pc = wx.createCanvasContext('cans-id-mask');
+					const windowWidth = wx.getSystemInfoSync().windowWidth;
+					const mask_size = 100 * scale;
+
+					pc.clearRect(0, 0, _this.cansWidth, _this.cansHeight);
+					pc.drawImage(_this.avatarPath, 0, 0, _this.cansWidth, _this.cansHeight);
+					pc.translate(mask_center_x, mask_center_y);
+					pc.rotate(rotate * Math.PI / 180);
+					if(_this.isAndroid) {
+						_this.rotateY == 180 && pc.scale(-1, 1);
+					}
+					pc.drawImage(_this.maskPic, -mask_size / 2, -mask_size / 2, mask_size, mask_size);
+					pc.draw();
+					_this.saveCans();
+				})
+			},
+			flipHorizontal() {
+				this.rotateY = this.rotateY == 0 ? 180 : 0;
+				console.log('rotateY', this.rotateY);
+			},
 			/**
 			 * 保存
 			 */
@@ -219,11 +336,11 @@
 				uni.canvasToTempFilePath({
 					x: 0,
 					y: 0,
-					width: this.cansWidth * 1.5,
-					height: this.cansHeight * 1.5,
+					height: this.cansWidth,
+					width: this.cansHeight,
 					destWidth: this.cansWidth * 3,
 					destHeight: this.cansHeight * 3,
-					canvasId: 'cans-id-happines',
+					canvasId: 'cans-id-mask',
 					success: function(res) {
 						uni.hideLoading()
 						uni.saveImageToPhotosAlbum({
@@ -291,12 +408,6 @@
 			hideModal: function(e) {
 				this.modalName = null;
 			},
-			toSharePage: function() {
-				uni.switchTab({
-					url: '/pages/share/share'
-				});
-				this.hideModal();
-			},
 			imageCheck: function(tempImagePath, callback) {
 				if (!getApp().globalData.enableSecurityCheck) {
 					callback(tempImagePath);
@@ -363,48 +474,70 @@
 
 <style lang="scss" scoped>
 	.main {
-		// background-color: #C12928;
-	}
-
-	.userinfo-avatar {
-		border-radius: 128upx;
-		width: 128upx;
-		height: 128upx;
-	}
-
-	.bg {
-		width: 100vw;
-		height: 100vh;
-		position: fixed;
-		left: 0;
-		top: 0;
-		// z-index: 998;
-		// background-color: rgba(0, 0, 0, 0.8);
+		background-color: #C12928;
 	}
 
 	.container {
 		height: 300px;
 		width: 100%;
+		margin-top: 150rpx;
+		margin-left: auto;
+		margin-right: auto;
+		// background-size: 100%;
+
 	}
 
-	.bg {
+	.avatar-bg-border {
+		border: 6px solid white;
+		border-radius: 10px;
+		width: 282px;
+		height: 282px;
+	}
+
+	.avatar-bg {
 		position: absolute;
 		z-index: 0;
-		height: 300px;
-		width: 300px;
+		height: 270px;
+		width: 270px;
 	}
 
-	button {
-		margin-top: 10px;
-
+	.action-wrapper {
+		padding-top: 50rpx;
+		padding-left: 100rpx;
+		padding-right: 100rpx;
+		font-weight: 800;
 	}
 
-	.hat {
+	.share-wrapper {
+		padding-top: 50rpx;
+		padding-left: 100rpx;
+		padding-right: 100rpx;
+		font-weight: 800;
+	}
+
+	.mask {
 		height: 100px;
 		width: 100px;
 		position: absolute;
-		border: dashed 2px yellow;
 		top: 100px;
+		border: 3px;
+	}
+	
+	.maskWithBorder{
+		border: dashed 3px white;
+	}
+	
+	.hideHandle{
+		display: none;
+	}
+
+	.circle {
+		border-radius: 50%;
+		font-size: 15px;
+		color: #000;
+		line-height: 25px;
+		text-align: center;
+		background: #fff;
 	}
 
 	.handle,
@@ -413,6 +546,8 @@
 		z-index: 1;
 		width: 25px;
 		height: 25px;
+		background-color: white;
+		color: black;
 	}
 
 	.scrollView {
@@ -425,7 +560,21 @@
 	.imgList {
 		height: 70px;
 		width: 70px;
-		border: 2px solid;
+		border: 2px solid white;
 		margin: 5px;
+	}
+
+	.cans-id-mask {
+		position: absolute;
+		top: 2000px;
+		left: 1000px;
+	}
+
+
+	.flip-horizontal {
+		-moz-transform: scaleX(-1);
+		-webkit-transform: scaleX(-1);
+		-o-transform: scaleX(-1);
+		transform: scaleX(-1);
 	}
 </style>
