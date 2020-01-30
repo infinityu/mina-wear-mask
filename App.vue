@@ -1,10 +1,11 @@
 <script>
 	import Vue from 'vue'
 	let sysInfo = uni.getSystemInfoSync();
-	console.log(sysInfo);
 	let WINDOW_HEIGHT = sysInfo.windowHeight;
 	let IS_ANDROID = !sysInfo.model.includes('iPhone');
-	console.log('IS_ANDROID', IS_ANDROID);
+	let envId = 'ncov-production-wwomb';
+	let collectionName = 'mp_launch_config';
+	let docId = 'mp_launch_config_doc';
 	export default {
 		globalData: {  
 		    WINDOW_HEIGHT: WINDOW_HEIGHT,
@@ -13,10 +14,9 @@
 			rapaintAfterCrop: false,
 			PAGE_BG_COLOR: '#C12928',
 			enableSecurityCheck: true,
-			showQuestion: false,
 			userAvatarUrl: null,
-			userAvatarFilePath: null,
-			questionUrl: ''
+			userAvatarFilePath: null
+			
 		},
 		onLaunch: function() {
 			console.log('App Launch');
@@ -27,6 +27,15 @@
 					traceUser: true
 				});
 			}
+			
+			const db = wx.cloud.database({
+				env: envId,
+				traceUser: true
+			});
+			
+			db.collection(collectionName).doc(docId).get().then(res => {
+				getApp().globalData.enableSecurityCheck = res.data.enableSecurityCheck;
+			})
 		},
 		onShow: function() {
 			console.log('App Show');
@@ -44,5 +53,4 @@
 	@import "colorui/main.css";
 	@import "colorui/icon.css";
 	@import "app.css";
-	
 </style>

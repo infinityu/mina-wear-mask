@@ -50,7 +50,8 @@
 				 :style="{transform: 'rotate(' +90+ 'deg)'}"></text>
 				<!-- <text v-if="currentMaskId == index" style="margin-left: 55px;" class="cuIcon-question cancel circle" @click="showTips"
 				 id="cancel"></text> -->
-				<image class="imgList" :src="'/static/image/mask/mask'+ index +'.png'" :data-mask-id="index" @tap="changeMask"></image>
+				<image class="imgList" :src="'/static/image/mask/'+ index +'.png'" 
+				:data-mask-id="index" @tap="changeMask"></image>
 			</view>
 		</scroll-view>
 
@@ -135,7 +136,7 @@
 				cansWidth: 270, // 宽度 px
 				cansHeight: 270, // 高度 px
 				avatarPath: '/static/image/mask/avatar_mask.png',
-				imgList: range(0, 11, 1), // 第二个参数是个数
+				imgList: range(0, 16, 1), // 第二个参数是个数
 				currentMaskId: -1,
 				showBorder: false,
 				maskCenterX: wx.getSystemInfoSync().windowWidth / 2,
@@ -160,9 +161,6 @@
 				touch_target: "",
 				start_x: 0,
 				start_y: 0,
-				envId: 'happiness-production-yy81s',
-				collectionName: 'ad_config',
-				docId: 'add_happiness_rwzc'
 			}
 		},
 		computed: {
@@ -170,7 +168,7 @@
 				userInfo: 'userInfo'
 			}),
 			maskPic: function() {
-				return '/static/image/mask/mask' + this.currentMaskId + '.png';
+				return '/static/image/mask/' + this.currentMaskId + '.png';
 			}
 		},
 		onLoad(option) {
@@ -178,15 +176,6 @@
 			if (!!getApp().globalData.userAvatarFilePath) {
 				this.avatarPath = getApp().globalData.userAvatarFilePath;
 			}
-			const db = wx.cloud.database({
-				env: this.envId,
-				traceUser: true
-			});
-			
-			let _this = this;
-			db.collection(this.collectionName).doc(this.docId).get().then(res => {
-				getApp().globalData.enableSecurityCheck = res.data.enableSecurityCheck;
-			})
 		},
 		onShow() {
 			if (getApp().globalData.rapaintAfterCrop) {
@@ -194,14 +183,13 @@
 				this.avatarPath = getApp().globalData.cropImageFilePath;
 				this.paint();
 			}
-
 		},
 		onShareAppMessage() {
 			return {
 				title: '我换上了口罩头像，防止疫情蔓延，保护家人朋友',
 				desc: '防传染、戴口罩，从我做起！',
 				imageUrl: '/static/image/mask/avatar_mask.png',
-				path: '/pages/happiness/add-mask',
+				path: '/pages/main/add-mask',
 				success: function(res) {
 					console.log(res);
 				}
@@ -641,10 +629,11 @@
 	}
 
 	.imgList {
-		height: 70px;
-		width: 70px;
+		height: 65px;
+		width: 65px;
 		border: 2px solid white;
-		margin: 5px;
+		border-radius: 5px;
+		margin: 10px 10px 30px 10px;
 	}
 
 	.cans-id-mask {

@@ -1,67 +1,65 @@
 <template>
 	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: hidden">
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
-		<!-- <view style="margin-top: 75px;" class="grid justify-around" data-target="Modal">
-			<view class="grid col-1">
-				<image style="width:270px; height:270px;" mode="aspectFill" src="/static/image/official-account.png"></image>
-			</view>
-			<view class="grid col-1">
-				<text class="text-grey margin-top animation-shake animation-speed-2 animation-delay-1"> 更多精彩，请关注公众号【人文之窗】 </text>
-			</view>	
-		</view> -->
-		<view class="grid justify-center" style="margin-top: 75rpx;">
-			<view>
-				<image class="animation-speed-2 animation-slide-right" style="height: 470rpx;" mode="aspectFit" src="/static/image/mouse-2020.png"></image>
-			</view>
-			<view style="margin-top: -50rpx;">
-				<image class="animation-speed-2 animation-slide-left" style="height: 335rpx;" mode="aspectFit" src="/static/image/wish5happiness.png"></image>
-			</view>
-		</view>
-
-		<view class="margin-top cu-list menu sm-border card-menu animation-shake animation-speed-2 animation-delay-3" style="width: 525rpx;">
-			<view class="cu-item arrow feedback-btn">
-				<view class="content">
-					<button class="free-btn-bordernone" open-type="contact" >
-						<tui-icon name="kefu" color="green" :size="20"></tui-icon>
-						<text style="color: grey; padding-left: 10px;" class="text-sm">
-							联系客服
-						</text>
-					</button>
-				</view>
-			</view>
-			<view class="cu-item arrow feedback-btn" @click="tucao">
-				<view class="content">
-					<button class="free-btn-bordernone">
-						<tui-icon name="message" color="green" :size="20"></tui-icon>
-						<text style="color: grey; padding-left: 10px;" class="text-sm">
-							产品建议
-						</text>
-					</button>
-					<!-- <text class="cuIcon-comment text-green"></text> -->
-				</view>
-			</view>
-		</view>
-
-		<view @click="showModal" data-target="Modal" id="btn-footer-oa">
-			<tui-footer :fixed="true" :copyright="copyright"></tui-footer>
-		</view>
-		<view class="cu-modal" :class="modalName=='Modal'?'show':''">
-			<view class="cu-dialog">
-				<view class="cu-bar bg-white justify-end">
-					<view class="content">微信搜索《人文之窗》</view>
-					<view class="action" @tap="hideModal">
-						<text class="cuIcon-close text-red"></text>
+		<view class="container">
+			<view class="about-actions margin-top cu-list menu sm-border card-menu animation-shake animation-speed-2 animation-delay-3">
+				<view class="cu-item arrow feedback-btn">
+					<view class="content">
+						<button class="free-btn-bordernone" open-type="contact">
+							<tui-icon name="kefu" color="green" :size="20"></tui-icon>
+							<text style="color: grey; padding-left: 10px;" class="text-sm">
+								联系客服
+							</text>
+						</button>
 					</view>
 				</view>
-				<view class="padding-xl">
-					中外名曲，经典老歌，电影故事，夜读美文，戏剧唱段，名家书画，摄影佳作。
+				<view class="cu-item arrow feedback-btn" @click="tucao">
+					<view class="content">
+						<button class="free-btn-bordernone">
+							<tui-icon name="message" color="green" :size="20"></tui-icon>
+							<text style="color: grey; padding-left: 10px;" class="text-sm">
+								产品建议
+							</text>
+						</button>
+					</view>
 				</view>
-				<view class="padding">
-					人文之窗综艺微刊，每晚与您不见不散。
+				<view class="cu-item arrow feedback-btn" @click="addHappiness">
+					<view class="content">
+						<button class="free-btn-bordernone">
+							<tui-icon name="agree" color="green" :size="20"></tui-icon>
+							<text style="color: grey; padding-left: 10px;" class="text-sm">
+								头像加福字
+							</text>
+						</button>
+						<view class="action">
+							<!-- <text class="text-grey text-sm"> 新年添福运！</text> -->
+						</view>
+					</view>
 				</view>
-				<view class="cu-bar bg-white justify-end">
-					<view class="action">
-						<button class="cu-btn line-green text-green" @tap="hideModal">我知道了</button>
+
+			</view>
+
+			<view @click="showModal" data-target="Modal" id="btn-footer-oa">
+				<tui-footer :fixed="true" :copyright="copyright"></tui-footer>
+			</view>
+			<view class="cu-modal" :class="modalName=='Modal'?'show':''">
+				<view class="cu-dialog">
+					<view class="cu-bar bg-white justify-end">
+						<view class="content">微信搜索《人文之窗》</view>
+						<view class="action" @tap="hideModal">
+							<text class="cuIcon-close text-red"></text>
+						</view>
+					</view>
+					<view class="padding-xl">
+						中外名曲，经典老歌，电影故事，夜读美文，戏剧唱段，名家书画，摄影佳作。
+					</view>
+					<view class="padding">
+						人文之窗综艺微刊，每晚与您不见不散。
+					</view>
+					<view class="cu-bar bg-white justify-end">
+						<view class="action">
+							<button class="cu-btn line-green text-green" @tap="hideModal">我知道了</button>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -133,8 +131,21 @@
 				// 初始化并触发跳转，支持链式调用
 				this.wx = uni;
 				Tucao.init(this, {
-					productId: 117112
+					productId: 120746
 				}).go();
+			},
+			addHappiness: function(){
+				console.log('addHappiness');
+				wx.navigateToMiniProgram({
+				  appId: 'wxb8055d6d942b3690',
+				  path: 'pages/happiness/add-happiness',
+				  success(res) {
+				    console.log(res);
+				  },
+				  fail(e){
+					  console.log(e);
+				  }
+				})
 			},
 			showModal: function(e) {
 				console.log(e.currentTarget.dataset);
@@ -165,8 +176,17 @@
 <style scoped>
 	.main {
 		background-color: #C12928;
-		height: 1334rpx;
-		width: 750rpx;
+	}
+
+	.container {
+		margin-top: 150rpx;
+	}
+	
+	.about-actions{
+		position: fixed;
+		bottom: 80px;
+		width: 500rpx;
+		left: 125rpx;
 	}
 
 	.card-menu {
