@@ -1,6 +1,11 @@
 <template>
 	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: scroll">
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
+		<view style="height: 54px; width: 750rpx; background-color: #C12928; position: absolute;"></view>
+		<view class="logo-area" style="position: absolute; top: 25px; left: 20px;">
+			<image style="width: 25px; height: 25px;" src="../../static/image/rwzc-logo-round.png"></image>
+			<text class="text-yellow text-bold text-sm">人文之窗公众号</text>
+		</view>
 		<view class="container grid justify-center" id="container" @touchstart="touchStart" @touchend="touchEnd" @touchmove="touchMove">
 			<view class="avatar-bg-border">
 				<image @touchstart="touchAvatarBg" class="bg avatar-bg" id="avatar-bg" :src="avatarPath"></image>
@@ -16,6 +21,11 @@
 		</view>
 		<view>
 			<canvas class="cans-id-mask" canvas-id="cans-id-mask" style="height:270px;width:270px;margin-left: auto;margin-right: auto;" />
+		</view>
+		<view class="flex-sub text-center">
+			<view class="solid-bottom">
+				<text class="text-yellow text-bold">戴上口罩 远离病毒 从你我做起</text>
+			</view>
 		</view>
 		<view class="grid justify-around action-wrapper">
 			<view class="grid col-1">
@@ -33,7 +43,7 @@
 		<view class="grid justify-around share-wrapper">
 			<view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
 				<button class="cu-btn block line-orange lg share-btn" open-type="share">
-					<text class="cuIcon-upload"></text> 分享给好友</button>
+					<text class="cuIcon-upload"></text> <text class="text-yellow">分享给好友</text> </button>
 			</view>
 		</view>
 
