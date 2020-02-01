@@ -1,6 +1,9 @@
 <template>
 	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: scroll">
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
+		<view v-if="SHOW_TIP">
+			<add-tips :statusBarHeight="statusBarHeight" />
+		</view>
 		<view style="height: 54px; width: 750rpx; background-color: #C12928; position: absolute;"></view>
 		<view class="logo-area" style="position: absolute; top: 25px; left: 20px;">
 			<image style="width: 25px; height: 25px;" src="../../static/image/rwzc-logo-round.png"></image>
@@ -60,8 +63,7 @@
 				 :style="{transform: 'rotate(' +90+ 'deg)'}"></text>
 				<!-- <text v-if="currentMaskId == index" style="margin-left: 55px;" class="cuIcon-question cancel circle" @click="showTips"
 				 id="cancel"></text> -->
-				<image class="imgList" :src="'/static/image/mask/'+ index +'.png'" 
-				:data-mask-id="index" @tap="changeMask"></image>
+				<image class="imgList" :src="'/static/image/mask/'+ index +'.png'" :data-mask-id="index" @tap="changeMask"></image>
 			</view>
 		</scroll-view>
 
@@ -123,6 +125,7 @@
 		mapMutations
 	} from "vuex";
 	import tuiFooter from "@/components/tui/footer";
+	import addTips from "@/components/add-tips";
 
 	// 在页面中定义激励视频广告
 	let videoAd = null;
@@ -132,13 +135,18 @@
 	const range = (start, end, step) => {
 		return Array.from(Array.from(Array(Math.ceil((end - start) / step)).keys()), x => start + x * step);
 	}
+	const STORAGE_KEY = 'PLUG-ADD-MYAPP-KEY';
 
 	export default {
 		components: {
-			tuiFooter
+			tuiFooter,
+			addTips
 		},
 		data() {
 			return {
+				SHOW_TIP: false,
+				duration: 15,
+				statusBarHeight: 0,
 				windowHeight: 0,
 				isAndroid: getApp().globalData.IS_ANDROID,
 				modalName: null,
@@ -187,7 +195,26 @@
 				this.avatarPath = getApp().globalData.userAvatarFilePath;
 			}
 		},
+		onReady() {
+			// 判断是否已经显示过
+			let cache = uni.getStorageSync(STORAGE_KEY);
+			console.log('cache', cache);
+			if (!cache) {
+				this.statusBarHeight = uni.getSystemInfoSync().statusBarHeight;
+				console.log('this.statusBarHeight', this.statusBarHeight);
+				
+				// 没显示过，则进行展示
+				this.SHOW_TIP = true;
+				console.log('SHOW_TIP', this.SHOW_TIP);
+				// 关闭时间
+				let _this = this;
+				setTimeout(() => {
+					_this.SHOW_TIP = false;
+				}, _this.duration * 1000);
+			}
+		},
 		onShow() {
+			console.log("onShow");
 			if (getApp().globalData.rapaintAfterCrop) {
 				getApp().globalData.rapaintAfterCrop = false;
 				this.avatarPath = getApp().globalData.cropImageFilePath;
