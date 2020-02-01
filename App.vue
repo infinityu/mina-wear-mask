@@ -1,15 +1,20 @@
 <script>
 	import Vue from 'vue'
 	let sysInfo = uni.getSystemInfoSync();
-	let WINDOW_HEIGHT = sysInfo.windowHeight;
+	let windowHeight = sysInfo.windowHeight;
 	let IS_ANDROID = !sysInfo.model.includes('iPhone');
-	let envId = 'ncov-production-wwomb';
-	let collectionName = 'mp_launch_config';
-	let docId = 'mp_launch_config_doc';
+	let statusBarHeight = sysInfo.statusBarHeight;
+	const STORAGE_KEY = 'PLUG-ADD-MYAPP-KEY';
+	const envId = 'ncov-production-wwomb';
+	const collectionName = 'mp_launch_config';
+	const docId = 'mp_launch_config_doc';
 	export default {
 		globalData: {  
-		    WINDOW_HEIGHT: WINDOW_HEIGHT,
 			IS_ANDROID: IS_ANDROID,
+		    windowHeight: windowHeight,
+			statusBarHeight: statusBarHeight,
+			SHOW_TIP: false,
+			duration: 20,
 			cropImageFilePath: '',
 			rapaintAfterCrop: false,
 			PAGE_BG_COLOR: '#C12928',
@@ -36,9 +41,24 @@
 			db.collection(collectionName).doc(docId).get().then(res => {
 				getApp().globalData.enableSecurityCheck = res.data.enableSecurityCheck;
 			})
+			
+			
 		},
 		onShow: function() {
 			console.log('App Show');
+			// 判断是否已经显示过
+			let cache = uni.getStorageSync(STORAGE_KEY);
+			console.log('cache', cache);
+			if (!cache) {
+				// 没显示过，则进行展示
+				this.globalData.SHOW_TIP = true;
+				let _this = this;
+				console.log('SHOW_TIP', _this.globalData.SHOW_TIP);
+				// 关闭时间
+				setTimeout(() => {
+					_this.globalData.SHOW_TIP = false;
+				}, _this.globalData.duration * 1000);
+			}
 		},
 		onHide: function() {
 			console.log('App Hide')

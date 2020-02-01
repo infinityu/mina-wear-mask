@@ -1,22 +1,19 @@
 <template>
-	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: scroll">
+	<view class="container" :style="{height:windowHeight+'px'}" style="overflow: scroll">
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
 		<view v-if="SHOW_TIP">
 			<add-tips :statusBarHeight="statusBarHeight" />
 		</view>
-		<view style="height: 54px; width: 750rpx; background-color: #C12928; position: absolute;"></view>
-		<view class="logo-area" style="position: absolute; top: 25px; left: 20px;">
-			<image style="width: 25px; height: 25px;" src="../../static/image/rwzc-logo-round.png"></image>
-			<text class="text-yellow text-bold text-sm">人文之窗公众号</text>
-		</view>
-		<view class="container grid justify-center" id="container" @touchstart="touchStart" @touchend="touchEnd" @touchmove="touchMove">
+		<!-- <view style="height: 54px; width: 750rpx; background-color: #C12928; position: absolute;"></view> -->
+		
+		<view class="avatar-container grid justify-center" id="avatar-container" @touchstart="touchStart" @touchend="touchEnd" @touchmove="touchMove">
 			<view class="avatar-bg-border">
 				<image @touchstart="touchAvatarBg" class="bg avatar-bg" id="avatar-bg" :src="avatarPath"></image>
 			</view>
 			<!-- <icon type="cancel" class="cancel" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 + 'px'}"></icon> -->
 			<!-- <icon type="waiting" class="handle" id="handle" color="green" :style="{top:handleCenterY-10 + 'px', left:handleCenterX-10 +'px'}"></icon> -->
 			<!-- <text class="cuIcon-order cancel circle" @click="flipHorizontal" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelterX-10 +'px'}"></text> -->
-			<image class="mask flip-horizontal" :class="{maskWithBorder: showBorder}" id='mask' :src="maskPic" :style="{top:maskCenterY-maskSize/2-2+'px', left:maskCenterX-maskSize/2-2+'px',
+			<image v-if="currentMaskId > -1" class="mask flip-horizontal" :class="{maskWithBorder: showBorder}" id='mask' :src="maskPic" :style="{top:maskCenterY-maskSize/2-2+'px', left:maskCenterX-maskSize/2-2+'px',
 				transform: 'rotate(' +rotate+ 'deg)' + 'scale(' +scale+')' + 'rotateY('+ rotateY +'deg)'}"></image>
 			<text class="cuIcon-full handle circle" :class="{hideHandle: !showBorder}" id="handle" :style="{top:handleCenterY-10 + 'px', left:handleCenterX-10 +'px'}"></text>
 			<text class="cuIcon-order cancel circle" v-if="isAndroid" :class="{hideHandle: !showBorder}" id="cancel" @click="flipHorizontal"
@@ -190,7 +187,7 @@
 			}
 		},
 		onLoad(option) {
-			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
+			this.windowHeight = getApp().globalData.windowHeight;
 			if (!!getApp().globalData.userAvatarFilePath) {
 				this.avatarPath = getApp().globalData.userAvatarFilePath;
 			}
@@ -319,6 +316,9 @@
 				let userInfo = result.detail.userInfo;
 				userInfo.avatarUrl = userInfo.avatarUrl.replace("132", "0"); // 使用最大分辨率头像 959 * 959
 				getApp().globalData.userAvatarUrl = userInfo.avatarUrl;
+				uni.showLoading({
+					title: '头像加载中...'
+				});
 				let self = this;
 				uni.downloadFile({
 					url: userInfo.avatarUrl,
@@ -570,11 +570,7 @@
 </script>
 
 <style lang="scss" scoped>
-	.main {
-		background-color: #C12928;
-	}
-
-	.container {
+	.avatar-container {
 		height: 300px;
 		width: 100%;
 		margin-top: 150rpx;
@@ -670,7 +666,7 @@
 		width: 65px;
 		border: 2px solid white;
 		border-radius: 5px;
-		margin: 10px 10px 30px 10px;
+		margin: 10px 10px 10px 10px;
 	}
 
 	.cans-id-mask {
