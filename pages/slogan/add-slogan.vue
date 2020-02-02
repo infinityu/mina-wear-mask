@@ -1,7 +1,7 @@
 <template>
 	<view class="container" :style="{height:windowHeight+'px'}">
 		<view v-if="SHOW_TIP">
-			<add-tips :statusBarHeight="statusBarHeight" />
+			<!-- <add-tips :statusBarHeight="statusBarHeight" /> -->
 		</view>
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
 		<view id="avatar-section" @click="nextHappiness">
@@ -47,7 +47,7 @@
 		<view class="grid justify-around share-wrapper">
 			<view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
 				<button class="cu-btn block line-orange lg share-btn" open-type="share">
-					<text class="cuIcon-upload"></text> 分享给好友</button>
+					<text class="cuIcon-upload"></text class="text-yellow"> 分享给好友</button>
 			</view>
 		</view>
 

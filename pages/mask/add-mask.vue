@@ -2,7 +2,7 @@
 	<view class="container" :style="{height:windowHeight+'px'}">
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
 		<view v-if="SHOW_TIP">
-			<add-tips :statusBarHeight="statusBarHeight" />
+			<!-- <add-tips :statusBarHeight="statusBarHeight" /> -->
 		</view>
 		<!-- <view style="height: 54px; width: 750rpx; background-color: #C12928; position: absolute;"></view> -->
 		
@@ -216,7 +216,7 @@
 				title: '我换上了口罩头像，防止疫情蔓延，保护家人朋友',
 				desc: '防传染、戴口罩，从我做起！',
 				imageUrl: '/static/image/mask/avatar_mask.png',
-				path: '/pages/mask/add-mask',
+				path: '/pages/index/index',
 				success: function(res) {
 					console.log(res);
 				}
