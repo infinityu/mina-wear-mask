@@ -1,5 +1,5 @@
 <template>
-	<view class="container">
+	<view class="container" style="overflow-y: scroll;">
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
 		<view v-if="SHOW_TIP">
 			<add-tips :statusBarHeight="statusBarHeight" />
@@ -52,6 +52,31 @@
 									</view>
 									<view>
 										<button class="cu-btn line-orange sm" @click="addMask">
+											<text class="cuIcon-forward"></text> <text class="text-orange">打开</text> </button>
+									</view>
+								</view>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
+			<view class="cu-card article">
+				<view class="cu-item shadow">
+					<view class="title">
+						<view class="text-cut"> 武汉加油 </view>
+					</view>
+					<view class="content">
+						<image style="width: 160rpx;" @click="addSlogan" src="/static/image/logo/slogan-logo.jpeg" mode="aspectFill"></image>
+						<view class="desc">
+							<view class="text-content">  武汉加油，中国加油，加油2020，不动如山，拒绝聚会，拒绝野味。</view>
+							<view>
+								<view class="grid justify-between">
+									<view>
+										<view class="cu-tag bg-red light sm round">武汉加油</view>
+										<view class="cu-tag bg-green light sm round">中国加油</view>
+									</view>
+									<view>
+										<button class="cu-btn line-orange sm" @click="addSlogan">
 											<text class="cuIcon-forward"></text> <text class="text-orange">打开</text> </button>
 									</view>
 								</view>
@@ -139,6 +164,11 @@
 					url: '/pages/mask/add-mask'
 				})
 			},
+			addSlogan: function(){
+				uni.switchTab({
+					url: '/pages/slogan/add-slogan'
+				})
+			},
 			tucao: function() {
 				const Tucao = requirePlugin('tucao').default;
 				// 初始化并触发跳转，支持链式调用
@@ -157,8 +187,8 @@
 
 <style scoped>
 	.about-actions {
-		position: fixed;
-		bottom: 80px;
+		/* position: fixed; */
+		/* bottom: 80px; */
 		width: 500rpx;
 		left: 125rpx;
 	}

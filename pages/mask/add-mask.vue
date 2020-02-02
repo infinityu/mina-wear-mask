@@ -47,13 +47,6 @@
 			</view>
 		</view>
 
-		<!-- <view class="infoView" style="display: none;">
-			<text>
-				一定要戴N95口罩才行吗？
-				国家卫健委高级别专家组组长钟南山院士接受白岩松采访时表示，实际上并不一定非要戴N95，因为病毒不是单独的存在，它常常存在飞沫里。一般的外科口罩还是能够阻挡大部分的，也就是说以自我防护、降低呼吸道感染风险为目的，佩戴医用外科口罩、N95型口罩都可以。如果是去一般露天公共场所、不与病人接触，可以选择佩戴医用外科口罩，不必过度防护，不去和专业医护人员争抢紧缺的N95口罩资源。
-			</text>
-		</view> -->
-
 		<scroll-view class="scrollView mask-scroll-view" scroll-x="true">
 			<view v-for="(item,index) in imgList" :key="index" style="display: inline-flex;">
 				<text v-if="currentMaskId == index && isAndroid" class="cuIcon-order cancel circle" @click="flipHorizontal" id="cancel"

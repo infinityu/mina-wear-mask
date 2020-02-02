@@ -1,5 +1,5 @@
 <template>
-	<view class="container" :style="{height:windowHeight+'px'}">
+	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: hidden">
 		<view v-if="SHOW_TIP">
 			<add-tips :statusBarHeight="statusBarHeight" />
 		</view>
@@ -7,28 +7,10 @@
 		<view id="avatar-section" @click="nextHappiness">
 			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px;" class="isCan"></canvas>
 		</view>
-		<view class="tui-drop-input-box grid justify-center">
-			<tui-dropdown-list :show="dropdownShow" :top="94" :height="400">
-				<template v-slot:selectionbox>
-					<tui-button size="small" type="white" shape="circle" @click="dropDownList(-1)">选择口号
-						<view class="tui-animation" :class="[dropdownShow?'tui-animation-show':'']">
-							<tui-icon name="turningdown" :size="20"></tui-icon>
-						</view>
-					</tui-button>
-				</template>
-				<template v-slot:dropdownbox>
-					<view class="tui-selected-list">
-						<scroll-view scroll-y class="tui-dropdown-scroll">
-							<block v-for="(item,index) in dropdownlistData" :key="index">
-								<tui-list-cell @click="dropDownList(index)" :last="dropdownlistData.length-1==index">
-									<tui-icon :name="item.icon" :size="item.size" :color="item.color"></tui-icon>
-									<text class="tui-ml-20" style="margin-left: 20px;">{{item.name}}</text>
-								</tui-list-cell>
-							</block>
-						</scroll-view>
-					</view>
-				</template>
-			</tui-dropdown-list>
+		<view class="flex-sub text-center">
+			<view class="solid-bottom padding">
+				<text class="text-orange">点击头像或摇一摇换福字</text>
+			</view>
 		</view>
 
 		<view class="grid justify-around action-wrapper">
@@ -47,17 +29,9 @@
 		<view class="grid justify-around share-wrapper">
 			<view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
 				<button class="cu-btn block line-orange lg share-btn" open-type="share">
-					<text class="cuIcon-upload"></text> 分享给好友</button>
+					<text class="cuIcon-upload"></text>  分享给好友</button>
 			</view>
 		</view>
-
-		<!-- <scroll-view class="scrollView mask-scroll-view" scroll-x="true">
-			<view v-for="(item,index) in imgList" class="imgList shadow" :key="index" style="display: inline-flex;">
-				<view class="slogan-bg">
-					<text>{{item}}</text>
-				</view>
-			</view>
-		</scroll-view> -->
 	</view>
 </template>
 <script>
@@ -66,12 +40,8 @@
 		mapState,
 		mapMutations
 	} from "vuex";
-	import addTips from "@/components/add-tips";
 	import tuiFooter from "@/components/tui/footer";
-	import tuiIcon from "@/components/tui/icon"
-	import tuiButton from "@/components/tui/button"
-	import tuiListCell from "@/components/tui/list-cell"
-	import tuiDropdownList from "@/components/tui/dropdown-list"
+	import addTips from "@/components/add-tips";
 
 	// 在页面中定义激励视频广告
 	let videoAd = null;
@@ -81,10 +51,6 @@
 	export default {
 		components: {
 			tuiFooter,
-			tuiButton,
-			tuiListCell,
-			tuiDropdownList,
-			tuiIcon,
 			addTips
 		},
 		data() {
@@ -97,43 +63,7 @@
 				cornerBgBoarderColor: '#FFFFFF',
 				r: 40,
 				boarderWidth: 15,
-				wishText: '武汉加油',
-				dropdownlistData: [{
-						name: "武汉加油",
-						color: "#000",
-						icon: "attestation",
-						size: 20
-					}, {
-						name: "中国加油",
-						color: "#000",
-						icon: "attestation",
-						size: 20
-					}, {
-						name: "加油2020",
-						color: "#000",
-						icon: "attestation",
-						size: 20
-					}, {
-						name: "不动如山",
-						color: "#000",
-						icon: "attestation",
-						size: 20
-					},
-					{
-						name: "拒绝聚会",
-						color: "#000",
-						icon: "attestation",
-						size: 20
-					},
-					{
-						name: "拒绝野味",
-						color: "#000",
-						icon: "attestation",
-						size: 20
-					}
-				],
-				// dropdownlistData: ['武汉加油', '中国加油', '加油2020', '不动如山', '拒绝聚会', '拒绝野味'],
-				dropdownShow: false,
+				wishText: '福',
 				avatarPath: '/static/image/mask/avatar_mask.png',
 				happinessPathList: ['/static/image/h0.png', '/static/image/h1.png', '/static/image/h2.png', '/static/image/h3.png',
 					'/static/image/h4.png'
@@ -149,6 +79,8 @@
 				lastX: 0,
 				lastY: 0,
 				lastZ: 0, //此组变量分别记录对应 x、y、z 三轴的数值和上次的数值
+				shaking: false,
+				shakeSpeed: 70, //设置阈值
 				lastChangeTime: 0,
 				showGentleMessage: false,
 				savedCounts: 0,
@@ -183,7 +115,6 @@
 			}
 		},
 		onLoad(option) {
-			this.windowHeight = getApp().globalData.windowHeight;
 			if (!!getApp().globalData.userAvatarFilePath) {
 				this.avatarPath = getApp().globalData.userAvatarFilePath;
 			}
@@ -192,15 +123,20 @@
 			this.paint();
 
 			const db = wx.cloud.database({
-				env: getApp().globalData.envId,
+				env: this.envId,
 				traceUser: true
 			});
 
 			let _this = this;
-			db.collection(getApp().globalData.collectionName).doc(getApp().globalData.docId).get().then(res => {
+			db.collection(this.collectionName).doc(this.docId).get().then(res => {
 				// res.data 包含该记录的数据
+				console.log('res.data.free_count', res.data.free_count);
+				_this.freeCount = res.data.free_count;
 				_this.enableRewardedVideoAd = res.data.enableRewardedVideoAd;
 				_this.enableInterstitialAd = res.data.enableInterstitialAd;
+				_this.showQuestion = res.data.show_question;
+				getApp().globalData.showQuestion = res.data.show_question;
+				getApp().globalData.questionUrl = res.data.question_url;
 				getApp().globalData.enableSecurityCheck = res.data.enableSecurityCheck;
 			})
 
@@ -282,14 +218,21 @@
 						})
 				}
 			}
+			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
+			wx.startAccelerometer({
+				interval: 'normal'
+			});
+			wx.onAccelerometerChange(this.shake);
 		},
-		onHide() {},
+		onHide() {
+			wx.stopAccelerometer();
+		},
 		onShareAppMessage() {
 			return {
-				title: '武汉加油，中国加油！',
-				desc: '武汉加油，中国加油，加油2020，不动如山，拒绝聚会，拒绝野味。',
-				// imageUrl: '/static/image/redirect-cover.jpg',
-				path: '/pages/index/index',
+				title: '头像加福贺新春',
+				desc: '贺新春，贴福字，为你的头像加个福字吧',
+				imageUrl: '/static/image/redirect-cover.jpg',
+				path: '/pages/happiness/add-happiness',
 				success: function(res) {
 					console.log(res);
 				}
@@ -297,12 +240,45 @@
 		},
 		methods: {
 			...mapMutations(["saveLoginUserInfo"]),
-			dropDownList(index) {
-				if (index !== -1) {
-					this.wishText = this.dropdownlistData[index].name;
-					this.paint();
+			openIntroduction() {
+				console.log('click');
+				uni.navigateTo({
+					url: '/pages/happiness/introduction'
+				})
+			},
+			shake(acceleration) {
+				var nowTime = new Date().getTime(); //记录当前时间
+				//如果这次摇的时间距离上次摇的时间有一定间隔 才执行
+				if (nowTime - this.lastTime > 100) {
+					var diffTime = nowTime - this.lastTime; //记录时间段
+					this.lastTime = nowTime; //记录本次摇动时间，为下次计算摇动时间做准备
+					this.x = acceleration.x; //获取 x 轴数值，x 轴为垂直于北轴，向东为正
+					this.y = acceleration.y; //获取 y 轴数值，y 轴向正北为正
+					this.z = acceleration.z; //获取 z 轴数值，z 轴垂直于地面，向上为正
+					//计算 公式的意思是 单位时间内运动的路程，即为我们想要的速度
+					var speed = Math.abs(this.x + this.y + this.z - this.lastX - this.lastY - this.lastZ) / diffTime * 10000;
+					if (speed > this.shakeSpeed) {
+						this.shaking = true;
+					} else {
+						if (this.shaking) {
+							this.shaking = false;
+							if (nowTime - this.lastChangeTime > 800) {
+								this.nextHappiness();
+								this.lastChangeTime = nowTime;
+								if (!this.showGentleMessage) {
+									this.showGentleMessage = true;
+									uni.showToast({
+										title: '轻轻摇就可以了哦'
+									});
+								}
+							}
+							console.log("换了一下");
+						}
+					}
+					this.lastX = this.x; //赋值，为下一次计算做准备
+					this.lastY = this.y; //赋值，为下一次计算做准备
+					this.lastZ = this.z; //赋值，为下一次计算做准备
 				}
-				this.dropdownShow = !this.dropdownShow
 			},
 			paint(avatarFilePath, happinessFilePath) {
 				if (!avatarFilePath) {
@@ -312,9 +288,8 @@
 					happinessFilePath = this.happinessPath;
 				}
 				this.drawCansBgImg(avatarFilePath);
-				this.drawTextBg();
-				// this.drawHappiness(happinessFilePath);
-				this.drawDefaultText();
+				this.drawCornerBg();
+				this.drawHappiness(happinessFilePath);
 				uni.vibrateShort({
 					success: function() {
 						console.log('vibrateShort');
@@ -325,7 +300,7 @@
 				this.ctx.drawImage(imageFilePath, 0, 0, this.cansWidth, this.cansHeight);
 				this.ctx.draw(false);
 			},
-			drawTextBg() {
+			drawCornerBg() {
 				this._drawCircleWithBoarder(this.cornerBgBoarderColor, this.cornerBgColor, this.cornerX, this.cornerY, this.r, this
 					.boarderWidth);
 			},
@@ -340,7 +315,7 @@
 			drawDefaultText() {
 				let textOption = {
 					text: this.wishText,
-					sLeft: 0.05,
+					sLeft: 0.73,
 					sTop: 0.93,
 					fontSize: 60,
 					color: 'white',
@@ -364,9 +339,16 @@
 			 */
 			_drawCircleWithBoarder(sColor, fColor, cornerX, cornerY, r, boarderWidth) {
 				this.ctx.save();
-				this.ctx.rect(0, 190, 270, 80);
-				this.ctx.setFillStyle('#d81e06');
+				var cx = cornerX + r;
+				var cy = cornerY + r;
+				// 圆的中心的 cx, cy 坐标, 圆的半径, 起始角, 结束角。
+				this.ctx.arc(cx, cy, r, 0, 2 * Math.PI); // 创建弧/曲线（用于创建圆或部分圆）
+				this.ctx.setLineWidth(boarderWidth);
+				this.ctx.setStrokeStyle(sColor);
+				this.ctx.stroke();
+				this.ctx.setFillStyle(fColor);
 				this.ctx.fill();
+				this.ctx.restore();
 				this.ctx.draw(true);
 			},
 			_drawText(item) {
@@ -461,6 +443,7 @@
 						console.log(res);
 						let tempImagePath = res.tempFilePaths[0];
 						self.imageCheck(tempImagePath, self.loadRecImageOrStartToCrop);
+						// self.loadRecImageOrStartToCrop(tempImagePath);
 					}
 				});
 			},
@@ -500,6 +483,13 @@
 			checkAdBeforeSave() {
 				console.log('enableRewardedVideoAd', this.enableRewardedVideoAd);
 				console.log('videoAd', videoAd);
+				console.log('ownImageUsed', this.ownImageUsed);
+				console.log('this.savedCounts', this.savedCounts);
+				console.log('this.freeCount', this.freeCount);
+				console.log('this.savedCounts >= this.freeCount', this.savedCounts >= this.freeCount);
+				console.log('interstitialAdAlreadyShow', this.interstitialAdAlreadyShow);
+				console.log('this.rewardedVideoAdAlreadyShow', this.rewardedVideoAdAlreadyShow);
+				console.log('this.rewardedVideoAdLoaded', this.rewardedVideoAdLoaded);
 				// 有成功加载的激励视频，才展现提示框
 				let _this = this;
 				if (!!videoAd && this.enableRewardedVideoAd && this.rewardedVideoAdLoaded &&
@@ -627,7 +617,6 @@
 				this.hideModal();
 			},
 			imageCheck: function(tempImagePath, callback) {
-				getApp().globalData.enableSecurityCheck = false;
 				if (!getApp().globalData.enableSecurityCheck) {
 					callback(tempImagePath);
 					return;
@@ -703,11 +692,11 @@
 							url: "/pages/about/about"
 						})
 						break;
-						// case 2:
-						// 	uni.previewImage({
-						// 		urls: ["https://thorui.cn/img/reward.jpg"]
-						// 	})
-						// 	break;
+					// case 2:
+					// 	uni.previewImage({
+					// 		urls: ["https://thorui.cn/img/reward.jpg"]
+					// 	})
+					// 	break;
 					default:
 						break;
 				}
@@ -739,6 +728,21 @@
 		// background-color: rgba(0, 0, 0, 0.8);
 	}
 
+	.isCan22 {
+		border: 6px solid white;
+		border-radius: 10px;
+		position: fixed;
+		left: 0;
+		// z-index: 999;
+		width: 270px;
+		height: 270px;
+		right: 0;
+		top: 200upx;
+		bottom: 130upx;
+		margin: 0 auto;
+		background-size: 100%;
+	}
+
 	.isCan {
 		border: 6px solid white;
 		border-radius: 10px;
@@ -748,7 +752,7 @@
 		margin-left: auto;
 		margin-right: auto;
 		background-size: 100%;
-		z-index: 800;
+
 	}
 
 	@media (min-width: 320px) {
@@ -761,6 +765,10 @@
 			font-weight: 800;
 		}
 
+		// .action-btn {
+		// 	background-color: #FFC700;
+		// 	color: white;
+		// }
 	}
 
 	.action-wrapper {
@@ -769,6 +777,11 @@
 		padding-right: 100rpx;
 		font-weight: 800;
 	}
+
+	// .action-btn {
+	// 	background-color: #FFC700;
+	// 	color: white;
+	// }
 
 	.share-wrapper {
 		padding-top: 50rpx;
@@ -787,69 +800,5 @@
 	.happiness-option {
 		width: 60px;
 		height: 60px;
-	}
-
-	.scrollView {
-		width: 100%;
-		position: absolute;
-		bottom: 5px;
-		white-space: nowrap;
-	}
-
-	.imgList {
-		height: 35px;
-		width: 65px;
-		border: 2px solid white;
-		border-radius: 5px;
-		margin: 10px 10px 10px 10px;
-		background-color: white;
-	}
-
-	.slogan-bg {
-		background-color: red;
-		border-radius: 25px;
-		height: 25px;
-		width: 55px;
-		color: white;
-		margin: auto;
-
-	}
-
-	.tui-dropdown-list{
-		width: 140px !important;
-	}
-
-	.tui-drop-input-box {
-		padding: 50upx 50upx 0upx 50upx;
-		box-sizing: border-box;
-	}
-
-	.tui-animation {
-		display: inline-block;
-		transform: rotate(0deg);
-		transition: all 0.2s;
-	}
-
-	.tui-animation-show {
-		transform: rotate(180deg);
-	}
-
-	.tui-selected-list {
-		width: 140px;
-		background: #fff;
-		border-radius: 20upx;
-		overflow: hidden;
-		transform: translateZ(0);
-	}
-
-	.tui-dropdown-scroll {
-		height: 400upx;
-	}
-	
-	.tui-btn-block{
-		height: 60rpx !important;
-		line-height: 60rpx !important;
-		font-size: 32rpx !important;
-
 	}
 </style>
