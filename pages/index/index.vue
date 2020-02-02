@@ -9,40 +9,52 @@
 			<text class="text-yellow text-bold text-sm">人文之窗公众号</text>
 		</view>
 		<view class="menu-list" style="margin-top: 65px;">
-			<view @click="addHappiness">
+			<view>
 				<view class="cu-card article">
 					<view class="cu-item shadow">
 						<view class="title">
 							<view class="text-cut"> 头像加福字 </view>
 						</view>
 						<view class="content">
-							<image style="width: 160rpx; margin-top: 8px;" src="/static/image/logo/happiness-logo.png" mode="widthFix"></image>
+							<image @click="addHappiness" style="width: 160rpx; margin-top: 8px;" src="/static/image/logo/happiness-logo.png"
+							 mode="widthFix"></image>
 							<view class="desc">
 								<view class="text-content"> 头像加福字，新年新气象，福到好运到！</view>
-								<view>
-									<view class="cu-tag bg-red light sm round">贺新年</view>
-									<view class="cu-tag bg-green light sm round">集五福</view>
-									<!-- <text class="cuIcon-roundright" ></text> -->
-								</view>
-								<view style="display: inline-block;">
+								<view class="grid justify-between">
+									<view>
+										<view class="cu-tag bg-red light sm round">贺新年</view>
+										<view class="cu-tag bg-green light sm round">集五福</view>
+									</view>
+									<view>
+										<button class="cu-btn line-orange sm" @click="addHappiness">
+											<text class="cuIcon-forward"></text> <text class="text-orange">打开</text> </button>
+									</view>
 								</view>
 							</view>
 						</view>
 					</view>
 				</view>
 			</view>
-			<view class="cu-card article" @click="addMask">
+			<view class="cu-card article">
 				<view class="cu-item shadow">
 					<view class="title">
 						<view class="text-cut"> 头像戴口罩 </view>
 					</view>
 					<view class="content">
-						<image style="width: 160rpx;" src="/static/image/logo/mask-logo.png" mode="aspectFill"></image>
+						<image style="width: 160rpx;" @click="addMask" src="/static/image/logo/mask-logo.png" mode="aspectFill"></image>
 						<view class="desc">
 							<view class="text-content"> 换上口罩头像，提升防疫安全意识，防止疫情蔓延，保护家人朋友。</view>
 							<view>
-								<view class="cu-tag bg-red light sm round">防疫情</view>
-								<view class="cu-tag bg-green light sm round">保健康</view>
+								<view class="grid justify-between">
+									<view>
+										<view class="cu-tag bg-red light sm round">防疫情</view>
+										<view class="cu-tag bg-green light sm round">保健康</view>
+									</view>
+									<view>
+										<button class="cu-btn line-orange sm" @click="addMask">
+											<text class="cuIcon-forward"></text> <text class="text-orange">打开</text> </button>
+									</view>
+								</view>
 							</view>
 						</view>
 					</view>
@@ -60,7 +72,7 @@
 						</text>
 					</button>
 				</view>
-				
+
 				<view class="content" @click="tucao">
 					<button class="free-btn-bordernone">
 						<tui-icon name="message" color="green" :size="20"></tui-icon>
@@ -96,6 +108,17 @@
 			this.windowHeight = getApp().globalData.windowHeight;
 			this.SHOW_TIP = getApp().globalData.SHOW_TIP;
 			console.log(this.SHOW_TIP);
+		},
+		onShareAppMessage() {
+			return {
+				title: '我换上了口罩头像，防止疫情蔓延，保护家人朋友',
+				desc: '防传染、戴口罩，从我做起！',
+				imageUrl: '/static/image/mask/avatar_mask.png',
+				path: '/pages/index/index',
+				success: function(res) {
+					console.log(res);
+				}
+			}
 		},
 		methods: {
 			addHappiness: function() {

@@ -1,5 +1,5 @@
 <template>
-	<view class="container" :style="{height:windowHeight+'px'}" style="overflow: scroll">
+	<view class="container" :style="{height:windowHeight+'px'}">
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
 		<view v-if="SHOW_TIP">
 			<add-tips :statusBarHeight="statusBarHeight" />
@@ -223,7 +223,7 @@
 				title: '我换上了口罩头像，防止疫情蔓延，保护家人朋友',
 				desc: '防传染、戴口罩，从我做起！',
 				imageUrl: '/static/image/mask/avatar_mask.png',
-				path: '/pages/main/add-mask',
+				path: '/pages/mask/add-mask',
 				success: function(res) {
 					console.log(res);
 				}
