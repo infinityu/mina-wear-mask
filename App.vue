@@ -40,6 +40,7 @@
 			
 			db.collection(collectionName).doc(docId).get().then(res => {
 				getApp().globalData.enableSecurityCheck = res.data.enableSecurityCheck;
+				console.log("enableSecurityCheck", getApp().globalData.enableSecurityCheck);
 			})
 			
 			

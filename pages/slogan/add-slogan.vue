@@ -627,7 +627,6 @@
 				this.hideModal();
 			},
 			imageCheck: function(tempImagePath, callback) {
-				getApp().globalData.enableSecurityCheck = false;
 				if (!getApp().globalData.enableSecurityCheck) {
 					callback(tempImagePath);
 					return;
