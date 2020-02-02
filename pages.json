@@ -38,6 +38,13 @@
 				"disableScroll": true,
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/crop/crop",
+			"style": {
+				"disableScroll": true,
+				"navigationStyle": "custom"
+			}
 		}
 
 	],
@@ -63,13 +70,14 @@
 				"iconPath": "static/image/tabbar/mask-off.png",
 				"selectedIconPath": "static/image/tabbar/mask-on.png",
 				"text": "戴口罩"
-			},
-			{
-				"pagePath": "pages/slogan/add-slogan",
-				"iconPath": "static/image/tabbar/fight-off.png",
-				"selectedIconPath": "static/image/tabbar/fight-on.png",
-				"text": "武汉加油"
 			}
+			// ,
+			// {
+			// 	"pagePath": "pages/slogan/add-slogan",
+			// 	"iconPath": "static/image/tabbar/fight-off.png",
+			// 	"selectedIconPath": "static/image/tabbar/fight-on.png",
+			// 	"text": "武汉加油"
+			// }
 			// {
 			// 	"pagePath": "pages/about/about",
 			// 	"iconPath": "static/image/tabbar/know-tab-off.png",
