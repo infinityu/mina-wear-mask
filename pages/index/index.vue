@@ -1,14 +1,39 @@
 <template>
 	<view class="container" style="overflow-y: scroll;">
-		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
+		<!-- <image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image> -->
 		<view v-if="SHOW_TIP">
 			<add-tips :statusBarHeight="statusBarHeight" />
 		</view>
-		<view class="logo-area" style="position: absolute; top: 25px; left: 20px;">
+		<view class="logo-area" :style="{top: statusBarHeight + 'px;'}">
 			<image style="width: 25px; height: 25px;" src="../../static/image/rwzc-logo-round.png"></image>
 			<text class="text-yellow text-bold text-sm">人文之窗公众号</text>
 		</view>
-		<view class="menu-list" style="margin-top: 65px;">
+		<view class="menu-list" :style="{'margin-top': statusBarHeight+40+'px' }">
+			<view class="cu-card article">
+				<view class="cu-item shadow">
+					<view class="title">
+						<view class="text-cut"> 实时疫情 </view>
+					</view>
+					<view class="content">
+						<image style="width: 160rpx;" @click="realtimeInfo" src="/static/image/logo/ncov-logo.png" mode="aspectFill"></image>
+						<view class="desc">
+							<view class="text-content"> 全国及各省市新型冠状病毒肺炎疫情实时状态，疫情最新数据汇总。</view>
+							<view>
+								<view class="grid justify-between">
+									<view>
+										<view class="cu-tag bg-red light sm round">新冠肺炎</view>
+										<view class="cu-tag bg-green light sm round">疫情实时</view>
+									</view>
+									<view>
+										<button class="cu-btn line-orange sm" @click="realtimeInfo">
+											<text class="cuIcon-forward"></text> <text class="text-orange">打开</text> </button>
+									</view>
+								</view>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
 			<view>
 				<view class="cu-card article">
 					<view class="cu-item shadow">
@@ -85,9 +110,11 @@
 					</view>
 				</view>
 			</view>
+			
 		</view>
 
-		<view class="about-actions margin-top cu-list menu sm-border card-menu animation-shake animation-speed-2 animation-delay-3">
+		<view class="about-actions margin-top cu-list menu sm-border card-menu animation-shake animation-speed-2 animation-delay-3"
+			style="margin-bottom: 50rpx;">
 			<view class="cu-item feedback-btn">
 				<view class="content">
 					<button class="free-btn-bordernone" open-type="contact">
@@ -146,6 +173,18 @@
 			}
 		},
 		methods: {
+			realtimeInfo: function() {
+				wx.navigateToMiniProgram({
+					appId: 'wx1656b2e5df4e587c',
+					path: 'pages/index/index',
+					success(res) {
+						console.log(res);
+					},
+					fail(e) {
+						console.log(e);
+					}
+				})
+			},
 			addHappiness: function() {
 				console.log('addHappiness');
 				wx.navigateToMiniProgram({
@@ -186,6 +225,10 @@
 </script>
 
 <style scoped>
+	.logo-area{
+		position: absolute;
+		left: 20px;
+	}
 	.about-actions {
 		/* position: fixed; */
 		/* bottom: 80px; */

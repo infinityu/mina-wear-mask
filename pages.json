@@ -18,7 +18,7 @@
 			"path": "pages/index/index",
 			"style": {
 				// "navigationBarBackgroundColor": "#C12928",
-				"disableScroll": true,
+				"disableScroll": false,
 				"navigationStyle": "custom"
 			}
 		},
