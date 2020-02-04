@@ -184,6 +184,17 @@
 			if (!!getApp().globalData.userAvatarFilePath) {
 				this.avatarPath = getApp().globalData.userAvatarFilePath;
 			}
+			// 在页面onLoad回调事件中创建插屏广告实例
+			if (wx.createInterstitialAd) {
+				interstitialAd = wx.createInterstitialAd({
+					adUnitId: 'adunit-2bf7cf186785bfda'
+				})
+				interstitialAd.onLoad(() => {})
+				interstitialAd.onError((err) => {
+					console.log(err);
+				})
+				interstitialAd.onClose(() => {})
+			}
 		},
 		onReady() {
 			// 判断是否已经显示过
@@ -209,6 +220,11 @@
 				getApp().globalData.rapaintAfterCrop = false;
 				this.avatarPath = getApp().globalData.cropImageFilePath;
 				this.paint();
+			}
+			if (interstitialAd) {
+				interstitialAd.show().catch((err) => {
+					console.error(err)
+				})
 			}
 		},
 		onShareAppMessage() {

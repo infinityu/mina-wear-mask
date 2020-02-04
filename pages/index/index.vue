@@ -143,6 +143,10 @@
 <script>
 	import tuiIcon from "@/components/tui/icon";
 	import addTips from "@/components/add-tips";
+	
+	// 在页面中定义插屏广告
+	let interstitialAd = null
+	
 	export default {
 		components: {
 			tuiIcon,
@@ -155,11 +159,30 @@
 				SHOW_TIP: false
 			}
 		},
+		onLoad() {
+			// 在页面onLoad回调事件中创建插屏广告实例
+			if (wx.createInterstitialAd) {
+				interstitialAd = wx.createInterstitialAd({
+					adUnitId: 'adunit-be801ba020f6edeb'
+				})
+				interstitialAd.onLoad(() => {})
+				interstitialAd.onError((err) => {
+					console.log(err);
+				})
+				interstitialAd.onClose(() => {})
+			}
+		},
 		onShow() {
 			this.statusBarHeight = getApp().globalData.statusBarHeight;
 			this.windowHeight = getApp().globalData.windowHeight;
 			this.SHOW_TIP = getApp().globalData.SHOW_TIP;
 			console.log(this.SHOW_TIP);
+			
+			if (interstitialAd) {
+				interstitialAd.show().catch((err) => {
+					console.error(err)
+				})
+			}
 		},
 		onShareAppMessage() {
 			return {

@@ -207,7 +207,7 @@
 			// 在页面onLoad回调事件中创建插屏广告实例
 			if (wx.createInterstitialAd) {
 				interstitialAd = wx.createInterstitialAd({
-					adUnitId: 'adunit-6a39f22d22569c87'
+					adUnitId: 'adunit-42a76755483ec613'
 				})
 				interstitialAd.onLoad(() => {})
 				interstitialAd.onError((err) => {})
@@ -272,7 +272,7 @@
 				this.paint();
 			} else {
 				//从剪裁页面跳转回来时不用展示，其他情况下，页面打开时展示插屏广告
-				if (interstitialAd && this.enableInterstitialAd && !this.interstitialAdAlreadyShow) {
+				if (interstitialAd) {
 					interstitialAd.show()
 						.then(() => {
 							this.interstitialAdAlreadyShow = true;
