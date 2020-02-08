@@ -1,7 +1,8 @@
 <template>
-	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: hidden">
+	<view class="container" :style="{height:windowHeight+'px'}">
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
-		<view class="container">
+		<view class="content-wrapper">
+			<ad unit-id="adunit-28338c7d91d145af"></ad>
 			<view class="about-actions margin-top cu-list menu sm-border card-menu animation-shake animation-speed-2 animation-delay-3">
 				<view class="cu-item arrow feedback-btn">
 					<view class="content">
@@ -23,19 +24,18 @@
 						</button>
 					</view>
 				</view>
-				<view class="cu-item arrow feedback-btn" @click="addHappiness">
+				<!-- <view class="cu-item arrow feedback-btn" @click="addHappiness">
 					<view class="content">
 						<button class="free-btn-bordernone">
 							<tui-icon name="agree" color="green" :size="20"></tui-icon>
 							<text style="color: grey; padding-left: 10px;" class="text-sm">
-								头像加福字
+								找开发小哥吐槽
 							</text>
 						</button>
 						<view class="action">
-							<!-- <text class="text-grey text-sm"> 新年添福运！</text> -->
 						</view>
 					</view>
-				</view>
+				</view> -->
 
 			</view>
 
@@ -98,11 +98,11 @@
 			}
 		},
 		onLoad() {
-			this.windowHeight = getApp().globalData.WINDOW_HEIGHT;
+			this.windowHeight = getApp().globalData.windowHeight;
 			// 在页面onLoad回调事件中创建插屏广告实例
 			if (wx.createInterstitialAd) {
 				interstitialAd = wx.createInterstitialAd({
-					adUnitId: 'adunit-beed4816676d471a'
+					adUnitId: 'adunit-28338c7d91d145af'
 				})
 				interstitialAd.onLoad(() => {})
 				interstitialAd.onError((err) => {
@@ -135,17 +135,21 @@
 				}).go();
 			},
 			addHappiness: function(){
-				console.log('addHappiness');
-				wx.navigateToMiniProgram({
-				  appId: 'wxb8055d6d942b3690',
-				  path: 'pages/happiness/add-happiness',
-				  success(res) {
-				    console.log(res);
-				  },
-				  fail(e){
-					  console.log(e);
-				  }
+				wx.previewImage({
+				  current: '/static/image/qcode.jpeg', // 当前显示图片的http链接
+				  urls: ['/static/image/qcode.jpeg'] // 需要预览的图片http链接列表
 				})
+				// console.log('addHappiness');
+				// wx.navigateToMiniProgram({
+				//   appId: 'wxb8055d6d942b3690',
+				//   path: 'pages/happiness/add-happiness',
+				//   success(res) {
+				//     console.log(res);
+				//   },
+				//   fail(e){
+				// 	  console.log(e);
+				//   }
+				// })
 			},
 			showModal: function(e) {
 				console.log(e.currentTarget.dataset);
@@ -174,11 +178,7 @@
 </script>
 
 <style scoped>
-	.main {
-		background-color: #C12928;
-	}
-
-	.container {
+	.content-wrapper {
 		margin-top: 150rpx;
 	}
 	

@@ -1,5 +1,5 @@
 <template>
-	<view class="container" style="overflow-y: scroll;">
+	<view class="container container-index" style="overflow-y: scroll;">
 		<!-- <image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image> -->
 		<view v-if="SHOW_TIP">
 			<add-tips :statusBarHeight="statusBarHeight" />
@@ -9,31 +9,7 @@
 			<text class="text-yellow text-bold text-sm">人文之窗公众号</text>
 		</view>
 		<view class="menu-list" :style="{'margin-top': statusBarHeight+40+'px' }">
-			<view class="cu-card article">
-				<view class="cu-item shadow">
-					<view class="title">
-						<view class="text-cut"> 实时疫情 </view>
-					</view>
-					<view class="content">
-						<image style="width: 160rpx;" @click="realtimeInfo" src="/static/image/logo/ncov-logo.png" mode="aspectFill"></image>
-						<view class="desc">
-							<view class="text-content"> 全国及各省市新型冠状病毒肺炎疫情实时状态，疫情最新数据汇总。</view>
-							<view>
-								<view class="grid justify-between">
-									<view>
-										<view class="cu-tag bg-red light sm round">新冠肺炎</view>
-										<view class="cu-tag bg-green light sm round">疫情实时</view>
-									</view>
-									<view>
-										<button class="cu-btn line-orange sm" @click="realtimeInfo">
-											<text class="cuIcon-forward"></text> <text class="text-orange">打开</text> </button>
-									</view>
-								</view>
-							</view>
-						</view>
-					</view>
-				</view>
-			</view>
+			
 			<view>
 				<view class="cu-card article">
 					<view class="cu-item shadow">
@@ -145,7 +121,8 @@
 	import addTips from "@/components/add-tips";
 	
 	// 在页面中定义插屏广告
-	let interstitialAd = null
+	let interstitialAd = null;
+	
 	
 	export default {
 		components: {
@@ -156,7 +133,8 @@
 			return {
 				windowHeight: 0,
 				statusBarHeight: 0,
-				SHOW_TIP: false
+				SHOW_TIP: false,
+				rewardedVideoAdLoaded: false
 			}
 		},
 		onLoad() {
@@ -171,6 +149,7 @@
 				})
 				interstitialAd.onClose(() => {})
 			}
+			
 		},
 		onShow() {
 			this.statusBarHeight = getApp().globalData.statusBarHeight;
@@ -248,6 +227,10 @@
 </script>
 
 <style scoped>
+	.container-index{
+		height: 2000rpx;
+	}
+	
 	.logo-area{
 		position: absolute;
 		left: 20px;

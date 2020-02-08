@@ -81,13 +81,13 @@
 				"iconPath": "static/image/tabbar/fight-off.png",
 				"selectedIconPath": "static/image/tabbar/fight-on.png",
 				"text": "武汉加油"
+			},
+			{
+				"pagePath": "pages/about/about",
+				"iconPath": "static/image/tabbar/about-off.png",
+				"selectedIconPath": "static/image/tabbar/about-on.png",
+				"text": "关于"
 			}
-			// {
-			// 	"pagePath": "pages/about/about",
-			// 	"iconPath": "static/image/tabbar/know-tab-off.png",
-			// 	"selectedIconPath": "static/image/tabbar/know-tab-on.png",
-			// 	"text": "涨姿势"
-			// }
 		]
 	}
 }
