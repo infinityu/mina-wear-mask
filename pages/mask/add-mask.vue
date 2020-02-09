@@ -120,7 +120,7 @@
 	// 在页面中定义激励视频广告
 	let videoAd = null;
 	// 在页面中定义插屏广告
-	let interstitialAd = null
+	let interstitialAd = null;
 
 	const range = (start, end, step) => {
 		return Array.from(Array.from(Array(Math.ceil((end - start) / step)).keys()), x => start + x * step);
@@ -144,7 +144,7 @@
 				cansWidth: 270, // 宽度 px
 				cansHeight: 270, // 高度 px
 				avatarPath: '/static/image/mask/avatar_mask.png',
-				imgList: range(0, 16, 1), // 第二个参数是个数
+				imgList: range(0, 29, 1), // 第二个参数是个数
 				currentMaskId: -1,
 				showBorder: false,
 				maskCenterX: wx.getSystemInfoSync().windowWidth / 2,
@@ -195,6 +195,32 @@
 				})
 				interstitialAd.onClose(() => {})
 			}
+			
+			let _this = this;
+			// 在页面onLoad回调事件中创建激励视频广告实例
+			if (wx.createRewardedVideoAd) {
+				videoAd = wx.createRewardedVideoAd({
+					adUnitId: 'adunit-9a8af70b40e15f29'
+				})
+				videoAd.onLoad(() => {
+					_this.rewardedVideoAdLoaded = true;
+				})
+				videoAd.onError((err) => {
+					// 广告组件出现错误，直接允许用户保存，不做其他复杂处理
+					_this.rewardedVideoAdLoaded = false;
+				})
+				videoAd.onClose((res) => {
+					if (res && res.isEnded || res === undefined) {
+						// 正常播放结束，下发奖励
+						_this.rewardedVideoAdAlreadyShow = true; // 本次使用不再展现激励广告
+						// _this.saveCans();
+					} else {
+						// 播放中途退出，进行提示
+						_this.rewardedVideoAdAlreadyShow = false;
+					}
+			
+				})
+			}
 		},
 		onReady() {
 			// 判断是否已经显示过
@@ -229,7 +255,7 @@
 		},
 		onShareAppMessage() {
 			return {
-				title: '我换上了口罩头像，防止疫情蔓延，保护家人朋友',
+				title: '我换上了口罩头像，防止疫情蔓延，30款口罩、护目镜任你选！',
 				desc: '防传染、戴口罩，从我做起！',
 				imageUrl: '/static/image/mask/avatar_mask.png',
 				path: '/pages/index/index',
@@ -424,6 +450,40 @@
 					pc.drawImage(_this.maskPic, -mask_size / 2, -mask_size / 2, mask_size, mask_size);
 					pc.draw();
 					_this.saveCans();
+					
+					// 有成功加载的激励视频，才展现提示框
+					if (!!videoAd && _this.rewardedVideoAdLoaded) {
+						uni.showModal({
+							title: '获取无限使用次数',
+							content: '请完整观看趣味广告视频，更多个性化口罩护目镜任意添加',
+							success: function(res) {
+								if (res.confirm) {
+									console.log('用户点击确定');
+									// 用户触发广告后，显示激励视频广告
+									if (videoAd) {
+										_this.rewardedVideoAdAlreadyShow = true;
+										videoAd.show().catch(() => {
+											// 失败重试
+											videoAd.load()
+												.then(() => {
+													videoAd.show();
+												})
+												.catch(err => {
+													console.log(err);
+													console.log('激励视频 广告显示失败')
+												})
+										})
+									}
+								} else if (res.cancel) {
+									console.log('用户点击取消');
+									// _this.saveCans();
+									return;
+								}
+							}
+						});
+					} else {
+						// _this.saveCans();
+					}
 				})
 			},
 			flipHorizontal() {

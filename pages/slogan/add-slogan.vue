@@ -114,6 +114,16 @@
 						icon: "attestation",
 						size: 20
 					}, {
+						name: "奋斗2020",
+						color: "#000",
+						icon: "attestation",
+						size: 20
+					}, {
+						name: "努力2020",
+						color: "#000",
+						icon: "attestation",
+						size: 20
+					}, {
 						name: "不动如山",
 						color: "#000",
 						icon: "attestation",
@@ -814,7 +824,7 @@
 
 	}
 
-	.tui-dropdown-list{
+	.tui-dropdown-list {
 		width: 140px !important;
 	}
 
@@ -844,8 +854,8 @@
 	.tui-dropdown-scroll {
 		height: 400upx;
 	}
-	
-	.tui-btn-block{
+
+	.tui-btn-block {
 		height: 60rpx !important;
 		line-height: 60rpx !important;
 		font-size: 32rpx !important;

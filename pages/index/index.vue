@@ -20,7 +20,7 @@
 							<image @click="addHappiness" style="width: 160rpx; margin-top: 8px;" src="/static/image/logo/happiness-logo.png"
 							 mode="widthFix"></image>
 							<view class="desc">
-								<view class="text-content"> 头像加福字，新年新气象，福到好运到！</view>
+								<view class="text-content"> 2020艰难开局，我们并肩战斗，头像加福，期待好运到来！</view>
 								<view class="grid justify-between">
 									<view>
 										<view class="cu-tag bg-red light sm round">贺新年</view>
@@ -44,7 +44,7 @@
 					<view class="content">
 						<image style="width: 160rpx;" @click="addMask" src="/static/image/logo/mask-logo.png" mode="aspectFill"></image>
 						<view class="desc">
-							<view class="text-content"> 换上口罩头像，提升防疫安全意识，防止疫情蔓延，保护家人朋友。</view>
+							<view class="text-content"> 换上口罩头像，防止疫情蔓延。    超过30款口罩、护目镜任你选！</view>
 							<view>
 								<view class="grid justify-between">
 									<view>
@@ -74,7 +74,7 @@
 								<view class="grid justify-between">
 									<view>
 										<view class="cu-tag bg-red light sm round">武汉加油</view>
-										<view class="cu-tag bg-green light sm round">中国加油</view>
+										<view class="cu-tag bg-green light sm round">自定义口号</view>
 									</view>
 									<view>
 										<button class="cu-btn line-orange sm" @click="addSlogan">
@@ -165,7 +165,7 @@
 		},
 		onShareAppMessage() {
 			return {
-				title: '我换上了口罩头像，防止疫情蔓延，保护家人朋友',
+				title: '我换上了口罩头像，防止疫情蔓延，30款口罩、护目镜任你选！',
 				desc: '防传染、戴口罩，从我做起！',
 				imageUrl: '/static/image/mask/avatar_mask.png',
 				path: '/pages/index/index',
