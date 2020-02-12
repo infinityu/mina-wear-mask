@@ -3403,6 +3403,11 @@ scroll-view.cu-steps .cu-item {
 	border-color: #ffffff;
 }
 
+.bg-redNormal {
+	background-color: #f00;
+	color: #ffffff;
+}
+
 .bg-red {
 	background-color: #e54d42;
 	color: #ffffff;

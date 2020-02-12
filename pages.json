@@ -51,6 +51,14 @@
 				"disableScroll": true,
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/text/add-text",
+			"style": {
+				"disableScroll": true,
+				"navigationBarTitleText": "头像加字"
+				// "navigationStyle": "custom"
+			}
 		}
 
 	],

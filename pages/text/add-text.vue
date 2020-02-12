@@ -1,34 +1,7 @@
 <template>
-	<view class="container" :style="{height:windowHeight+'px'}">
-		<view v-if="SHOW_TIP">
-			<!-- <add-tips :statusBarHeight="statusBarHeight" /> -->
-		</view>
-		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
-		<view id="avatar-section" @click="nextHappiness">
+	<view class="main" :style="{height:windowHeight+'px'}" style="overflow: hidden">
+		<view id="avatar-section">
 			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px;" class="isCan"></canvas>
-		</view>
-		<view class="tui-drop-input-box grid justify-center">
-			<tui-dropdown-list :show="dropdownShow" :top="94" :height="400">
-				<template v-slot:selectionbox>
-					<tui-button size="small" type="white" shape="circle" @click="dropDownList(-1)">选择口号
-						<view class="tui-animation" :class="[dropdownShow?'tui-animation-show':'']">
-							<tui-icon name="turningdown" :size="20"></tui-icon>
-						</view>
-					</tui-button>
-				</template>
-				<template v-slot:dropdownbox>
-					<view class="tui-selected-list">
-						<scroll-view scroll-y class="tui-dropdown-scroll">
-							<block v-for="(item,index) in dropdownlistData" :key="index">
-								<tui-list-cell @click="dropDownList(index)" :last="dropdownlistData.length-1==index">
-									<tui-icon :name="item.icon" :size="item.size" :color="item.color"></tui-icon>
-									<text class="tui-ml-20" style="margin-left: 20px;">{{item.name}}</text>
-								</tui-list-cell>
-							</block>
-						</scroll-view>
-					</view>
-				</template>
-			</tui-dropdown-list>
 		</view>
 
 		<view class="grid justify-around action-wrapper">
@@ -44,21 +17,24 @@
 				<button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow" @click="chooseImage">选择图片</button>
 			</view>
 		</view>
-		<view class="grid justify-around share-wrapper">
-			<ad unit-id="adunit-9eaa632f3263c819"></ad>
-			<!-- <view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
-				<button class="cu-btn block line-orange lg share-btn" open-type="share">
-					<text class="cuIcon-upload"></text><text class="text-yellow"> 分享给好友</text></button>
-			</view> -->
-		</view>
 
-		<!-- <scroll-view class="scrollView mask-scroll-view" scroll-x="true">
-			<view v-for="(item,index) in imgList" class="imgList shadow" :key="index" style="display: inline-flex;">
-				<view class="slogan-bg">
-					<text>{{item}}</text>
+		<view>
+			<view class="uni-form-item uni-column">
+				<view class="title uni-inline-item" style="margin-right: 25rpx;"> 输入一个字: 
+					<input class="uni-inline-item" confirm-type="done" @confirm="onKeyInput" maxlength="1" placeholder="高, 白, 美, 忙, 稳, 约, 赞, 壕, 帅, 萌, 矮, 丑, 穷" />
 				</view>
 			</view>
-		</scroll-view> -->
+		</view>
+
+		<view>
+			<view class="grid col-5 padding-sm">
+				<view class="margin-tb-sm text-center" v-for="(item,index) in ColorList" :key="index">
+					<button @click="changeColor" :data-color="item.color" class="cu-btn round" :class="['bg-' + item.name , shadow?'shadow':'']">{{item.title}}</button>
+				</view>
+			</view>
+		</view>
+
+
 	</view>
 </template>
 <script>
@@ -67,12 +43,9 @@
 		mapState,
 		mapMutations
 	} from "vuex";
-	import addTips from "@/components/add-tips";
 	import tuiFooter from "@/components/tui/footer";
-	import tuiIcon from "@/components/tui/icon"
-	import tuiButton from "@/components/tui/button"
-	import tuiListCell from "@/components/tui/list-cell"
-	import tuiDropdownList from "@/components/tui/dropdown-list"
+	import tuiFab from "@/components/tui/tui-fab";
+	import addTips from "@/components/add-tips";
 
 	// 在页面中定义激励视频广告
 	let videoAd = null;
@@ -82,14 +55,12 @@
 	export default {
 		components: {
 			tuiFooter,
-			tuiButton,
-			tuiListCell,
-			tuiDropdownList,
-			tuiIcon,
+			tuiFab,
 			addTips
 		},
 		data() {
 			return {
+				ColorList: this.ColorList,
 				windowHeight: 0,
 				cansWidth: 270, // 宽度 px
 				cansHeight: 270, // 高度 px
@@ -98,56 +69,11 @@
 				cornerBgBoarderColor: '#FFFFFF',
 				r: 40,
 				boarderWidth: 15,
-				wishText: '武汉加油',
-				dropdownlistData: [{
-						name: "武汉加油",
-						color: "#000",
-						icon: "attestation",
-						size: 20
-					}, {
-						name: "中国加油",
-						color: "#000",
-						icon: "attestation",
-						size: 20
-					}, {
-						name: "加油2020",
-						color: "#000",
-						icon: "attestation",
-						size: 20
-					}, {
-						name: "奋斗2020",
-						color: "#000",
-						icon: "attestation",
-						size: 20
-					}, {
-						name: "努力2020",
-						color: "#000",
-						icon: "attestation",
-						size: 20
-					}, {
-						name: "不动如山",
-						color: "#000",
-						icon: "attestation",
-						size: 20
-					},
-					{
-						name: "拒绝聚会",
-						color: "#000",
-						icon: "attestation",
-						size: 20
-					},
-					{
-						name: "拒绝野味",
-						color: "#000",
-						icon: "attestation",
-						size: 20
-					}
-				],
-				// dropdownlistData: ['武汉加油', '中国加油', '加油2020', '不动如山', '拒绝聚会', '拒绝野味'],
-				dropdownShow: false,
-				avatarPath: '/static/image/mask/avatar_mask.png',
-				happinessPathList: ['/static/image/h0.png', '/static/image/h1.png', '/static/image/h2.png', '/static/image/h3.png',
-					'/static/image/h4.png'
+				wishText: '萌',
+				avatarPath: '/static/image/text/纲手.jpg',
+				happinessPathList: ['/static/image/happiness/h0.png', '/static/image/happiness/h1.png',
+					'/static/image/happiness/h2.png', '/static/image/happiness/h3.png',
+					'/static/image/happiness/h4.png'
 				],
 				happinessIndex: 0,
 				copyright: " Copyright © 2016-2020 人文之窗公众号",
@@ -160,6 +86,8 @@
 				lastX: 0,
 				lastY: 0,
 				lastZ: 0, //此组变量分别记录对应 x、y、z 三轴的数值和上次的数值
+				shaking: false,
+				shakeSpeed: 70, //设置阈值
 				lastChangeTime: 0,
 				showGentleMessage: false,
 				savedCounts: 0,
@@ -194,7 +122,6 @@
 			}
 		},
 		onLoad(option) {
-			this.windowHeight = getApp().globalData.windowHeight;
 			if (!!getApp().globalData.userAvatarFilePath) {
 				this.avatarPath = getApp().globalData.userAvatarFilePath;
 			}
@@ -203,57 +130,51 @@
 			this.paint();
 
 			const db = wx.cloud.database({
-				env: getApp().globalData.envId,
+				env: this.envId,
 				traceUser: true
 			});
 
 			let _this = this;
-			db.collection(getApp().globalData.collectionName).doc(getApp().globalData.docId).get().then(res => {
-				// res.data 包含该记录的数据
-				_this.enableRewardedVideoAd = res.data.enableRewardedVideoAd;
-				_this.enableInterstitialAd = res.data.enableInterstitialAd;
-				getApp().globalData.enableSecurityCheck = res.data.enableSecurityCheck;
-			})
 
-			// 在页面onLoad回调事件中创建插屏广告实例
-			if (wx.createInterstitialAd) {
-				interstitialAd = wx.createInterstitialAd({
-					adUnitId: 'adunit-42a76755483ec613'
-				})
-				interstitialAd.onLoad(() => {})
-				interstitialAd.onError((err) => {})
-				interstitialAd.onClose(() => {})
-			}
+			// // 在页面onLoad回调事件中创建插屏广告实例
+			// if (wx.createInterstitialAd) {
+			// 	interstitialAd = wx.createInterstitialAd({
+			// 		adUnitId: 'adunit-0eed22f1c6e7d39e'
+			// 	})
+			// 	interstitialAd.onLoad(() => {})
+			// 	interstitialAd.onError((err) => {})
+			// 	interstitialAd.onClose(() => {})
+			// }
 
-			// 在页面onLoad回调事件中创建激励视频广告实例
-			if (wx.createRewardedVideoAd) {
-				videoAd = wx.createRewardedVideoAd({
-					adUnitId: 'adunit-e79298021d1311a7'
-				})
-				videoAd.onLoad(() => {
-					_this.rewardedVideoAdLoaded = true;
-				})
-				videoAd.onError((err) => {
-					// 广告组件出现错误，直接允许用户保存，不做其他复杂处理
-					console.log('videoAd.onError', err);
-					_this.rewardedVideoAdLoaded = false;
-				})
-				videoAd.onClose((res) => {
-					if (res && res.isEnded || res === undefined) {
-						// 正常播放结束，下发奖励
-						console.log('正常播放结束，下发奖励');
-						_this.rewardedVideoAdAlreadyShow = true; // 本次使用不再展现激励广告
-						_this.saveCans();
-					} else {
-						// 播放中途退出，进行提示
-						console.log('播放中途退出，重新提示');
-						console.log('rewardedVideoAdAlreadyShow', _this.rewardedVideoAdAlreadyShow);
-						_this.rewardedVideoAdAlreadyShow = false;
-						_this.checkAdBeforeSave();
-					}
+			// // 在页面onLoad回调事件中创建激励视频广告实例
+			// if (wx.createRewardedVideoAd) {
+			// 	videoAd = wx.createRewardedVideoAd({
+			// 		adUnitId: 'adunit-e9dfe89f3616833e'
+			// 	})
+			// 	videoAd.onLoad(() => {
+			// 		_this.rewardedVideoAdLoaded = true;
+			// 	})
+			// 	videoAd.onError((err) => {
+			// 		// 广告组件出现错误，直接允许用户保存，不做其他复杂处理
+			// 		console.log('videoAd.onError', err);
+			// 		_this.rewardedVideoAdLoaded = false;
+			// 	})
+			// 	videoAd.onClose((res) => {
+			// 		if (res && res.isEnded || res === undefined) {
+			// 			// 正常播放结束，下发奖励
+			// 			console.log('正常播放结束，下发奖励');
+			// 			_this.rewardedVideoAdAlreadyShow = true; // 本次使用不再展现激励广告
+			// 			_this.saveCans();
+			// 		} else {
+			// 			// 播放中途退出，进行提示
+			// 			console.log('播放中途退出，重新提示');
+			// 			console.log('rewardedVideoAdAlreadyShow', _this.rewardedVideoAdAlreadyShow);
+			// 			_this.rewardedVideoAdAlreadyShow = false;
+			// 			_this.checkAdBeforeSave();
+			// 		}
 
-				})
-			}
+			// 	})
+			// }
 
 		},
 		onReady() {
@@ -283,7 +204,7 @@
 				this.paint();
 			} else {
 				//从剪裁页面跳转回来时不用展示，其他情况下，页面打开时展示插屏广告
-				if (interstitialAd) {
+				if (interstitialAd && this.enableInterstitialAd && !this.interstitialAdAlreadyShow) {
 					interstitialAd.show()
 						.then(() => {
 							this.interstitialAdAlreadyShow = true;
@@ -293,13 +214,14 @@
 						})
 				}
 			}
+			this.windowHeight = getApp().globalData.windowHeight;
 		},
 		onHide() {},
 		onShareAppMessage() {
 			return {
-				title: '武汉加油，中国加油！',
-				desc: '武汉加油，中国加油，加油2020，不动如山，拒绝聚会，拒绝野味。',
-				// imageUrl: '/static/image/redirect-cover.jpg',
+				title: '我换上了口罩头像，防止疫情蔓延，30款口罩、护目镜任你选！',
+				desc: '防传染、戴口罩，从我做起！',
+				imageUrl: '/static/image/mask/avatar_mask.png',
 				path: '/pages/index/index',
 				success: function(res) {
 					console.log(res);
@@ -308,12 +230,14 @@
 		},
 		methods: {
 			...mapMutations(["saveLoginUserInfo"]),
-			dropDownList(index) {
-				if (index !== -1) {
-					this.wishText = this.dropdownlistData[index].name;
-					this.paint();
-				}
-				this.dropdownShow = !this.dropdownShow
+			changeColor(e) {
+				console.log(e);
+				this.cornerBgColor = e.currentTarget.dataset.color;
+				this.paint();
+			},
+			onKeyInput: function(event) {
+				this.wishText = event.target.value;
+				this.paint();
 			},
 			paint(avatarFilePath, happinessFilePath) {
 				if (!avatarFilePath) {
@@ -323,7 +247,7 @@
 					happinessFilePath = this.happinessPath;
 				}
 				this.drawCansBgImg(avatarFilePath);
-				this.drawTextBg();
+				this.drawCornerBg();
 				// this.drawHappiness(happinessFilePath);
 				this.drawDefaultText();
 				uni.vibrateShort({
@@ -336,7 +260,7 @@
 				this.ctx.drawImage(imageFilePath, 0, 0, this.cansWidth, this.cansHeight);
 				this.ctx.draw(false);
 			},
-			drawTextBg() {
+			drawCornerBg() {
 				this._drawCircleWithBoarder(this.cornerBgBoarderColor, this.cornerBgColor, this.cornerX, this.cornerY, this.r, this
 					.boarderWidth);
 			},
@@ -351,7 +275,7 @@
 			drawDefaultText() {
 				let textOption = {
 					text: this.wishText,
-					sLeft: 0.05,
+					sLeft: 0.73,
 					sTop: 0.93,
 					fontSize: 60,
 					color: 'white',
@@ -375,9 +299,16 @@
 			 */
 			_drawCircleWithBoarder(sColor, fColor, cornerX, cornerY, r, boarderWidth) {
 				this.ctx.save();
-				this.ctx.rect(0, 190, 270, 80);
-				this.ctx.setFillStyle('#d81e06');
+				var cx = cornerX + r;
+				var cy = cornerY + r;
+				// 圆的中心的 cx, cy 坐标, 圆的半径, 起始角, 结束角。
+				this.ctx.arc(cx, cy, r, 0, 2 * Math.PI); // 创建弧/曲线（用于创建圆或部分圆）
+				this.ctx.setLineWidth(boarderWidth);
+				this.ctx.setStrokeStyle(sColor);
+				this.ctx.stroke();
+				this.ctx.setFillStyle(fColor);
 				this.ctx.fill();
+				this.ctx.restore();
 				this.ctx.draw(true);
 			},
 			_drawText(item) {
@@ -472,6 +403,7 @@
 						console.log(res);
 						let tempImagePath = res.tempFilePaths[0];
 						self.imageCheck(tempImagePath, self.loadRecImageOrStartToCrop);
+						// self.loadRecImageOrStartToCrop(tempImagePath);
 					}
 				});
 			},
@@ -498,20 +430,7 @@
 					}
 				});
 			},
-			changeHappiness(e) {
-				this.happinessIndex = parseInt(e.currentTarget.dataset.target, 10);
-				// this.happinessPath = this.happinessPathList[this.happinessIndex];
-				this.paint();
-			},
-			nextHappiness() {
-				this.happinessIndex = (this.happinessIndex + 1) % 5;
-				// this.happinessPath = this.happinessPathList[this.happinessIndex];
-				this.paint();
-			},
 			checkAdBeforeSave() {
-				console.log('enableRewardedVideoAd', this.enableRewardedVideoAd);
-				console.log('videoAd', videoAd);
-				// 有成功加载的激励视频，才展现提示框
 				let _this = this;
 				if (!!videoAd && this.enableRewardedVideoAd && this.rewardedVideoAdLoaded &&
 					!this.rewardedVideoAdAlreadyShow && this.savedCounts >= this.freeCount) {
@@ -624,19 +543,6 @@
 					}
 				}, this)
 			},
-			showModal: function(e) {
-				console.log(e.currentTarget.dataset);
-				this.modalName = e.currentTarget.dataset.target;
-			},
-			hideModal: function(e) {
-				this.modalName = null;
-			},
-			toSharePage: function() {
-				uni.switchTab({
-					url: '/pages/share/share'
-				});
-				this.hideModal();
-			},
 			imageCheck: function(tempImagePath, callback) {
 				if (!getApp().globalData.enableSecurityCheck) {
 					callback(tempImagePath);
@@ -697,31 +603,7 @@
 					}
 				})
 			},
-			onClickFab(e) {
-				let index = e.index
 
-				switch (index) {
-					case -1:
-						break;
-					case 0:
-						uni.switchTab({
-							url: "/pages/happiness/add-mask"
-						})
-						break;
-					case 1:
-						uni.switchTab({
-							url: "/pages/about/about"
-						})
-						break;
-						// case 2:
-						// 	uni.previewImage({
-						// 		urls: ["https://thorui.cn/img/reward.jpg"]
-						// 	})
-						// 	break;
-					default:
-						break;
-				}
-			}
 
 		},
 
@@ -730,23 +612,16 @@
 
 <style lang="scss" scoped>
 	.main {
-		background-color: #C12928;
+		background-color: #F8F8F8;
 	}
 
-	.userinfo-avatar {
-		border-radius: 128upx;
-		width: 128upx;
-		height: 128upx;
-	}
+	#avatar-section {
+		width: 300px;
+		height: 300px;
+		margin: auto auto;
+		background-color: white;
+		box-shadow: 6upx 6upx 8upx rgba(114, 130, 138, 0.2);
 
-	.bg {
-		width: 100vw;
-		height: 100vh;
-		position: fixed;
-		left: 0;
-		top: 0;
-		// z-index: 998;
-		// background-color: rgba(0, 0, 0, 0.8);
 	}
 
 	.isCan {
@@ -754,11 +629,11 @@
 		border-radius: 10px;
 		width: 270px;
 		height: 270px;
-		margin-top: 150rpx;
+		// margin-top: 50rpx;
 		margin-left: auto;
 		margin-right: auto;
 		background-size: 100%;
-		z-index: 800;
+
 	}
 
 	@media (min-width: 320px) {
@@ -771,6 +646,10 @@
 			font-weight: 800;
 		}
 
+		// .action-btn {
+		// 	background-color: #FFC700;
+		// 	color: white;
+		// }
 	}
 
 	.action-wrapper {
@@ -779,6 +658,11 @@
 		padding-right: 100rpx;
 		font-weight: 800;
 	}
+
+	// .action-btn {
+	// 	background-color: #FFC700;
+	// 	color: white;
+	// }
 
 	.share-wrapper {
 		padding-top: 50rpx;
@@ -797,69 +681,5 @@
 	.happiness-option {
 		width: 60px;
 		height: 60px;
-	}
-
-	.scrollView {
-		width: 100%;
-		position: absolute;
-		bottom: 5px;
-		white-space: nowrap;
-	}
-
-	.imgList {
-		height: 35px;
-		width: 65px;
-		border: 2px solid white;
-		border-radius: 5px;
-		margin: 10px 10px 10px 10px;
-		background-color: white;
-	}
-
-	.slogan-bg {
-		background-color: red;
-		border-radius: 25px;
-		height: 25px;
-		width: 55px;
-		color: white;
-		margin: auto;
-
-	}
-
-	.tui-dropdown-list {
-		width: 140px !important;
-	}
-
-	.tui-drop-input-box {
-		padding: 50upx 50upx 0upx 50upx;
-		box-sizing: border-box;
-	}
-
-	.tui-animation {
-		display: inline-block;
-		transform: rotate(0deg);
-		transition: all 0.2s;
-	}
-
-	.tui-animation-show {
-		transform: rotate(180deg);
-	}
-
-	.tui-selected-list {
-		width: 140px;
-		background: #fff;
-		border-radius: 20upx;
-		overflow: hidden;
-		transform: translateZ(0);
-	}
-
-	.tui-dropdown-scroll {
-		height: 400upx;
-	}
-
-	.tui-btn-block {
-		height: 60rpx !important;
-		line-height: 60rpx !important;
-		font-size: 32rpx !important;
-
 	}
 </style>

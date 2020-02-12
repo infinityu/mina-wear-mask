@@ -19,14 +19,14 @@
 						<view class="text-cut"> 头像戴口罩 </view>
 					</view>
 					<view class="content">
-						<image style="width: 160rpx;" src="/static/image/logo/mask-logo.png" mode="aspectFill"></image>
+						<image style="width: 180rpx;" src="/static/image/logo/mask-logo.png" mode="aspectFill"></image>
 						<view class="desc">
 							<view class="text-content"> 换上口罩头像，防止疫情蔓延。    超过30款口罩、护目镜任你选！</view>
 							<view>
 								<view class="grid justify-between">
 									<view>
-										<view class="cu-tag bg-red light sm round">防疫情</view>
-										<view class="cu-tag bg-green light sm round">保健康</view>
+										<view class="cu-tag bg-red light sm round">防疫情，保健康</view>
+										<!-- <view class="cu-tag bg-green light sm round">保健康</view> -->
 									</view>
 									
 								</view>
@@ -41,14 +41,35 @@
 						<view class="text-cut"> 武汉加油 </view>
 					</view>
 					<view class="content">
-						<image style="width: 160rpx;"  src="/static/image/logo/slogan-logo.jpeg" mode="aspectFill"></image>
+						<image style="width: 180rpx;"  src="/static/image/logo/slogan-logo.jpeg" mode="aspectFill"></image>
 						<view class="desc">
 							<view class="text-content">  武汉加油，中国加油，加油2020，不动如山，拒绝聚会，拒绝野味。</view>
 							<view>
 								<view class="grid justify-between">
 									<view>
-										<view class="cu-tag bg-red light sm round">武汉加油</view>
-										<view class="cu-tag bg-green light sm round">自定义口号</view>
+										<view class="cu-tag bg-red light sm round">武汉加油、自定义口号</view>
+										<!-- <view class="cu-tag bg-green light sm round">自定义口号</view> -->
+									</view>
+								</view>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
+			<view class="cu-card article" @click="addText">
+				<view class="cu-item shadow" style="margin: 30rpx 30rpx 0rpx 30rpx; ">
+					<view class="title">
+						<view class="text-cut">  头像加字 </view>
+					</view>
+					<view class="content">
+						<image style="width: 180rpx;"  src="/static/image/logo/text-logo.jpeg" mode="aspectFill"></image>
+						<view class="desc">
+							<view class="text-content">  头像一键加字，加V字，制作姓氏头像，让你在朋友圈脱颖而出。</view>
+							<view>
+								<view class="grid justify-between">
+									<view>
+										<view class="cu-tag bg-red light sm round">任意文字、颜色</view>
+										<!-- <view class="cu-tag bg-green light sm round">多种颜色</view> -->
 									</view>
 								</view>
 							</view>
@@ -165,6 +186,12 @@
 					url: '/pages/slogan/add-slogan'
 				})
 			},
+			addText: function(){
+				uni.navigateTo({
+					url: '/pages/text/add-text'
+				})
+			},
+			
 			tucao: function() {
 				const Tucao = requirePlugin('tucao').default;
 				// 初始化并触发跳转，支持链式调用
