@@ -2,43 +2,36 @@
 	<view class="container" :style="{height:windowHeight+'px'}">
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
 		<view class="content-wrapper">
-			<ad unit-id="adunit-28338c7d91d145af"></ad>
-			<view class="about-actions margin-top cu-list menu sm-border card-menu animation-shake animation-speed-2 animation-delay-3">
-				<view class="cu-item arrow feedback-btn">
-					<view class="content">
-						<button class="free-btn-bordernone" open-type="contact">
-							<tui-icon name="kefu" color="green" :size="20"></tui-icon>
-							<text style="color: grey; padding-left: 10px;" class="text-sm">
-								联系客服
-							</text>
-						</button>
-					</view>
+			<view>
+				<view class="ad-container margin-top cu-list menu sm-border card-menu">
+					<ad unit-id="adunit-b7df91d4367e062b"></ad>
 				</view>
-				<view class="cu-item arrow feedback-btn" @click="tucao">
-					<view class="content">
-						<button class="free-btn-bordernone">
-							<tui-icon name="message" color="green" :size="20"></tui-icon>
-							<text style="color: grey; padding-left: 10px;" class="text-sm">
-								产品建议
-							</text>
-						</button>
-					</view>
-				</view>
-				<!-- <view class="cu-item arrow feedback-btn" @click="addHappiness">
-					<view class="content">
-						<button class="free-btn-bordernone">
-							<tui-icon name="agree" color="green" :size="20"></tui-icon>
-							<text style="color: grey; padding-left: 10px;" class="text-sm">
-								找开发小哥吐槽
-							</text>
-						</button>
-						<view class="action">
+				<view class="cu-card article" >
+					<view class="cu-item shadow">
+						<view class="title">
+							<view class="text-cut"> 头像加福字 </view>
+						</view>
+						<view class="content">
+							<image style="width: 160rpx; margin-top: 8px;" src="/static/image/logo/happiness-logo.png"
+							 mode="widthFix"></image>
+							<view class="desc">
+								<view class="text-content"> 2020艰难开局，我们并肩战斗，头像加福，期待好运到来！</view>
+								<view class="grid justify-between">
+									<view>
+										<view class="cu-tag bg-red light sm round">贺新年</view>
+										<view class="cu-tag bg-green light sm round">集五福</view>
+									</view>
+									<view>
+										<button class="cu-btn line-orange sm" @click="addHappiness">
+										<text class="cuIcon-forward"></text> <text class="text-orange">打开</text> </button>
+									</view>
+								</view>
+							</view>
 						</view>
 					</view>
-				</view> -->
-
+				</view>
 			</view>
-
+			
 			<view @click="showModal" data-target="Modal" id="btn-footer-oa">
 				<tui-footer :fixed="true" :copyright="copyright"></tui-footer>
 			</view>
@@ -134,22 +127,18 @@
 					productId: 120746
 				}).go();
 			},
-			addHappiness: function(){
-				wx.previewImage({
-				  current: '/static/image/qcode.jpeg', // 当前显示图片的http链接
-				  urls: ['/static/image/qcode.jpeg'] // 需要预览的图片http链接列表
+			addHappiness: function() {
+				console.log('addHappiness');
+				wx.navigateToMiniProgram({
+					appId: 'wxb8055d6d942b3690',
+					path: 'pages/happiness/add-happiness',
+					success(res) {
+						console.log(res);
+					},
+					fail(e) {
+						console.log(e);
+					}
 				})
-				// console.log('addHappiness');
-				// wx.navigateToMiniProgram({
-				//   appId: 'wxb8055d6d942b3690',
-				//   path: 'pages/happiness/add-happiness',
-				//   success(res) {
-				//     console.log(res);
-				//   },
-				//   fail(e){
-				// 	  console.log(e);
-				//   }
-				// })
 			},
 			showModal: function(e) {
 				console.log(e.currentTarget.dataset);
@@ -183,10 +172,10 @@
 	}
 	
 	.about-actions{
-		position: fixed;
-		bottom: 80px;
+		/* position: fixed; */
+		/* bottom: 80px; */
 		width: 500rpx;
-		left: 125rpx;
+		/* left: 125rpx; */
 	}
 
 	.card-menu {
@@ -202,5 +191,9 @@
 
 	.free-btn-bordernone::after {
 		border: none;
+	}
+	
+	.ad-container {
+		width: 690rpx;
 	}
 </style>

@@ -45,10 +45,11 @@
 			</view>
 		</view>
 		<view class="grid justify-around share-wrapper">
-			<view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
+			<ad unit-id="adunit-9eaa632f3263c819"></ad>
+			<!-- <view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
 				<button class="cu-btn block line-orange lg share-btn" open-type="share">
 					<text class="cuIcon-upload"></text><text class="text-yellow"> 分享给好友</text></button>
-			</view>
+			</view> -->
 		</view>
 
 		<!-- <scroll-view class="scrollView mask-scroll-view" scroll-x="true">

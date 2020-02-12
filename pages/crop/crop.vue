@@ -491,6 +491,10 @@
 </script>
 
 <style>
+	page{
+		background-color: #000000;
+	}
+	
 	/* pages/uni-cropper/index.wxss */
 	.uni-content-info {
 		/* position: fixed;
@@ -506,7 +510,7 @@
 	.cropper-config {
 		padding: 20upx 0upx;
 		position: fixed;
-		bottom: 0px;
+		bottom:  100rpx;
 		width: 750upx;
 		heigh: 80px;
 	}

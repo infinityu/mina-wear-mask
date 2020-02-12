@@ -41,10 +41,12 @@
 			</view>
 		</view>
 		<view class="grid justify-around share-wrapper">
-			<view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
+			<!-- <view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
 				<button class="cu-btn block line-orange lg share-btn" open-type="share">
 					<text class="cuIcon-upload"></text> <text class="text-yellow">分享给好友</text> </button>
-			</view>
+			</view> -->
+			<ad unit-id="adunit-85230d6cd9a1beee"></ad>
+			
 		</view>
 
 		<scroll-view class="scrollView mask-scroll-view" scroll-x="true">
@@ -640,7 +642,7 @@
 
 <style lang="scss" scoped>
 	.avatar-container {
-		height: 300px;
+		height: 290px;
 		width: 100%;
 		margin-top: 150rpx;
 		margin-left: auto;
@@ -663,14 +665,14 @@
 	}
 
 	.action-wrapper {
-		padding-top: 50rpx;
+		padding-top: 10rpx;
 		padding-left: 100rpx;
 		padding-right: 100rpx;
 		font-weight: 800;
 	}
 
 	.share-wrapper {
-		padding-top: 50rpx;
+		padding-top: 10rpx;
 		padding-left: 100rpx;
 		padding-right: 100rpx;
 		font-weight: 800;
@@ -714,7 +716,7 @@
 	.scrollView {
 		width: 100%;
 		position: absolute;
-		bottom: 5px;
+		bottom: 0px;
 		white-space: nowrap;
 	}
 

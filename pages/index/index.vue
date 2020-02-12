@@ -4,45 +4,22 @@
 		<view v-if="SHOW_TIP">
 			<add-tips :statusBarHeight="statusBarHeight" />
 		</view>
-		<view class="logo-area" :style="{top: statusBarHeight + 'px;'}">
+		<!-- <view class="logo-area" :style="{top: statusBarHeight + 'px;'}">
 			<image style="width: 25px; height: 25px;" src="../../static/image/rwzc-logo-round.png"></image>
 			<text class="text-yellow text-bold text-sm">人文之窗公众号</text>
-		</view>
+		</view> -->
 		<view class="menu-list" :style="{'margin-top': statusBarHeight+40+'px' }">
-			
-			<view>
-				<view class="cu-card article">
-					<view class="cu-item shadow">
-						<view class="title">
-							<view class="text-cut"> 头像加福字 </view>
-						</view>
-						<view class="content">
-							<image @click="addHappiness" style="width: 160rpx; margin-top: 8px;" src="/static/image/logo/happiness-logo.png"
-							 mode="widthFix"></image>
-							<view class="desc">
-								<view class="text-content"> 2020艰难开局，我们并肩战斗，头像加福，期待好运到来！</view>
-								<view class="grid justify-between">
-									<view>
-										<view class="cu-tag bg-red light sm round">贺新年</view>
-										<view class="cu-tag bg-green light sm round">集五福</view>
-									</view>
-									<view>
-										<button class="cu-btn line-orange sm" @click="addHappiness">
-											<text class="cuIcon-forward"></text> <text class="text-orange">打开</text> </button>
-									</view>
-								</view>
-							</view>
-						</view>
-					</view>
-				</view>
+			<view class="ad-container margin-top cu-list menu sm-border card-menu">
+				<ad unit-id="adunit-28338c7d91d145af"></ad>
+				<!-- <ad unit-id="adunit-7301464a68a1e24e" ad-type="video" ad-theme="white"></ad> -->
 			</view>
-			<view class="cu-card article">
-				<view class="cu-item shadow">
+			<view class="cu-card article" @click="addMask" >
+				<view class="cu-item shadow" style="margin: 30rpx 30rpx 0rpx 30rpx; ">
 					<view class="title">
 						<view class="text-cut"> 头像戴口罩 </view>
 					</view>
 					<view class="content">
-						<image style="width: 160rpx;" @click="addMask" src="/static/image/logo/mask-logo.png" mode="aspectFill"></image>
+						<image style="width: 160rpx;" src="/static/image/logo/mask-logo.png" mode="aspectFill"></image>
 						<view class="desc">
 							<view class="text-content"> 换上口罩头像，防止疫情蔓延。    超过30款口罩、护目镜任你选！</view>
 							<view>
@@ -51,23 +28,20 @@
 										<view class="cu-tag bg-red light sm round">防疫情</view>
 										<view class="cu-tag bg-green light sm round">保健康</view>
 									</view>
-									<view>
-										<button class="cu-btn line-orange sm" @click="addMask">
-											<text class="cuIcon-forward"></text> <text class="text-orange">打开</text> </button>
-									</view>
+									
 								</view>
 							</view>
 						</view>
 					</view>
 				</view>
 			</view>
-			<view class="cu-card article">
-				<view class="cu-item shadow">
+			<view class="cu-card article" @click="addSlogan">
+				<view class="cu-item shadow" style="margin: 30rpx 30rpx 0rpx 30rpx; ">
 					<view class="title">
 						<view class="text-cut"> 武汉加油 </view>
 					</view>
 					<view class="content">
-						<image style="width: 160rpx;" @click="addSlogan" src="/static/image/logo/slogan-logo.jpeg" mode="aspectFill"></image>
+						<image style="width: 160rpx;"  src="/static/image/logo/slogan-logo.jpeg" mode="aspectFill"></image>
 						<view class="desc">
 							<view class="text-content">  武汉加油，中国加油，加油2020，不动如山，拒绝聚会，拒绝野味。</view>
 							<view>
@@ -76,41 +50,35 @@
 										<view class="cu-tag bg-red light sm round">武汉加油</view>
 										<view class="cu-tag bg-green light sm round">自定义口号</view>
 									</view>
-									<view>
-										<button class="cu-btn line-orange sm" @click="addSlogan">
-											<text class="cuIcon-forward"></text> <text class="text-orange">打开</text> </button>
-									</view>
 								</view>
 							</view>
 						</view>
 					</view>
 				</view>
 			</view>
-			
-		</view>
-
-		<view class="about-actions margin-top cu-list menu sm-border card-menu animation-shake animation-speed-2 animation-delay-3"
-			style="margin-bottom: 50rpx;">
-			<view class="cu-item feedback-btn">
-				<view class="content">
-					<button class="free-btn-bordernone" open-type="contact">
-						<tui-icon name="kefu" color="green" :size="20"></tui-icon>
-						<text style="color: grey; padding-left: 10px;" class="text-sm">
-							联系客服
-						</text>
-					</button>
+			<view class="about-actions margin-top cu-list menu sm-border card-menu animation-shake animation-speed-2 animation-delay-3">
+				<view class="cu-item arrow feedback-btn">
+					<view class="content">
+						<button class="free-btn-bordernone" open-type="contact">
+							<tui-icon name="kefu" color="green" :size="20"></tui-icon>
+							<text style="color: grey; padding-left: 10px;" class="text-sm">
+								联系客服
+							</text>
+						</button>
+					</view>
 				</view>
-
-				<view class="content" @click="tucao">
-					<button class="free-btn-bordernone">
-						<tui-icon name="message" color="green" :size="20"></tui-icon>
-						<text style="color: grey; padding-left: 10px;" class="text-sm">
-							产品建议
-						</text>
-					</button>
+				<view class="cu-item arrow feedback-btn" @click="tucao">
+					<view class="content">
+						<button class="free-btn-bordernone">
+							<tui-icon name="message" color="green" :size="20"></tui-icon>
+							<text style="color: grey; padding-left: 10px;" class="text-sm">
+								产品建议
+							</text>
+						</button>
+					</view>
 				</view>
 			</view>
-
+			
 		</view>
 
 	</view>
@@ -187,19 +155,6 @@
 					}
 				})
 			},
-			addHappiness: function() {
-				console.log('addHappiness');
-				wx.navigateToMiniProgram({
-					appId: 'wxb8055d6d942b3690',
-					path: 'pages/happiness/add-happiness',
-					success(res) {
-						console.log(res);
-					},
-					fail(e) {
-						console.log(e);
-					}
-				})
-			},
 			addMask: function() {
 				uni.switchTab({
 					url: '/pages/mask/add-mask'
@@ -235,11 +190,12 @@
 		position: absolute;
 		left: 20px;
 	}
-	.about-actions {
-		/* position: fixed; */
-		/* bottom: 80px; */
-		width: 500rpx;
-		left: 125rpx;
+	.ad-container {
+		width: 690rpx;
+	}
+	
+	.about-actions{
+		width: 690rpx;
 	}
 
 	.card-menu {
