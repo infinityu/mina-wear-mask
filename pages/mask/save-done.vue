@@ -1,32 +1,17 @@
 <template>
 	<view class="container" :style="{height:windowHeight+'px'}">
-		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
-		<view v-if="SHOW_TIP">
-			<!-- <add-tips :statusBarHeight="statusBarHeight" /> -->
-		</view>
-		<!-- <view style="height: 54px; width: 750rpx; background-color: #C12928; position: absolute;"></view> -->
-
-		<view class="avatar-container grid justify-center" id="avatar-container" @touchstart="touchStart" @touchend="touchEnd"
-		 @touchmove="touchMove">
+		
+		<view class="avatar-container grid justify-center" id="avatar-container" @touchstart="touchStart" @touchend="touchEnd" @touchmove="touchMove">
 			<view class="avatar-bg-border">
 				<image @touchstart="touchAvatarBg" class="bg avatar-bg" id="avatar-bg" :src="avatarPath"></image>
 			</view>
-			<!-- <icon type="cancel" class="cancel" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 + 'px'}"></icon> -->
-			<!-- <icon type="waiting" class="handle" id="handle" color="green" :style="{top:handleCenterY-10 + 'px', left:handleCenterX-10 +'px'}"></icon> -->
-			<!-- <text class="cuIcon-order cancel circle" @click="flipHorizontal" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelterX-10 +'px'}"></text> -->
-			<image v-if="currentMaskId > -1" class="mask flip-horizontal" :class="{maskWithBorder: showBorder}" id='mask' :src="maskPic"
-			 :style="{top:maskCenterY-maskSize/2-2+'px', left:maskCenterX-maskSize/2-2+'px',
-				transform: 'rotate(' +rotate+ 'deg)' + 'scale(' +scale+')' + 'rotateY('+ rotateY +'deg)'}"></image>
-			<text class="cuIcon-full handle circle" :class="{hideHandle: !showBorder}" id="handle" :style="{top:handleCenterY-10 + 'px', left:handleCenterX-10 +'px'}"></text>
-			<text class="cuIcon-order cancel circle" v-if="isAndroid" :class="{hideHandle: !showBorder}" id="cancel" @click="flipHorizontal"
-			 :style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 +'px', transform: 'rotate(' +90+ 'deg)'}"></text>
 		</view>
 		<view>
 			<canvas class="cans-id-mask" canvas-id="cans-id-mask" style="height:270px;width:270px;margin-left: auto;margin-right: auto;" />
 		</view>
 		<view class="flex-sub text-center">
 			<view class="solid-bottom">
-				<text class="text-yellow text-bold">戴上口罩 远离病毒 从你我做起</text>
+				<text class="text-yellow text-bold">戴口罩头像保存成功，请至相册查看</text>
 			</view>
 		</view>
 		<view class="grid justify-around action-wrapper">
@@ -43,49 +28,9 @@
 			</view>
 		</view>
 		<view class="grid justify-around share-wrapper">
-			<!-- <view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
-				<button class="cu-btn block line-orange lg share-btn" open-type="share">
-					<text class="cuIcon-upload"></text> <text class="text-yellow">分享给好友</text> </button>
-			</view> -->
 			<ad unit-id="adunit-85230d6cd9a1beee"></ad>
-
 		</view>
 
-		<scroll-view class="scrollView mask-scroll-view" scroll-x="true">
-			<view v-for="(item,index) in imgList" :key="index" style="display: inline-flex;">
-				<text v-if="currentMaskId == index && isAndroid" class="cuIcon-order cancel circle" @click="flipHorizontal" id="cancel"
-				 :style="{transform: 'rotate(' +90+ 'deg)'}"></text>
-				<!-- <text v-if="currentMaskId == index" style="margin-left: 55px;" class="cuIcon-question cancel circle" @click="showTips"
-				 id="cancel"></text> -->
-				<image class="imgList" :src="'/static/image/mask/'+ index +'.png'" :data-mask-id="index" @tap="changeMask"></image>
-			</view>
-		</scroll-view>
-
-		<view class="cu-modal" :class="modalName=='saveTip'?'show':''">
-			<view class="cu-dialog">
-				<view class="cu-bar bg-white justify-end">
-					<view class="content"> 已保存至相册</view>
-					<view class="action" @tap="hideModal">
-						<text class="cuIcon-close text-red"></text>
-					</view>
-				</view>
-				<view class="padding-xl">
-					预防千万条，口罩第一条。
-					健康第一位，不要吃野味。
-					不往人群挤，病毒不找你。
-					洗手很重要，胜过吃补药。
-					通风也要紧，疾病无踪影。
-				</view>
-				<view class="padding">
-					祝大家平安过节！戴口罩，勤洗手，早睡早起，健康美丽！
-				</view>
-				<view class="cu-bar bg-white justify-end">
-					<view class="action">
-						<button class="cu-btn line-green text-green" @tap="hideModal">我知道了</button>
-					</view>
-				</view>
-			</view>
-		</view>
 
 	</view>
 </template>
@@ -100,6 +45,8 @@
 
 	// 在页面中定义激励视频广告
 	let videoAd = null;
+	// 在页面中定义插屏广告
+	let interstitialAd = null;
 
 	const range = (start, end, step) => {
 		return Array.from(Array.from(Array(Math.ceil((end - start) / step)).keys()), x => start + x * step);
@@ -120,9 +67,9 @@
 				isAndroid: getApp().globalData.IS_ANDROID,
 				modalName: null,
 				savedCounts: 0,
-				cansWidth: 270, // 宽度 px
-				cansHeight: 270, // 高度 px
-				avatarPath: '/static/image/mask/avatar_mask.png',
+				cansWidth: 200, // 宽度 px
+				cansHeight: 200, // 高度 px
+				avatarPath: getApp().globalData.maskAvatarSavedTempPath,
 				imgList: range(0, 29, 1), // 第二个参数是个数
 				currentMaskId: -1,
 				showBorder: false,
@@ -163,7 +110,18 @@
 			if (!!getApp().globalData.userAvatarFilePath) {
 				this.avatarPath = getApp().globalData.userAvatarFilePath;
 			}
-
+			// 在页面onLoad回调事件中创建插屏广告实例
+			if (wx.createInterstitialAd) {
+				interstitialAd = wx.createInterstitialAd({
+					adUnitId: 'adunit-2bf7cf186785bfda'
+				})
+				interstitialAd.onLoad(() => {})
+				interstitialAd.onError((err) => {
+					console.log(err);
+				})
+				interstitialAd.onClose(() => {})
+			}
+			
 			let _this = this;
 			// 在页面onLoad回调事件中创建激励视频广告实例
 			if (wx.createRewardedVideoAd) {
@@ -181,15 +139,12 @@
 					if (res && res.isEnded || res === undefined) {
 						// 正常播放结束，下发奖励
 						_this.rewardedVideoAdAlreadyShow = true; // 本次使用不再展现激励广告
-						_this.saveCans();
+						// _this.saveCans();
 					} else {
 						// 播放中途退出，进行提示
 						_this.rewardedVideoAdAlreadyShow = false;
-						uni.showToast({
-							title: '请完整观看哦'
-						})
 					}
-
+			
 				})
 			}
 		},
@@ -200,7 +155,7 @@
 			if (!cache) {
 				this.statusBarHeight = uni.getSystemInfoSync().statusBarHeight;
 				console.log('this.statusBarHeight', this.statusBarHeight);
-
+				
 				// 没显示过，则进行展示
 				this.SHOW_TIP = true;
 				console.log('SHOW_TIP', this.SHOW_TIP);
@@ -217,6 +172,11 @@
 				getApp().globalData.rapaintAfterCrop = false;
 				this.avatarPath = getApp().globalData.cropImageFilePath;
 				this.paint();
+			}
+			if (interstitialAd) {
+				interstitialAd.show().catch((err) => {
+					console.error(err)
+				})
 			}
 		},
 		onShareAppMessage() {
@@ -415,12 +375,13 @@
 					}
 					pc.drawImage(_this.maskPic, -mask_size / 2, -mask_size / 2, mask_size, mask_size);
 					pc.draw();
+					_this.saveCans();
 					
 					// 有成功加载的激励视频，才展现提示框
 					if (!!videoAd && _this.rewardedVideoAdLoaded) {
 						uni.showModal({
-							title: '获取无限制使用',
-							content: '观看完视频可以自动保存哦',
+							title: '获取无限使用次数',
+							content: '请完整观看趣味广告视频，更多个性化口罩护目镜任意添加',
 							success: function(res) {
 								if (res.confirm) {
 									console.log('用户点击确定');
@@ -441,13 +402,13 @@
 									}
 								} else if (res.cancel) {
 									console.log('用户点击取消');
-									_this.saveCans();
+									// _this.saveCans();
 									return;
 								}
 							}
 						});
 					} else {
-						_this.saveCans();
+						// _this.saveCans();
 					}
 				})
 			},
@@ -490,6 +451,24 @@
 										console.log('vibrateShort');
 									}
 								});
+								// 保存时，如果没有激励广告则展示一次插屏广告，因为一个完整操作流程已结束，提升广告曝光
+								if (interstitialAd && _this.enableInterstitialAd && !_this.interstitialAdAlreadyShow &&
+									!_this.rewardedVideoAdAlreadyShow) { // 没有激励广告才在保存时展示插屏广告
+									interstitialAd.show()
+										.then(() => {
+											_this.interstitialAdAlreadyShow = true;
+										})
+										.catch((err) => {
+											interstitialAd.load().then(() => {
+												interstitialAd.show();
+											}).catch(err => {
+												console.log(err);
+												console.log('插屏广告显示失败')
+											})
+											console.error(err)
+										})
+								}
+								console.log('保存成功')
 							},
 							fail(res) {
 								console.log(res)

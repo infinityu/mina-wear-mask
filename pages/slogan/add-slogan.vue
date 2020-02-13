@@ -1,8 +1,5 @@
 <template>
 	<view class="container" :style="{height:windowHeight+'px'}">
-		<view v-if="SHOW_TIP">
-			<!-- <add-tips :statusBarHeight="statusBarHeight" /> -->
-		</view>
 		<image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image>
 		<view id="avatar-section" @click="nextHappiness">
 			<canvas canvas-id="cans-id-happines" style="width:270px; height:270px;" class="isCan"></canvas>
@@ -46,19 +43,8 @@
 		</view>
 		<view class="grid justify-around share-wrapper">
 			<ad unit-id="adunit-9eaa632f3263c819"></ad>
-			<!-- <view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
-				<button class="cu-btn block line-orange lg share-btn" open-type="share">
-					<text class="cuIcon-upload"></text><text class="text-yellow"> 分享给好友</text></button>
-			</view> -->
 		</view>
 
-		<!-- <scroll-view class="scrollView mask-scroll-view" scroll-x="true">
-			<view v-for="(item,index) in imgList" class="imgList shadow" :key="index" style="display: inline-flex;">
-				<view class="slogan-bg">
-					<text>{{item}}</text>
-				</view>
-			</view>
-		</scroll-view> -->
 	</view>
 </template>
 <script>
@@ -73,11 +59,6 @@
 	import tuiButton from "@/components/tui/button"
 	import tuiListCell from "@/components/tui/list-cell"
 	import tuiDropdownList from "@/components/tui/dropdown-list"
-
-	// 在页面中定义激励视频广告
-	let videoAd = null;
-	// 在页面中定义插屏广告
-	let interstitialAd = null
 
 	export default {
 		components: {
@@ -164,10 +145,6 @@
 				showGentleMessage: false,
 				savedCounts: 0,
 				freeCount: 1,
-				enableRewardedVideoAd: true,
-				enableInterstitialAd: true,
-				rewardedVideoAdAlreadyShow: false,
-				interstitialAdAlreadyShow: false,
 				ownImageUsed: false,
 				showQuestion: false,
 				envId: 'happiness-production-yy81s',
@@ -202,59 +179,6 @@
 			this.ctx = uni.createCanvasContext('cans-id-happines', this);
 			this.paint();
 
-			const db = wx.cloud.database({
-				env: getApp().globalData.envId,
-				traceUser: true
-			});
-
-			let _this = this;
-			db.collection(getApp().globalData.collectionName).doc(getApp().globalData.docId).get().then(res => {
-				// res.data 包含该记录的数据
-				_this.enableRewardedVideoAd = res.data.enableRewardedVideoAd;
-				_this.enableInterstitialAd = res.data.enableInterstitialAd;
-				getApp().globalData.enableSecurityCheck = res.data.enableSecurityCheck;
-			})
-
-			// 在页面onLoad回调事件中创建插屏广告实例
-			if (wx.createInterstitialAd) {
-				interstitialAd = wx.createInterstitialAd({
-					adUnitId: 'adunit-42a76755483ec613'
-				})
-				interstitialAd.onLoad(() => {})
-				interstitialAd.onError((err) => {})
-				interstitialAd.onClose(() => {})
-			}
-
-			// 在页面onLoad回调事件中创建激励视频广告实例
-			if (wx.createRewardedVideoAd) {
-				videoAd = wx.createRewardedVideoAd({
-					adUnitId: 'adunit-e79298021d1311a7'
-				})
-				videoAd.onLoad(() => {
-					_this.rewardedVideoAdLoaded = true;
-				})
-				videoAd.onError((err) => {
-					// 广告组件出现错误，直接允许用户保存，不做其他复杂处理
-					console.log('videoAd.onError', err);
-					_this.rewardedVideoAdLoaded = false;
-				})
-				videoAd.onClose((res) => {
-					if (res && res.isEnded || res === undefined) {
-						// 正常播放结束，下发奖励
-						console.log('正常播放结束，下发奖励');
-						_this.rewardedVideoAdAlreadyShow = true; // 本次使用不再展现激励广告
-						_this.saveCans();
-					} else {
-						// 播放中途退出，进行提示
-						console.log('播放中途退出，重新提示');
-						console.log('rewardedVideoAdAlreadyShow', _this.rewardedVideoAdAlreadyShow);
-						_this.rewardedVideoAdAlreadyShow = false;
-						_this.checkAdBeforeSave();
-					}
-
-				})
-			}
-
 		},
 		onReady() {
 			console.log("onReady");
@@ -281,18 +205,7 @@
 				getApp().globalData.rapaintAfterCrop = false;
 				this.avatarPath = getApp().globalData.cropImageFilePath;;
 				this.paint();
-			} else {
-				//从剪裁页面跳转回来时不用展示，其他情况下，页面打开时展示插屏广告
-				if (interstitialAd) {
-					interstitialAd.show()
-						.then(() => {
-							this.interstitialAdAlreadyShow = true;
-						})
-						.catch((err) => {
-							console.error(err)
-						})
-				}
-			}
+			} else {}
 		},
 		onHide() {},
 		onShareAppMessage() {
@@ -509,42 +422,7 @@
 				this.paint();
 			},
 			checkAdBeforeSave() {
-				console.log('enableRewardedVideoAd', this.enableRewardedVideoAd);
-				console.log('videoAd', videoAd);
-				// 有成功加载的激励视频，才展现提示框
-				let _this = this;
-				if (!!videoAd && this.enableRewardedVideoAd && this.rewardedVideoAdLoaded &&
-					!this.rewardedVideoAdAlreadyShow && this.savedCounts >= this.freeCount) {
-					uni.showModal({
-						title: '获取无限使用次数',
-						content: '请完整观看趣味广告视频',
-						success: function(res) {
-							if (res.confirm) {
-								console.log('用户点击确定');
-								// 用户触发广告后，显示激励视频广告
-								if (videoAd) {
-									videoAd.show().catch(() => {
-										// 失败重试
-										videoAd.load()
-											.then(() => {
-												videoAd.show();
-											})
-											.catch(err => {
-												console.log(err);
-												console.log('激励视频 广告显示失败')
-											})
-									})
-								}
-							} else if (res.cancel) {
-								console.log('用户点击取消');
-								// _this.saveCans();
-								return;
-							}
-						}
-					});
-				} else {
-					this.saveCans();
-				}
+				this.saveCans();
 			},
 			/**
 			 * 保存
@@ -578,23 +456,7 @@
 									}
 								});
 								_this.savedCounts++;
-								// 保存时，如果没有激励广告则展示一次插屏广告，因为一个完整操作流程已结束，提升广告曝光
-								if (interstitialAd && _this.enableInterstitialAd && !_this.interstitialAdAlreadyShow &&
-									!_this.rewardedVideoAdAlreadyShow) { // 没有激励广告才在保存时展示插屏广告
-									interstitialAd.show()
-										.then(() => {
-											_this.interstitialAdAlreadyShow = true;
-										})
-										.catch((err) => {
-											interstitialAd.load().then(() => {
-												interstitialAd.show();
-											}).catch(err => {
-												console.log(err);
-												console.log('插屏广告显示失败')
-											})
-											console.error(err)
-										})
-								}
+
 								console.log('保存成功')
 							},
 							fail(res) {

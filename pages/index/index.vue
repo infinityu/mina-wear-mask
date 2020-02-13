@@ -1,6 +1,5 @@
 <template>
 	<view class="container container-index" style="overflow-y: scroll;">
-		<!-- <image class="page-bg" :style="{height:windowHeight+'px'}" mode="aspectFill" src="/static/image/page-bg.png"></image> -->
 		<view v-if="SHOW_TIP">
 			<add-tips :statusBarHeight="statusBarHeight" />
 		</view>
@@ -69,6 +68,27 @@
 								<view class="grid justify-between">
 									<view>
 										<view class="cu-tag bg-red light sm round">任意文字、颜色</view>
+										<!-- <view class="cu-tag bg-green light sm round">多种颜色</view> -->
+									</view>
+								</view>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
+			<view class="cu-card article" @click="chatBackground">
+				<view class="cu-item shadow" style="margin: 30rpx 30rpx 0rpx 30rpx; ">
+					<view class="title">
+						<view class="text-cut">聊天背景图、壁纸锁屏 </view>
+					</view>
+					<view class="content">
+						<image style="width: 180rpx;"  src="/static/image/logo/chat-bg-logo.png" mode="aspectFill"></image>
+						<view class="desc">
+							<view class="text-content"> 聊天背景图，高清手机壁纸，锁屏图片</view>
+							<view>
+								<view class="grid justify-between">
+									<view>
+										<view class="cu-tag bg-red light sm round">聊天背景、壁纸、锁屏</view>
 										<!-- <view class="cu-tag bg-green light sm round">多种颜色</view> -->
 									</view>
 								</view>
@@ -189,6 +209,11 @@
 			addText: function(){
 				uni.navigateTo({
 					url: '/pages/text/add-text'
+				})
+			},
+			chatBackground: function(){
+				uni.navigateTo({
+					url: '/page-chat-bg/pages/index/index'
 				})
 			},
 			

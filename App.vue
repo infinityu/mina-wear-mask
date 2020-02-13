@@ -20,7 +20,8 @@
 			PAGE_BG_COLOR: '#C12928',
 			enableSecurityCheck: true,
 			userAvatarUrl: null,
-			userAvatarFilePath: null
+			userAvatarFilePath: null,
+			maskAvatarSavedTempPath: null
 			
 		},
 		onLaunch: function() {

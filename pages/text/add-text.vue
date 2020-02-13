@@ -21,7 +21,7 @@
 		<view>
 			<view class="uni-form-item uni-column">
 				<view class="title uni-inline-item" style="margin-right: 25rpx;"> 输入一个字: 
-					<input class="uni-inline-item" confirm-type="done" @confirm="onKeyInput" maxlength="1" placeholder="高, 白, 美, 忙, 稳, 约, 赞, 壕, 帅, 萌, 矮, 丑, 穷" />
+					<input class="uni-inline-item" confirm-type="done" @blur="onKeyInput" @confirm="onKeyInput" maxlength="1" placeholder="高, 白, 美, 忙, 稳, 约, 赞, 壕, 帅, 萌, 矮, 丑, 穷" />
 				</view>
 			</view>
 		</view>
