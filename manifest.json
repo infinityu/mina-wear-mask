@@ -71,7 +71,7 @@
 				"provider": "wx8abaf00ee8c3202e"
 			}
 		},
-		"navigateToMiniProgramAppIdList": ["wxb8055d6d942b3690", "wx1656b2e5df4e587c"],
+		"navigateToMiniProgramAppIdList": ["wxb8055d6d942b3690", "wx1656b2e5df4e587c", "wxd44e78294c5c5401"],
 		"requiredBackgroundModes": ["audio"]
 	},
 	"mp-alipay": {

@@ -100,6 +100,8 @@
 
 	// 在页面中定义激励视频广告
 	let videoAd = null;
+	// 在页面中定义插屏广告
+	let interstitialAd = null
 
 	const range = (start, end, step) => {
 		return Array.from(Array.from(Array(Math.ceil((end - start) / step)).keys()), x => start + x * step);
@@ -165,6 +167,19 @@
 			}
 
 			let _this = this;
+			
+			// 在页面onLoad回调事件中创建插屏广告实例
+			if (wx.createInterstitialAd) {
+				interstitialAd = wx.createInterstitialAd({
+					adUnitId: 'adunit-2bf7cf186785bfda'
+				})
+				interstitialAd.onLoad(() => {})
+				interstitialAd.onError((err) => {
+					console.log(err);
+				})
+				interstitialAd.onClose(() => {})
+			}
+			
 			// 在页面onLoad回调事件中创建激励视频广告实例
 			if (wx.createRewardedVideoAd) {
 				videoAd = wx.createRewardedVideoAd({
@@ -213,6 +228,14 @@
 		},
 		onShow() {
 			console.log("onShow");
+			
+			// 在适合的场景显示插屏广告
+			if (interstitialAd) {
+			  interstitialAd.show().catch((err) => {
+			    console.error(err)
+			  })
+			}
+			
 			if (getApp().globalData.rapaintAfterCrop) {
 				getApp().globalData.rapaintAfterCrop = false;
 				this.avatarPath = getApp().globalData.cropImageFilePath;

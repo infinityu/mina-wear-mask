@@ -1,5 +1,5 @@
 <template>
-	<view class="container container-index" style="overflow-y: scroll;">
+	<scroll-view class="container container-index" style="overflow-y: scroll;">
 		<view v-if="SHOW_TIP">
 			<add-tips :statusBarHeight="statusBarHeight" />
 		</view>
@@ -25,6 +25,28 @@
 								<view class="grid justify-between">
 									<view>
 										<view class="cu-tag bg-red light sm round">防疫情，保健康</view>
+										<!-- <view class="cu-tag bg-green light sm round">保健康</view> -->
+									</view>
+									
+								</view>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
+			<view class="cu-card article" @click="nasa" >
+				<view class="cu-item shadow" style="margin: 30rpx 30rpx 0rpx 30rpx; ">
+					<view class="title">
+						<view class="text-cut"> 生日那天的宇宙 </view>
+					</view>
+					<view class="content">
+						<image style="width: 180rpx;" src="/static/image/logo/nasa.jpeg" mode="aspectFill"></image>
+						<view class="desc">
+							<view class="text-content"> 快来看看你生日那天，哈勃望远镜看到了怎样的宇宙星空！</view>
+							<view>
+								<view class="grid justify-between">
+									<view>
+										<view class="cu-tag bg-red light sm round">全宇宙独一无二的生日礼物</view>
 										<!-- <view class="cu-tag bg-green light sm round">保健康</view> -->
 									</view>
 									
@@ -122,7 +144,7 @@
 			
 		</view>
 
-	</view>
+	</scroll-view>
 </template>
 
 <script>
@@ -199,6 +221,18 @@
 			addMask: function() {
 				uni.switchTab({
 					url: '/pages/mask/add-mask'
+				})
+			},
+			nasa: function() {
+				wx.navigateToMiniProgram({
+					appId: 'wxd44e78294c5c5401',
+					path: 'pages/board/borad',
+					success(res) {
+						console.log(res);
+					},
+					fail(e) {
+						console.log(e);
+					}
 				})
 			},
 			addSlogan: function(){

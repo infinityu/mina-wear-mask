@@ -6,7 +6,8 @@
 	let statusBarHeight = sysInfo.statusBarHeight;
 	const STORAGE_KEY = 'PLUG-ADD-MYAPP-KEY';
 	const envId = 'ncov-production-wwomb';
-	const collectionName = 'mp_launch_config';
+	// const collectionName = 'mp_launch_config';
+	const collectionName = 'config_jill';
 	const docId = 'mp_launch_config_doc';
 	export default {
 		globalData: {  
